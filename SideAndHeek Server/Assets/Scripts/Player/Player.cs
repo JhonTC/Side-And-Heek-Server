@@ -21,11 +21,19 @@ public class Player : MonoBehaviour
     public int itemAmount = 0;
     public int maxItemCount = 100;
 
-    public void Initialize(int _id, string _username)
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
+
+    public void Initialize(int _id, string _username, Transform _transform)
     {
         id = _id;
         username = _username;
         controller = GetComponent<SimplePlayerController>();
+
+        controller.TeleportPhysicalBody(_transform.position);
+        controller.rigidbody.rotation = _transform.rotation;
     }
 
     public void FixedUpdate()

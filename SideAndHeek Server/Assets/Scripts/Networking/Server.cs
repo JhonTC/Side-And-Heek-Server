@@ -125,15 +125,16 @@ public class Server
     {
         for (int i = 1; i <= MaxPlayers; i++)
         {
-            clients.Add(i, new Client(i));
+            clients.Add(i, new Client(i, i == 1));
         }
 
         packetHandlers = new Dictionary<int, PacketHandler>()
-            {
-                { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved },
-                { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
-                { (int)ClientPackets.playerReady, ServerHandle.PlayerReady }
-            };
+        {
+            { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved },
+            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
+            { (int)ClientPackets.playerReady, ServerHandle.PlayerReady },
+            { (int)ClientPackets.tryStartGame, ServerHandle.TryStartGame }
+        };
         Debug.Log("Initialised packets");
     }
 

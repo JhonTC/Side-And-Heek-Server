@@ -16,6 +16,8 @@ public class ItemSpawner : MonoBehaviour
         spawnerId = nextSpawnerId;
         nextSpawnerId++;
         spawners.Add(spawnerId, this);
+        
+        ServerSend.CreateItemSpawner(spawnerId, transform.position, hasItem);
 
         StartCoroutine(SpawnItem());
     }

@@ -36,4 +36,12 @@ public class ServerHandle
 
         Server.clients[_fromClient].player.SetReady(_isReady);
     }
+
+    public static void TryStartGame(int _fromClient, Packet _packet)
+    {
+        //if (Server.clients[_fromClient].isHost)
+        //{
+        GameManager.instance.TryStartGame();
+        //}
+    }
 }

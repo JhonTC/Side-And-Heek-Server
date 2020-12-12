@@ -122,7 +122,7 @@ public class ServerSend
         }
     }
 
-    public static void CreateItemSpawner(int _toClient, int _spawnerId, Vector3 _position, bool _hasItem)
+    public static void CreateItemSpawner(int _spawnerId, Vector3 _position, bool _hasItem)
     {
         using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
         {
@@ -130,7 +130,7 @@ public class ServerSend
             _packet.Write(_position);
             _packet.Write(_hasItem);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -163,6 +163,16 @@ public class ServerSend
             _packet.Write(_isReady);
 
             SendTCPDataToAll(_playerId, _packet);
+        }
+    }
+
+    public static void ChangeScene(string _sceneToLoad)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.changeScene))
+        {
+            _packet.Write(_sceneToLoad);
+
+            SendTCPDataToAll(_packet);
         }
     }
 

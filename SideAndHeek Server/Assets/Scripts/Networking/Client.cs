@@ -9,14 +9,17 @@ public class Client
 
     public int id;
     public Player player;
+    public bool isHost;
+
     public TCP tcp;
     public UDP udp;
 
-    public Client(int _clientId)
+    public Client(int _clientId, bool _isHost)
     {
         id = _clientId;
         tcp = new TCP(id);
         udp = new UDP(id);
+        isHost = _isHost;
     }
 
     public class TCP
@@ -186,8 +189,9 @@ public class Client
 
     public void SendIntoGame(string _playerName)
     {
-        player = NetworkManager.instance.InstantiatePlayer();
-        player.Initialize(id, _playerName);
+        Transform _transform = GameManager.instance.GetNextSpawnpoint();
+        player = NetworkManager.instance.InstantiatePlayer(_transform);
+        player.Initialize(id, _playerName, _transform);
 
         foreach (Client _client in Server.clients.Values)
         {
@@ -206,11 +210,6 @@ public class Client
             {
                 ServerSend.SpawnPlayer(_client.id, player);
             }
-        }
-
-        foreach (ItemSpawner _itemSpawner in ItemSpawner.spawners.Values)
-        {
-            ServerSend.CreateItemSpawner(id, _itemSpawner.spawnerId, _itemSpawner.transform.position, _itemSpawner.hasItem);
         }
     }
 

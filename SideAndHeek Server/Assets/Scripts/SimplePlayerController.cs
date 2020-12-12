@@ -305,4 +305,18 @@ public class SimplePlayerController : MonoBehaviour
         awfRigidBody = activeWalkingFoot.foot.GetComponent<Rigidbody>();
         owfRigidBody = otherWalkingFoot.foot.GetComponent<Rigidbody>();
     }
+
+    public void TeleportPhysicalBody(Vector3 _position)
+    {
+        //rigidbody.gameObject.SetActive(false);
+
+        Vector3 rootPosition = rigidbody.position;
+        rigidbody.position = _position;
+        rightLeg.position = _position + (rootPosition - rightLeg.position);
+        leftLeg.position = _position + (rootPosition - leftLeg.position);
+        rightFootCollider.foot.position = _position + (rootPosition - rightFootCollider.foot.position);
+        leftFootCollider.foot.position = _position + (rootPosition - leftFootCollider.foot.position);
+
+        //rigidbody.gameObject.SetActive(true);
+    }
 }

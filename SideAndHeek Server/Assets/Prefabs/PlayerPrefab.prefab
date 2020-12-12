@@ -1025,7 +1025,7 @@ MonoBehaviour:
   flopForce: 3000
   footReturnSpeed: 5
   rigidbody: {fileID: 9066730951440007205}
-  turnSpeed: 10
+  turnSpeed: 15
   rightLeg: {fileID: 754844974334568868}
   leftLeg: {fileID: 1746681689206596659}
   leftFootCollider: {fileID: 4731582423666647673}

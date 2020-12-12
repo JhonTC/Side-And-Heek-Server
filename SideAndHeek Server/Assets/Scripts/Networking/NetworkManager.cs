@@ -19,6 +19,8 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Instance already exists, destroying object!");
             Destroy(this);
         }
+
+        DontDestroyOnLoad(this);
     }
 
     private void Start()
@@ -26,7 +28,7 @@ public class NetworkManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
         
-        Server.Start(50, 42069);
+        Server.Start(10, 42069);
     }
 
     private void OnApplicationQuit()
@@ -34,7 +36,7 @@ public class NetworkManager : MonoBehaviour
         Server.Stop();
     }
 
-    public Player InstantiatePlayer()
+    public Player InstantiatePlayer(Transform _transform)
     {
         return Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
     }
