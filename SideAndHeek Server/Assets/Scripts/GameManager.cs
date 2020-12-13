@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public List<Transform> spawnpoints = new List<Transform>();
     private int spawnpointIndexCounter = 1;
+
+    public bool gameStarted = false;
 
     private void Awake()
     {
@@ -52,6 +55,7 @@ public class GameManager : MonoBehaviour
         } else
         {
             spawnpointIndexCounter = 0; //change to 1 and add code for seeker to spawn separatley at spawnpoints[0]
+            gameStarted = true;
         }
 
         foreach (Client client in Server.clients.Values)
@@ -60,8 +64,7 @@ public class GameManager : MonoBehaviour
             {
                 Transform _spawnpoint = GetNextSpawnpoint();
 
-                client.player.controller.TeleportPhysicalBody(_spawnpoint.position);
-                client.player.controller.rigidbody.rotation = _spawnpoint.rotation;
+                client.player.TeleportPlayer(_spawnpoint); 
             }
         }
     }
@@ -108,12 +111,36 @@ public class GameManager : MonoBehaviour
         return newSpawnpoints;
     }
 
-    public void TryStartGame()
+    public void TryStartGame(int _fromClient)
     {
-        if (AreAllPlayersReady())
+        bool areAllPlayersReady = AreAllPlayersReady();
+        if (areAllPlayersReady)
         {
             LoadScene("Map_Legacy");
             ServerSend.ChangeScene("Map_Legacy");
+
+            int _randPlayerId = Server.clients.ElementAt(Random.Range(0, Server.GetPlayerCount() - 1)).Value.id;
+
+            foreach (Client client in Server.clients.Values)
+            {
+                if (client.player != null)
+                {
+                    PlayerType _playerType = PlayerType.Default;
+                    if (client.id == _randPlayerId)
+                    {
+                        _playerType = PlayerType.Hunter;
+                    }
+                    else
+                    {
+                        _playerType = PlayerType.Hider;
+                    }
+
+                    ServerSend.SetPlayerType(client.id, _playerType);
+                }
+            }
+        } else
+        {
+            ServerSend.SetPlayerType(_fromClient);
         }
     }
 

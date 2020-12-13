@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public int id;
     public string username;
     public bool isReady = false;
+    public PlayerType playerType = PlayerType.Default;
 
     private float moveSpeed = 5f / Constants.TICKS_PER_SEC;
 
@@ -32,7 +33,7 @@ public class Player : MonoBehaviour
         username = _username;
         controller = GetComponent<SimplePlayerController>();
 
-        controller.TeleportPhysicalBody(_transform.position);
+        //controller.TeleportPhysicalBody(_transform.position);
         controller.rigidbody.rotation = _transform.rotation;
     }
 
@@ -77,4 +78,20 @@ public class Player : MonoBehaviour
         itemAmount++;
         return true;
     }
+
+    public void TeleportPlayer(Transform _spawnpoint)
+    {
+        controller.TeleportPhysicalBody(transform.position);
+
+        transform.position = _spawnpoint.position;
+        controller.rigidbody.rotation = _spawnpoint.rotation;
+    }
+}
+
+public enum PlayerType
+{
+    Default = 0,
+    Hunter,
+    Hider,
+    Spectator
 }

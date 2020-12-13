@@ -39,9 +39,6 @@ public class ServerHandle
 
     public static void TryStartGame(int _fromClient, Packet _packet)
     {
-        //if (Server.clients[_fromClient].isHost)
-        //{
-        GameManager.instance.TryStartGame();
-        //}
+        GameManager.instance.TryStartGame(_fromClient);
     }
 }

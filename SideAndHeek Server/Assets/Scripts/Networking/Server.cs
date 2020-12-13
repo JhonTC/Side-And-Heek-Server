@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
@@ -54,16 +55,25 @@ public class Server
         tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
         Debug.Log($"Incoming connection from {_client.Client.RemoteEndPoint}...");
 
-        for (int i = 1; i <= MaxPlayers; i++)
+        if (!GameManager.instance.gameStarted)
         {
-            if (clients[i].tcp.socket == null)
+            for (int i = 1; i <= MaxPlayers; i++)
             {
-                clients[i].tcp.Connect(_client);
-                return;
+                if (clients[i].tcp.socket == null)
+                {
+                    clients[i].tcp.Connect(_client);
+                    return;
+                }
             }
         }
-
-        Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
+        else if (GameManager.instance.gameStarted)
+        {
+            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Game in progress!");
+        }
+        else
+        {
+            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
+        }
     }
 
     private static void UDPRecieveCallback(IAsyncResult _result)
@@ -142,5 +152,19 @@ public class Server
     {
         tcpListener.Stop();
         udpListener.Close();
+    }
+
+    public static int GetPlayerCount()
+    {
+        int i = 0;
+        foreach (Client client in clients.Values)
+        {
+            if (client.player != null)
+            {
+                i++;
+            }
+        }
+
+        return i;
     }
 }

@@ -190,7 +190,7 @@ public class Client
     public void SendIntoGame(string _playerName)
     {
         Transform _transform = GameManager.instance.GetNextSpawnpoint();
-        player = NetworkManager.instance.InstantiatePlayer(_transform);
+        player = NetworkManager.instance.InstantiatePlayer(_transform.position);
         player.Initialize(id, _playerName, _transform);
 
         foreach (Client _client in Server.clients.Values)

@@ -74,6 +74,7 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
+            _packet.Write(_player.isReady);
             _packet.Write(_player.transform.position);
             _packet.Write(_player.transform.rotation);
 
@@ -173,6 +174,25 @@ public class ServerSend
             _packet.Write(_sceneToLoad);
 
             SendTCPDataToAll(_packet);
+        }
+    }
+
+    public static void SetPlayerType(int _playerId) { SetPlayerType(_playerId, PlayerType.Default, false); }
+    public static void SetPlayerType(int _playerId, PlayerType _playerType) { SetPlayerType(_playerId, _playerType, true); }
+    public static void SetPlayerType(int _playerId, PlayerType _playerType, bool _sendToAll)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.setPlayerType))
+        {
+            _packet.Write(_playerId);
+            _packet.Write((int)_playerType);
+
+            if (_sendToAll)
+            {
+                SendTCPDataToAll(_packet);
+            } else
+            {
+                SendTCPData(_playerId, _packet);
+            }
         }
     }
 
