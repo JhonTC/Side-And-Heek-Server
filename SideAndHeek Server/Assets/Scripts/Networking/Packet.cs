@@ -16,7 +16,8 @@ public enum ServerPackets
     itemPickedUp,
     playerReadyToggled,
     changeScene,
-    setPlayerType
+    setPlayerType,
+    setSpecialCountdown
 }
 
 /// <summary>Sent from client to server.</summary>

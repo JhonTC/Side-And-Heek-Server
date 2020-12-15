@@ -6,7 +6,6 @@ TagManager:
   tags:
   - Ground
   - LobbySpawnpoints
-  - MapSpawnpoints
   layers:
   - Default
   - TransparentFX

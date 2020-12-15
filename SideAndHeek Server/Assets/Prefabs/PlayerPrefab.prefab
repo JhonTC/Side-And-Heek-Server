@@ -1054,6 +1054,7 @@ MonoBehaviour:
   id: 0
   username: 
   isReady: 0
+  playerType: 0
   controller: {fileID: 7465626053844319711}
   test: 0
   itemAmount: 0

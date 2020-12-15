@@ -7,10 +7,12 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public List<Transform> spawnpoints = new List<Transform>();
-    private int spawnpointIndexCounter = 1;
-
     public bool gameStarted = false;
+    
+    private LevelManager levelManager;
+    
+    [SerializeField] private int specialSpawnDelay = 20;
+    private int specialSpawnCount = 0;
 
     private void Awake()
     {
@@ -25,7 +27,6 @@ public class GameManager : MonoBehaviour
         }
         
         DontDestroyOnLoad(this);
-        LoadSpawnpointsForScene(true);
     }
 
     void OnEnable()
@@ -38,23 +39,11 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
     }
 
-    public void LoadScene(string sceneName)
-    {
-        if (SceneManager.GetActiveScene().name == "Lobby")
-        {
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        }
-    }
-
     private void OnLevelFinishedLoading(Scene _scene, LoadSceneMode _loadSceneMode)
     {
-        spawnpoints = LoadSpawnpointsForScene(_scene.name.Contains("Lobby"));
-        if (_scene.name.Contains("Lobby"))
+        if (LevelManager.instance.levelType == LevelType.Map)
         {
-            spawnpointIndexCounter = 0;
-        } else
-        {
-            spawnpointIndexCounter = 0; //change to 1 and add code for seeker to spawn separatley at spawnpoints[0]
+            // maybe delay this...
             gameStarted = true;
         }
 
@@ -62,53 +51,30 @@ public class GameManager : MonoBehaviour
         {
             if (client.player != null)
             {
-                Transform _spawnpoint = GetNextSpawnpoint();
-
-                client.player.TeleportPlayer(_spawnpoint); 
+                if (client.player.playerType != PlayerType.Hunter)
+                {
+                    client.player.TeleportPlayer(LevelManager.instance.GetNextSpawnpoint(!gameStarted && client.isHost));
+                } else
+                {
+                    StartCoroutine(SpawnSpecial(client.player, specialSpawnDelay));
+                }
             }
         }
     }
 
-    public Transform GetNextSpawnpoint()
+    private IEnumerator SpawnSpecial(Player _player, int _delay = 60)
     {
-        if (spawnpoints.Count != 0)
+        specialSpawnCount = _delay;
+        while (specialSpawnCount > 0)
         {
-            if (spawnpoints.Count <= spawnpointIndexCounter)
-            {
-                spawnpointIndexCounter = 0;
-            }
+            yield return new WaitForSeconds(1.0f);
+            
+            ServerSend.SetSpecialCountdown(_player.id, specialSpawnCount, specialSpawnCount > 1);
 
-            Transform ret = spawnpoints[spawnpointIndexCounter];
-            spawnpointIndexCounter++;
-
-            return ret;
+            specialSpawnCount--;
         }
 
-        throw new System.Exception("ERROR: spawnpointIndexCounter is larger of spawnpoints list size");
-    }
-
-    private List<Transform> LoadSpawnpointsForScene(bool isLobby)
-    {
-        string spawnpointTag = "Spawnpoints";
-        if (isLobby)
-        {
-            spawnpointTag = "Lobby" + spawnpointTag;
-        } else
-        {
-            spawnpointTag = "Map" + spawnpointTag;
-        }
-
-        List<Transform> newSpawnpoints = new List<Transform>();
-        GameObject spawnpointParent = GameObject.FindGameObjectWithTag(spawnpointTag);
-        if (spawnpointParent)
-        {
-            for (int i = 0; i < spawnpointParent.transform.childCount; i++)
-            {
-                newSpawnpoints.Add(spawnpointParent.transform.GetChild(i));
-            }
-        }
-
-        return newSpawnpoints;
+        _player.TeleportPlayer(LevelManager.instance.GetNextSpawnpoint(true));
     }
 
     public void TryStartGame(int _fromClient)
@@ -116,9 +82,6 @@ public class GameManager : MonoBehaviour
         bool areAllPlayersReady = AreAllPlayersReady();
         if (areAllPlayersReady)
         {
-            LoadScene("Map_Legacy");
-            ServerSend.ChangeScene("Map_Legacy");
-
             int _randPlayerId = Server.clients.ElementAt(Random.Range(0, Server.GetPlayerCount() - 1)).Value.id;
 
             foreach (Client client in Server.clients.Values)
@@ -126,7 +89,7 @@ public class GameManager : MonoBehaviour
                 if (client.player != null)
                 {
                     PlayerType _playerType = PlayerType.Default;
-                    if (client.id == _randPlayerId)
+                    if (client.player.id == _randPlayerId)
                     {
                         _playerType = PlayerType.Hunter;
                     }
@@ -134,10 +97,14 @@ public class GameManager : MonoBehaviour
                     {
                         _playerType = PlayerType.Hider;
                     }
+                    client.player.playerType = _playerType;
 
-                    ServerSend.SetPlayerType(client.id, _playerType);
+                    ServerSend.SetPlayerType(client.player);
                 }
             }
+            
+            LevelManager.instance.LoadScene("Map_Legacy", LevelType.Map);
+            ServerSend.ChangeScene("Map_Legacy");
         } else
         {
             ServerSend.SetPlayerType(_fromClient);

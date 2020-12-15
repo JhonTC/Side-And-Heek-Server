@@ -178,7 +178,7 @@ public class ServerSend
     }
 
     public static void SetPlayerType(int _playerId) { SetPlayerType(_playerId, PlayerType.Default, false); }
-    public static void SetPlayerType(int _playerId, PlayerType _playerType) { SetPlayerType(_playerId, _playerType, true); }
+    public static void SetPlayerType(Player _player) { SetPlayerType(_player.id, _player.playerType, true); }
     public static void SetPlayerType(int _playerId, PlayerType _playerType, bool _sendToAll)
     {
         using (Packet _packet = new Packet((int)ServerPackets.setPlayerType))
@@ -193,6 +193,18 @@ public class ServerSend
             {
                 SendTCPData(_playerId, _packet);
             }
+        }
+    }
+
+    public static void SetSpecialCountdown(int _specialId, int _countdownValue, bool _isCountdownActive)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.setSpecialCountdown))
+        {
+            _packet.Write(_specialId);
+            _packet.Write(_countdownValue);
+            _packet.Write(_isCountdownActive);
+            
+            SendTCPDataToAll(_packet);
         }
     }
 
