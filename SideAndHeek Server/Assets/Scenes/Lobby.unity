@@ -194,7 +194,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8744c053c6b2eb54989ffd2648c84c3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnpoints: []
   gameStarted: 0
   specialSpawnDelay: 20
 --- !u!4 &217739930
@@ -3336,7 +3335,7 @@ GameObject:
   - component: {fileID: 2271755423284105977}
   m_Layer: 0
   m_Name: Spawnpoints
-  m_TagString: LobbySpawnpoints
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

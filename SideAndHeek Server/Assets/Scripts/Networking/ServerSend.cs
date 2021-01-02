@@ -87,7 +87,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
             _packet.Write(_player.id);
-            _packet.Write(_player.controller.rigidbody.position);
+            _packet.Write(_player.controller.root.position);
             _packet.Write(_player.controller.rightFootCollider.foot.position);
             _packet.Write(_player.controller.leftFootCollider.foot.position);
             _packet.Write(_player.controller.rightLeg.position);
@@ -107,7 +107,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
         {
             _packet.Write(_player.id);
-            _packet.Write(_player.controller.rigidbody.rotation);
+            _packet.Write(_player.controller.root.rotation);
 
             SendUDPDataToAll(_packet);
         }
@@ -118,7 +118,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.playerDisconnected))
         {
             _packet.Write(_playerId);
-
+            
             SendTCPDataToAll(_packet);
         }
     }

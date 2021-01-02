@@ -12,10 +12,10 @@ public class SimplePlayerController : MonoBehaviour
     [SerializeField] private float footVerticalForce;
     [SerializeField] private float flopForce;
     [SerializeField] private float footReturnSpeed;
-    public Rigidbody rigidbody;
+    public Rigidbody root;
 
     [SerializeField] private float turnSpeed;
-
+    
     public Transform rightLeg;
     public Transform leftLeg;
     public FootCollisionHandler leftFootCollider;
@@ -40,8 +40,8 @@ public class SimplePlayerController : MonoBehaviour
         awfRigidBody = activeWalkingFoot.foot.GetComponent<Rigidbody>();
         owfRigidBody = otherWalkingFoot.foot.GetComponent<Rigidbody>();
 
-        leftFootInitialDisplacement = rigidbody.transform.position - leftFootCollider.foot.position;
-        rightFootInitialDisplacement = rigidbody.transform.position - rightFootCollider.foot.position;
+        leftFootInitialDisplacement = root.transform.position - leftFootCollider.foot.position;
+        rightFootInitialDisplacement = root.transform.position - rightFootCollider.foot.position;
         activeFootDisplacement = leftFootInitialDisplacement;
     }
 
@@ -66,6 +66,7 @@ public class SimplePlayerController : MonoBehaviour
     float flopTimer = 0f;
     float maxFlopDuration = 3f;
     public float defaultFlopDuration = 3f;
+    public bool canKnockOutOthers = false;
 
     public void OnFlop() { OnFlop(true, false, defaultFlopDuration); }
     public void OnFlop(bool applyFlopForce, bool resetFlop, float duration)
@@ -81,9 +82,10 @@ public class SimplePlayerController : MonoBehaviour
 
             if (applyFlopForce && largeGroundCollider.isGrounded)
             {
-                Vector3 forward = rigidbody.transform.forward;
+                Vector3 forward = root.transform.forward;
                 forward.y = 0f;
-                rigidbody.AddForce(forward * flopForce + Vector3.up * (flopForce / 2f));
+                root.AddForce(forward * flopForce + Vector3.up * (flopForce / 2f));
+                canKnockOutOthers = true;
             }
 
             isFlopping = true;
@@ -112,7 +114,7 @@ public class SimplePlayerController : MonoBehaviour
     {
         if (!isFlopping)
         {
-            rigidbody.rotation = Quaternion.Lerp(rigidbody.rotation, _rotation, Time.fixedDeltaTime * turnSpeed);
+            root.rotation = Quaternion.Lerp(root.rotation, _rotation, Time.fixedDeltaTime * turnSpeed);
         }
     }
 
@@ -132,7 +134,7 @@ public class SimplePlayerController : MonoBehaviour
         {
             Vector3 footCentrePos = leftFootCollider.foot.position + (rightFootCollider.foot.position - leftFootCollider.foot.position) / 2;
 
-            Vector3 rayPosition = new Vector3(leftFootCollider.foot.position.x, rigidbody.position.y, leftFootCollider.foot.position.z);
+            Vector3 rayPosition = new Vector3(leftFootCollider.foot.position.x, root.position.y, leftFootCollider.foot.position.z);
             Vector3 rayDirection = Vector3.down;
             RaycastHit rayhit;
             if (Physics.Raycast(rayPosition, rayDirection, out rayhit, standingHeight, groundMask))
@@ -146,14 +148,14 @@ public class SimplePlayerController : MonoBehaviour
 
                 Vector3 forceDirection = rigidbody.position - forcePosition;*/
 
-                rigidbody.AddForceAtPosition(Vector3.up * standingForce, rigidbody.position);
-                Debug.DrawRay(rigidbody.position, rayDirection, Color.red, standingHeight);
+                root.AddForceAtPosition(Vector3.up * standingForce, root.position);
+                Debug.DrawRay(root.position, rayDirection, Color.red, standingHeight);
             }
 
-            rayPosition = new Vector3(rightFootCollider.foot.position.x, rigidbody.position.y, rightFootCollider.foot.position.z); // if rigidbody is tiled in the z, this position won't account for that!
+            rayPosition = new Vector3(rightFootCollider.foot.position.x, root.position.y, rightFootCollider.foot.position.z); // if rigidbody is tiled in the z, this position won't account for that!
             if (Physics.Raycast(rayPosition, rayDirection, out rayhit, standingHeight, groundMask))
             {
-                float distance = Vector2.Distance(new Vector2(rigidbody.position.x, rigidbody.position.z), new Vector2(rightFootCollider.foot.position.x, rightFootCollider.foot.position.z));
+                float distance = Vector2.Distance(new Vector2(root.position.x, root.position.z), new Vector2(rightFootCollider.foot.position.x, rightFootCollider.foot.position.z));
 
                 /*Vector3 footLocalPos = rightFootCollider.foot.transform.localPosition;
                 Vector3 temp = rigidbody.transform.right * (rightFootCollider.foot.transform.parent.localPosition.x + footLocalPos.x);
@@ -164,25 +166,25 @@ public class SimplePlayerController : MonoBehaviour
 
                 Vector3 forceDirection = rigidbody.position - forcePosition;*/
                 
-                rigidbody.AddForceAtPosition(Vector3.up * standingForce, rigidbody.position);
-                Debug.DrawRay(rigidbody.position, rayDirection, Color.green, standingHeight);
+                root.AddForceAtPosition(Vector3.up * standingForce, root.position);
+                Debug.DrawRay(root.position, rayDirection, Color.green, standingHeight);
             }
 
             if (inputSpeed > 0 || isJumping)
             {
                 if (moveStageTimer < moveStageDuration)
                 {
-                    Vector3 position = awfRigidBody.transform.position - rigidbody.transform.forward * 0.2f;
+                    Vector3 position = awfRigidBody.transform.position - root.transform.forward * 0.2f;
                     Vector3 force = Vector3.zero;
 
                     if (walkStage == WalkStage.LiftFoot)
                     {
-                        Vector3 forward = rigidbody.transform.forward;
+                        Vector3 forward = root.transform.forward;
                         forward.y = 0;
 
                         force = forward * (maxFootForwardForce * inputSpeed) + Vector3.up * footVerticalForce;
 
-                        otherWalkingFoot.foot.position = Vector3.Lerp(otherWalkingFoot.foot.position, rigidbody.transform.position - activeFootDisplacement, footReturnSpeed * Time.fixedDeltaTime);
+                        otherWalkingFoot.foot.position = Vector3.Lerp(otherWalkingFoot.foot.position, root.transform.position - activeFootDisplacement, footReturnSpeed * Time.fixedDeltaTime);
                     }
                     else if (walkStage == WalkStage.DropFoot)
                     {
@@ -224,19 +226,19 @@ public class SimplePlayerController : MonoBehaviour
                 
                 if (rightFootCollider.isGrounded)
                 {
-                    Vector3 tempRight = rigidbody.transform.right * rightFootInitialDisplacement.x;
-                    Vector3 tempForward = rigidbody.transform.forward * rightFootInitialDisplacement.z;
-                    Vector3 tempUp = rigidbody.transform.up * rightFootInitialDisplacement.y;
-                    Vector3 newPos = rigidbody.position - (tempRight + tempForward + tempUp);
+                    Vector3 tempRight = root.transform.right * rightFootInitialDisplacement.x;
+                    Vector3 tempForward = root.transform.forward * rightFootInitialDisplacement.z;
+                    Vector3 tempUp = root.transform.up * rightFootInitialDisplacement.y;
+                    Vector3 newPos = root.position - (tempRight + tempForward + tempUp);
                     //rightFootCollider.foot.position = Vector3.Lerp(rightFootCollider.foot.position, newPos, footReturnSpeed * Time.fixedDeltaTime);
                 }
 
                 if (leftFootCollider.isGrounded)
                 {
-                    Vector3 tempRight = rigidbody.transform.right * leftFootInitialDisplacement.x;
-                    Vector3 tempForward = rigidbody.transform.forward * leftFootInitialDisplacement.z;
-                    Vector3 tempUp = rigidbody.transform.up * leftFootInitialDisplacement.y;
-                    Vector3 newPos = rigidbody.position - (tempRight + tempForward + tempUp);
+                    Vector3 tempRight = root.transform.right * leftFootInitialDisplacement.x;
+                    Vector3 tempForward = root.transform.forward * leftFootInitialDisplacement.z;
+                    Vector3 tempUp = root.transform.up * leftFootInitialDisplacement.y;
+                    Vector3 newPos = root.position - (tempRight + tempForward + tempUp);
                     //leftFootCollider.foot.position = Vector3.Lerp(leftFootCollider.foot.position, newPos, footReturnSpeed * Time.fixedDeltaTime);
                 }
             }
@@ -251,11 +253,11 @@ public class SimplePlayerController : MonoBehaviour
         }
         
 
-        Vector3 rightDisplacement = rigidbody.position - (rigidbody.transform.right * leftFootInitialDisplacement.x);
+        Vector3 rightDisplacement = root.position - (root.transform.right * leftFootInitialDisplacement.x);
         Vector3 forcePosition = new Vector3(rightDisplacement.x, leftFootCollider.foot.position.y, rightDisplacement.z);
         leftFootCollider.foot.AddForceAtPosition(Vector3.down * gravity * 0.5f * Time.fixedDeltaTime, forcePosition);
 
-        rightDisplacement = rigidbody.position - (rigidbody.transform.right * rightFootInitialDisplacement.x);
+        rightDisplacement = root.position - (root.transform.right * rightFootInitialDisplacement.x);
         forcePosition = new Vector3(rightDisplacement.x, rightFootCollider.foot.position.y, rightDisplacement.z);
         rightFootCollider.foot.AddForceAtPosition(Vector3.down * gravity * 0.5f * Time.fixedDeltaTime, forcePosition);
 
@@ -308,11 +310,16 @@ public class SimplePlayerController : MonoBehaviour
     
     public void TeleportPhysicalBody(Vector3 _position)
     {
-        Vector3 rootPosition = rigidbody.position;
-        rigidbody.position = _position;
+        Vector3 rootPosition = root.position;
+        root.position = _position;
         rightLeg.position = _position + (rootPosition - rightLeg.position);
         leftLeg.position = _position + (rootPosition - leftLeg.position);
         rightFootCollider.foot.position = _position + (rootPosition - rightFootCollider.foot.position);
         leftFootCollider.foot.position = _position + (rootPosition - leftFootCollider.foot.position);
+    }
+
+    public void OnCollisionWithOther(float flopTime)
+    {
+        OnFlop(false, true, flopTime);
     }
 }

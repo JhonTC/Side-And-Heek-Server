@@ -87,6 +87,7 @@ public class Client
             catch (Exception _e)
             {
                 Debug.Log($"Error receiving TCP data: {_e}");
+                Server.clients[id].Disconnect();
             }
         }
 
@@ -215,17 +216,17 @@ public class Client
 
     public void Disconnect()
     {
-        Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
-
+        Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
+        
         ThreadManager.ExecuteOnMainThread(() =>
         {
             UnityEngine.Object.Destroy(player.gameObject);
             player = null;
         });
-        
+
         tcp.Disconnect();
         udp.Disconnect();
 
-        ServerSend.PlayerDisconnected(player.id);
+        ServerSend.PlayerDisconnected(id);
     }
 }

@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 7828178634491682873}
   - component: {fileID: 520601729990159541}
   - component: {fileID: 2778905217071802472}
+  - component: {fileID: 6439982518482234388}
   m_Layer: 0
   m_Name: Right Upper Leg
-  m_TagString: Untagged
+  m_TagString: BodyCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,6 +159,20 @@ CharacterJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &6439982518482234388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565719001330717062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588ee8dec984e6f47a965e2247056691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5137751333337972922}
+  isHeadCollider: 0
 --- !u!1 &819255836547286368
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,9 +296,10 @@ GameObject:
   - component: {fileID: 5269197655953799626}
   - component: {fileID: 6643937494362156593}
   - component: {fileID: 3611785367809027902}
+  - component: {fileID: 6215405012846761045}
   m_Layer: 0
   m_Name: RLower Leg
-  m_TagString: Untagged
+  m_TagString: BodyCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -425,6 +441,20 @@ CharacterJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &6215405012846761045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2480180619071172900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588ee8dec984e6f47a965e2247056691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5137751333337972922}
+  isHeadCollider: 0
 --- !u!1 &4988845412594479372
 GameObject:
   m_ObjectHideFlags: 0
@@ -597,9 +627,10 @@ GameObject:
   - component: {fileID: 6268632512345821910}
   - component: {fileID: 6264265458638178}
   - component: {fileID: 7465649068640248251}
+  - component: {fileID: 1062500044618284771}
   m_Layer: 0
   m_Name: Left Upper Leg
-  m_TagString: Untagged
+  m_TagString: BodyCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -741,6 +772,20 @@ CharacterJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &1062500044618284771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5596031114343728438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588ee8dec984e6f47a965e2247056691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5137751333337972922}
+  isHeadCollider: 0
 --- !u!1 &5621036565587000744
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,9 +857,11 @@ GameObject:
   - component: {fileID: 6470880689955525797}
   - component: {fileID: 6411029818967867700}
   - component: {fileID: 4427756210342442526}
+  - component: {fileID: 669418877133012311}
+  - component: {fileID: 2077467234453716864}
   m_Layer: 0
   m_Name: Head
-  m_TagString: Player
+  m_TagString: BodyCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -896,6 +943,34 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!136 &669418877133012311
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000082053402785220}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.51
+  m_Height: 2.02
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2077467234453716864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000082053402785220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588ee8dec984e6f47a965e2247056691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5137751333337972922}
+  isHeadCollider: 1
 --- !u!1 &6361225632882881508
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,7 +1099,7 @@ MonoBehaviour:
   footVerticalForce: 110
   flopForce: 3000
   footReturnSpeed: 5
-  rigidbody: {fileID: 9066730951440007205}
+  root: {fileID: 9066730951440007205}
   turnSpeed: 15
   rightLeg: {fileID: 754844974334568868}
   leftLeg: {fileID: 1746681689206596659}
@@ -1033,6 +1108,7 @@ MonoBehaviour:
   largeGroundCollider: {fileID: 6361225632882881515}
   isPlayerControlled: 1
   defaultFlopDuration: 3
+  canKnockOutOthers: 0
   moveStageDuration: 0.1
   standingHeight: 1.63
   groundMask:
@@ -1059,6 +1135,7 @@ MonoBehaviour:
   test: 0
   itemAmount: 0
   maxItemCount: 100
+  activePlayerCollisionIds: 
 --- !u!1 &8169273767763415176
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,9 +1150,10 @@ GameObject:
   - component: {fileID: 1194472205020791086}
   - component: {fileID: 8115876796585542049}
   - component: {fileID: 6938116070829608737}
+  - component: {fileID: 8937925721343940712}
   m_Layer: 0
   m_Name: LLower Leg
-  m_TagString: Untagged
+  m_TagString: BodyCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1217,3 +1295,17 @@ CharacterJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &8937925721343940712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8169273767763415176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588ee8dec984e6f47a965e2247056691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5137751333337972922}
+  isHeadCollider: 0

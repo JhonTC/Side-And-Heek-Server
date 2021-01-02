@@ -21,6 +21,9 @@ public class Player : MonoBehaviour
 
     public int itemAmount = 0;
     public int maxItemCount = 100;
+    
+    //[HideInInspector]
+    public List<int> activePlayerCollisionIds = new List<int>();
 
     private void Awake()
     {
@@ -34,7 +37,7 @@ public class Player : MonoBehaviour
         controller = GetComponent<SimplePlayerController>();
 
         //controller.TeleportPhysicalBody(_transform.position);
-        controller.rigidbody.rotation = _transform.rotation;
+        controller.root.rotation = _transform.rotation;
     }
 
     public void FixedUpdate()
@@ -84,7 +87,17 @@ public class Player : MonoBehaviour
         controller.TeleportPhysicalBody(transform.position);
 
         transform.position = _spawnpoint.position;
-        controller.rigidbody.rotation = _spawnpoint.rotation;
+        controller.root.rotation = _spawnpoint.rotation;
+    }
+
+    public void OnCollisionWithOther(float flopTime, bool turnToHunter)
+    {
+        controller.OnCollisionWithOther(flopTime);
+        if (turnToHunter)
+        {
+            playerType = PlayerType.Hunter;
+            ServerSend.SetPlayerType(id, playerType, true);
+        }
     }
 }
 

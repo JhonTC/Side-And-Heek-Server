@@ -24,7 +24,7 @@ public class ItemSpawner : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (hasItem && other.CompareTag("Player"))
         {
             Player _player = other.GetComponentInParent<Player>();
             if (_player.AttemptPickupItem())
