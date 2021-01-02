@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     private bool[] otherInputs = { false, false };
     private Quaternion rotation = Quaternion.identity;
 
-    public SimplePlayerController controller;
+    [HideInInspector] public SimplePlayerController movementController;
 
     public bool test = false;
 
@@ -24,6 +24,11 @@ public class Player : MonoBehaviour
     
     //[HideInInspector]
     public List<int> activePlayerCollisionIds = new List<int>();
+
+    public bool isBodyActive = false;
+
+    [SerializeField] private SimplePlayerController bodyPrefab;
+    [SerializeField] private FootCollisionHandler largeGroundCollider;
 
     private void Awake()
     {
@@ -34,24 +39,28 @@ public class Player : MonoBehaviour
     {
         id = _id;
         username = _username;
-        controller = GetComponent<SimplePlayerController>();
+
+        SpawnPlayer();
 
         //controller.TeleportPhysicalBody(_transform.position);
-        controller.root.rotation = _transform.rotation;
+        //movementController.root.rotation = _transform.rotation;
     }
 
     public void FixedUpdate()
     {
-        if (otherInputs[0])
+        if (isBodyActive)
         {
-            controller.OnJump();
+            if (otherInputs[0])
+            {
+                movementController.OnJump();
+            }
+            if (otherInputs[1])
+            {
+                movementController.OnFlop();
+            }
+            movementController.CustomFixedUpdate(inputSpeed);
+            movementController.SetRotation(rotation);
         }
-        if (otherInputs[1])
-        {
-            controller.OnFlop();
-        }
-        controller.CustomFixedUpdate(inputSpeed);
-        controller.SetRotation(rotation);
 
         ServerSend.PlayerPositions(this);
         ServerSend.PlayerRotations(this);
@@ -84,19 +93,43 @@ public class Player : MonoBehaviour
 
     public void TeleportPlayer(Transform _spawnpoint)
     {
-        controller.TeleportPhysicalBody(transform.position);
-
+        //movementController.TeleportPhysicalBody(transform.position);
+        DespawnPlayer();
         transform.position = _spawnpoint.position;
-        controller.root.rotation = _spawnpoint.rotation;
+        SpawnPlayer();
+        //movementController.root.rotation = _spawnpoint.rotation;
     }
 
     public void OnCollisionWithOther(float flopTime, bool turnToHunter)
     {
-        controller.OnCollisionWithOther(flopTime);
-        if (turnToHunter)
+        if (isBodyActive)
         {
-            playerType = PlayerType.Hunter;
-            ServerSend.SetPlayerType(id, playerType, true);
+            movementController.OnCollisionWithOther(flopTime);
+            if (turnToHunter)
+            {
+                playerType = PlayerType.Hunter;
+                ServerSend.SetPlayerType(id, playerType, true);
+            }
+        }
+    }
+
+    public void SpawnPlayer()
+    {
+        if (!isBodyActive)
+        {
+            movementController = Instantiate(bodyPrefab, transform);
+            movementController.largeGroundCollider = largeGroundCollider;
+            movementController.SetupBodyCollisionHandlers(this);
+            isBodyActive = true;
+        }
+    }
+
+    public void DespawnPlayer()
+    {
+        if (isBodyActive)
+        {
+            isBodyActive = false;
+            Destroy(movementController.gameObject);
         }
     }
 }

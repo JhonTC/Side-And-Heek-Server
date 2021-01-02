@@ -84,32 +84,38 @@ public class ServerSend
 
     public static void PlayerPositions(Player _player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
+        if (_player.isBodyActive)
         {
-            _packet.Write(_player.id);
-            _packet.Write(_player.controller.root.position);
-            _packet.Write(_player.controller.rightFootCollider.foot.position);
-            _packet.Write(_player.controller.leftFootCollider.foot.position);
-            _packet.Write(_player.controller.rightLeg.position);
-            _packet.Write(_player.controller.leftLeg.position);
+            using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.movementController.root.position);
+                _packet.Write(_player.movementController.rightFootCollider.foot.position);
+                _packet.Write(_player.movementController.leftFootCollider.foot.position);
+                _packet.Write(_player.movementController.rightLeg.position);
+                _packet.Write(_player.movementController.leftLeg.position);
 
-            _packet.Write(_player.controller.rightFootCollider.foot.rotation);
-            _packet.Write(_player.controller.leftFootCollider.foot.rotation);
-            _packet.Write(_player.controller.rightLeg.rotation);
-            _packet.Write(_player.controller.leftLeg.rotation);
+                _packet.Write(_player.movementController.rightFootCollider.foot.rotation);
+                _packet.Write(_player.movementController.leftFootCollider.foot.rotation);
+                _packet.Write(_player.movementController.rightLeg.rotation);
+                _packet.Write(_player.movementController.leftLeg.rotation);
 
-            SendUDPDataToAll(_packet);
+                SendUDPDataToAll(_packet);
+            }
         }
     }
 
     public static void PlayerRotations(Player _player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
+        if (_player.isBodyActive)
         {
-            _packet.Write(_player.id);
-            _packet.Write(_player.controller.root.rotation);
+            using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.movementController.root.rotation);
 
-            SendUDPDataToAll(_packet);
+                SendUDPDataToAll(_packet);
+            }
         }
     }
 

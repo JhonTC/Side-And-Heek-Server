@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
             ServerSend.ChangeScene("Map_Legacy");
         } else
         {
-            ServerSend.SetPlayerType(_fromClient);
+            ServerSend.SetPlayerType(_fromClient); //SHOULD SEND the startgame failed message - change to sending specific error codes
         }
     }
 

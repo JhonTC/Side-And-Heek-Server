@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(Rigidbody))]
 public class SimplePlayerController : MonoBehaviour
 {
     [SerializeField] private float standingForce;
@@ -12,7 +13,7 @@ public class SimplePlayerController : MonoBehaviour
     [SerializeField] private float footVerticalForce;
     [SerializeField] private float flopForce;
     [SerializeField] private float footReturnSpeed;
-    public Rigidbody root;
+    [HideInInspector] public Rigidbody root;
 
     [SerializeField] private float turnSpeed;
     
@@ -20,21 +21,25 @@ public class SimplePlayerController : MonoBehaviour
     public Transform leftLeg;
     public FootCollisionHandler leftFootCollider;
     public FootCollisionHandler rightFootCollider;
-    [SerializeField] private FootCollisionHandler largeGroundCollider;
+    [HideInInspector] public FootCollisionHandler largeGroundCollider;
 
     private Vector3 leftFootInitialDisplacement;
     private Vector3 rightFootInitialDisplacement;
     private Vector3 activeFootDisplacement;
 
     //private bool isWKeyPressed = false;
-    private bool isFKeyPressed = false;
+    private bool isFlopKeyPressed = false;
     private FootCollisionHandler activeWalkingFoot;
     private FootCollisionHandler otherWalkingFoot;
 
     [SerializeField] private bool isPlayerControlled = false;
 
+    [SerializeField] private BodyCollisionDetection[] bodyCollisionDetectors;
+
     private void Start()
     {
+        root = GetComponent<Rigidbody>();
+
         activeWalkingFoot = rightFootCollider;
         otherWalkingFoot = leftFootCollider;
         awfRigidBody = activeWalkingFoot.foot.GetComponent<Rigidbody>();
@@ -321,5 +326,13 @@ public class SimplePlayerController : MonoBehaviour
     public void OnCollisionWithOther(float flopTime)
     {
         OnFlop(false, true, flopTime);
+    }
+
+    public void SetupBodyCollisionHandlers(Player owner)
+    {
+        foreach (BodyCollisionDetection bcd in bodyCollisionDetectors)
+        {
+            bcd.player = owner;
+        }
     }
 }

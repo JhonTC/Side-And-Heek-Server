@@ -4,31 +4,34 @@ using UnityEngine;
 
 public class BodyCollisionDetection : MonoBehaviour
 {
-    [SerializeField] private Player player;
+    [HideInInspector] public Player player;
     [SerializeField] private bool isHeadCollider = false;
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "BodyCollider")
+        if (player != null)
         {
-            Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
-            if (other != player)
+            if (collision.gameObject.tag == "BodyCollider")
             {
-                if (other.playerType == player.playerType)
+                Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
+                if (other != player)
                 {
-                    if (player.controller.canKnockOutOthers)
+                    if (other.playerType == player.playerType)
                     {
-                        other.OnCollisionWithOther(3f, false);
+                        if (player.movementController.canKnockOutOthers)
+                        {
+                            other.OnCollisionWithOther(3f, false);
+                        }
                     }
-                }
-                else if (player.playerType == PlayerType.Hunter)
-                {
-                    if (!player.activePlayerCollisionIds.Contains(other.id))
+                    else if (player.playerType == PlayerType.Hunter)
                     {
-                        player.activePlayerCollisionIds.Add(other.id);
+                        if (!player.activePlayerCollisionIds.Contains(other.id))
+                        {
+                            player.activePlayerCollisionIds.Add(other.id);
 
-                        other.OnCollisionWithOther(5f, true);
-                        //send caught to other player
+                            other.OnCollisionWithOther(5f, true);
+                            //send caught to other player
+                        }
                     }
                 }
             }
@@ -37,14 +40,17 @@ public class BodyCollisionDetection : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.tag == "BodyCollider")
+        if (player != null)
         {
-            Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
-            if (other != player)
+            if (collision.gameObject.tag == "BodyCollider")
             {
-                if (player.activePlayerCollisionIds.Contains(other.id))
+                Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
+                if (other != player)
                 {
-                    player.activePlayerCollisionIds.Remove(other.id);
+                    if (player.activePlayerCollisionIds.Contains(other.id))
+                    {
+                        player.activePlayerCollisionIds.Remove(other.id);
+                    }
                 }
             }
         }
@@ -52,56 +58,65 @@ public class BodyCollisionDetection : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.tag == "BodyCollider")
-        {
-            Player other = collider.GetComponent<BodyCollisionDetection>().player;
-            if (other != player)
-            {
-                if (other.playerType == player.playerType)
-                {
-                    if (player.controller.canKnockOutOthers)
-                    {
-                        other.OnCollisionWithOther(3f, false);
-                    }
-                }
-                else if (player.playerType == PlayerType.Hunter)
-                {
-                    if (!player.activePlayerCollisionIds.Contains(other.id))
-                    {
-                        player.activePlayerCollisionIds.Add(other.id);
-
-                        other.OnCollisionWithOther(5f, true);
-                        //send caught to other player
-                    }
-                }
-            }
-        }
-        
-        if (isHeadCollider)
+        if (player != null)
         {
             if (collider.tag == "BodyCollider")
             {
                 Player other = collider.GetComponent<BodyCollisionDetection>().player;
-                if (other == player)
+                if (player != null)
                 {
-                    return;
+                    if (other != player)
+                    {
+                        if (other.playerType == player.playerType)
+                        {
+                            if (player.movementController.canKnockOutOthers)
+                            {
+                                other.OnCollisionWithOther(3f, false);
+                            }
+                        }
+                        else if (player.playerType == PlayerType.Hunter)
+                        {
+                            if (!player.activePlayerCollisionIds.Contains(other.id))
+                            {
+                                player.activePlayerCollisionIds.Add(other.id);
+
+                                other.OnCollisionWithOther(5f, true);
+                                //send caught to other player
+                            }
+                        }
+                    }
                 }
             }
 
-            player.controller.canKnockOutOthers = false;
+            if (isHeadCollider)
+            {
+                if (collider.tag == "BodyCollider")
+                {
+                    Player other = collider.GetComponent<BodyCollisionDetection>().player;
+                    if (other == player)
+                    {
+                        return;
+                    }
+                }
+                
+                player.movementController.canKnockOutOthers = false;
+            }
         }
     }
 
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.tag == "BodyCollider")
+        if (player != null)
         {
-            Player other = collider.GetComponent<BodyCollisionDetection>().player;
-            if (other != player)
+            if (collider.tag == "BodyCollider")
             {
-                if (player.activePlayerCollisionIds.Contains(other.id))
+                Player other = collider.GetComponent<BodyCollisionDetection>().player;
+                if (other != player)
                 {
-                    player.activePlayerCollisionIds.Remove(other.id);
+                    if (player.activePlayerCollisionIds.Contains(other.id))
+                    {
+                        player.activePlayerCollisionIds.Remove(other.id);
+                    }
                 }
             }
         }
