@@ -8,6 +8,8 @@ public class NetworkManager : MonoBehaviour
 
     public Player playerPrefab;
 
+    [SerializeField] private int maxPlayers = 10;
+
     private void Awake()
     {
         if (instance == null)
@@ -28,7 +30,7 @@ public class NetworkManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
         
-        Server.Start(10, 42069);
+        Server.Start(maxPlayers, 42069);
     }
 
     private void OnApplicationQuit()

@@ -37,6 +37,14 @@ public class ServerHandle
         Server.clients[_fromClient].player.SetReady(_isReady);
     }
 
+    public static void SetPlayerColour(int _fromClient, Packet _packet)
+    {
+        Color _colour = _packet.ReadColour();
+        bool _isSeekerColour = _packet.ReadBool();
+
+        ServerSend.SetPlayerColour(_fromClient, _colour, _isSeekerColour);
+    }
+
     public static void TryStartGame(int _fromClient, Packet _packet)
     {
         GameManager.instance.TryStartGame(_fromClient);

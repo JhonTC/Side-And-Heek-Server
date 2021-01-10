@@ -214,5 +214,17 @@ public class ServerSend
         }
     }
 
+    public static void SetPlayerColour(int _playerId, Color _colour, bool _isSeekerColour)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.setPlayerColour))
+        {
+            _packet.Write(_playerId);
+            _packet.Write(_colour);
+            _packet.Write(_isSeekerColour);
+
+            SendTCPDataToAll(_playerId, _packet);
+        }
+    }
+
     #endregion
 }

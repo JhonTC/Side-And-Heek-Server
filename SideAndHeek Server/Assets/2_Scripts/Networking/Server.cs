@@ -23,6 +23,7 @@ public class Server
 
         Debug.Log("Starting server...");
         InitialiseServerData();
+        ErrorResponseHandler.InitialiseErrorResponseData();
 
         string strHostName = Dns.GetHostName();
         IPHostEntry hostEntry = Dns.GetHostEntry(strHostName);
@@ -54,7 +55,7 @@ public class Server
         TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
         tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
         Debug.Log($"Incoming connection from {_client.Client.RemoteEndPoint}...");
-
+        
         if (!GameManager.instance.gameStarted)
         {
             for (int i = 1; i <= MaxPlayers; i++)
@@ -65,14 +66,12 @@ public class Server
                     return;
                 }
             }
+            
+            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
         else if (GameManager.instance.gameStarted)
         {
             Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Game in progress!");
-        }
-        else
-        {
-            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
     }
 
@@ -143,7 +142,8 @@ public class Server
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeRecieved },
             { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
             { (int)ClientPackets.playerReady, ServerHandle.PlayerReady },
-            { (int)ClientPackets.tryStartGame, ServerHandle.TryStartGame }
+            { (int)ClientPackets.tryStartGame, ServerHandle.TryStartGame },
+            { (int)ClientPackets.setPlayerColour, ServerHandle.SetPlayerColour }
         };
         Debug.Log("Initialised packets");
     }

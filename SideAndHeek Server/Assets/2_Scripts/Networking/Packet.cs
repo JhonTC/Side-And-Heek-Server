@@ -17,7 +17,8 @@ public enum ServerPackets
     playerReadyToggled,
     changeScene,
     setPlayerType,
-    setSpecialCountdown
+    setSpecialCountdown,
+    setPlayerColour
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -26,7 +27,8 @@ public enum ClientPackets
     welcomeReceived = 1,
     playerMovement,
     playerReady,
-    tryStartGame
+    tryStartGame,
+    setPlayerColour
 }
 
 public class Packet : IDisposable
@@ -186,6 +188,16 @@ public class Packet : IDisposable
         Write(_value.y);
         Write(_value.z);
         Write(_value.w);
+    }
+
+    /// <summary>Adds a Colour to the packet.</summary>
+    /// <param name="_value">The Colour to add.</param>
+    public void Write(Color _value)
+    {
+        Write(_value.r);
+        Write(_value.g);
+        Write(_value.b);
+        Write(_value.a);
     }
     #endregion
 
@@ -371,6 +383,13 @@ public class Packet : IDisposable
     public Quaternion ReadQuaternion(bool _moveReadPos = true)
     {
         return new Quaternion(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+    }
+
+    /// <summary>Reads a Colour from the packet.</summary>
+    /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+    public Color ReadColour(bool _moveReadPos = true)
+    {
+        return new Color(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
     }
     #endregion
 
