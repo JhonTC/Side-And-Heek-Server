@@ -129,34 +129,93 @@ public class ServerSend
         }
     }
 
-    public static void CreateItemSpawner(int _spawnerId, Vector3 _position, bool _hasItem)
+    public static void CreateItemSpawner(int _playerId, int _spawnerId, Vector3 _position, TaskDetails taskDetails)
     {
         using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
         {
             _packet.Write(_spawnerId);
             _packet.Write(_position);
-            _packet.Write(_hasItem);
+
+            if (taskDetails == null)
+            {
+                _packet.Write((int)TaskCode.NULL_TASK);
+                _packet.Write("");
+                _packet.Write("");
+                _packet.Write(Color.white);
+            }
+            else if (taskDetails.task == null)
+            {
+                _packet.Write((int)TaskCode.NULL_TASK);
+                _packet.Write("");
+                _packet.Write("");
+                _packet.Write(Color.white);
+            }
+            else
+            {
+                _packet.Write((int)taskDetails.task.taskCode);
+                _packet.Write(taskDetails.task.taskName);
+                _packet.Write(taskDetails.task.taskContent);
+                _packet.Write(taskDetails.task.taskDifficulty.color);
+            }
+
+            SendTCPData(_playerId, _packet);
+        }
+    }
+    public static void CreateItemSpawner(int _spawnerId, Vector3 _position, TaskDetails taskDetails)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
+        {
+            _packet.Write(_spawnerId);
+            _packet.Write(_position);
+
+            if (taskDetails == null)
+            {
+                _packet.Write((int)TaskCode.NULL_TASK);
+                _packet.Write("");
+                _packet.Write("");
+                _packet.Write(Color.white);
+            }
+            else if (taskDetails.task == null)
+            {
+                _packet.Write((int)TaskCode.NULL_TASK);
+                _packet.Write("");
+                _packet.Write("");
+                _packet.Write(Color.white);
+            } 
+            else
+            {
+                _packet.Write((int)taskDetails.task.taskCode);
+                _packet.Write(taskDetails.task.taskName);
+                _packet.Write(taskDetails.task.taskContent);
+                _packet.Write(taskDetails.task.taskDifficulty.color);
+            }
 
             SendTCPDataToAll(_packet);
         }
     }
 
-    public static void ItemSpawned(int _spawnerId)
+    public static void ItemSpawned(int _spawnerId, TaskSO task)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemSpawned))
         {
             _packet.Write(_spawnerId);
 
+            _packet.Write((int)task.taskCode);
+            _packet.Write(task.taskName);
+            _packet.Write(task.taskContent);
+            _packet.Write(task.taskDifficulty.color);
+
             SendTCPDataToAll(_packet);
         }
     }
 
-    public static void ItemPickedUp(int _spawnerId, int _byPlayer)
+    public static void ItemPickedUp(int _spawnerId, int _byPlayer, TaskCode _code)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemPickedUp))
         {
             _packet.Write(_spawnerId);
             _packet.Write(_byPlayer);
+            _packet.Write((int)_code);
 
             SendTCPDataToAll(_packet);
         }
@@ -173,6 +232,17 @@ public class ServerSend
         }
     }
 
+    public static void PlayerReadyReset(int _playerId, bool _isReady)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerReadyToggled))
+        {
+            _packet.Write(_playerId);
+            _packet.Write(_isReady);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     public static void ChangeScene(string _sceneToLoad)
     {
         using (Packet _packet = new Packet((int)ServerPackets.changeScene))
@@ -183,7 +253,16 @@ public class ServerSend
         }
     }
 
-    public static void SetPlayerType(int _playerId) { SetPlayerType(_playerId, PlayerType.Default, false); }
+    public static void UnloadScene(string _sceneToUnload)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.unloadScene))
+        {
+            _packet.Write(_sceneToUnload);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     public static void SetPlayerType(Player _player) { SetPlayerType(_player.id, _player.playerType, true); }
     public static void SetPlayerType(int _playerId, PlayerType _playerType, bool _sendToAll)
     {
@@ -223,6 +302,60 @@ public class ServerSend
             _packet.Write(_isSeekerColour);
 
             SendTCPDataToAll(_playerId, _packet);
+        }
+    }
+
+    public static void SendErrorResponse(ErrorResponseCode _responseCode)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.sendErrorResponseCode))
+        {
+            _packet.Write((int)_responseCode);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    public static void GameOver(bool _isHunterVictory)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.gameOver))
+        {
+            _packet.Write(_isHunterVictory);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    public static void PlayerTeleported(int _playerId, Vector3 _position)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerTeleported))
+        {
+            _packet.Write(_playerId);
+            _packet.Write(_position);
+
+            SendTCPData(_playerId, _packet);
+        }
+    }
+
+    public static void TaskProgressed(int _playerId, TaskCode _code, float progression)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.taskProgressed))
+        {
+            _packet.Write(_playerId);
+            _packet.Write((int)_code);
+            _packet.Write(progression);
+
+            SendTCPData(_playerId, _packet);
+        }
+    }
+
+    public static void TaskComplete(int _playerId, TaskCode _code)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.taskComplete))
+        {
+            _packet.Write(_playerId);
+            _packet.Write((int)_code);
+
+            SendTCPData(_playerId, _packet);
         }
     }
 

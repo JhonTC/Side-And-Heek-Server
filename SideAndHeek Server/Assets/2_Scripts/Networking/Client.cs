@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
+[System.Serializable]
 public class Client
 {
     public static int dataBufferSize = 4096;
@@ -10,6 +11,9 @@ public class Client
     public int id;
     public Player player;
     public bool isHost;
+    public string uniqueUserCode;
+
+    public bool isConnected = false;
 
     public TCP tcp;
     public UDP udp;
@@ -50,6 +54,8 @@ public class Client
             stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
             ServerSend.Welcome(id, "Welcome to the server");
+
+            Server.clients[id].isConnected = true;
         }
 
         public void SendData(Packet _packet)
@@ -190,7 +196,7 @@ public class Client
 
     public void SendIntoGame(string _playerName)
     {
-        Transform _transform = LevelManager.instance.GetNextSpawnpoint(Server.GetPlayerCount() == 0);
+        Transform _transform = LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(Server.GetPlayerCount() == 0);
         player = NetworkManager.instance.InstantiatePlayer(_transform.position);
         player.Initialize(id, _playerName, _transform);
 
@@ -212,21 +218,47 @@ public class Client
                 ServerSend.SpawnPlayer(_client.id, player);
             }
         }
+
+        foreach (ItemSpawner _itemSpawner in ItemSpawner.spawners.Values)
+        {
+            ServerSend.CreateItemSpawner(id, _itemSpawner.spawnerId, _itemSpawner.transform.position, _itemSpawner.activeTaskDetails);
+        }
     }
 
     public void Disconnect()
     {
-        Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
-        
-        ThreadManager.ExecuteOnMainThread(() =>
+        if (/*GameManager.instance.gameStarted*/true) {
+
+            Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
+
+            isConnected = false;
+
+            ThreadManager.ExecuteOnMainThread(() =>
+            {
+                UnityEngine.Object.Destroy(player.gameObject);
+                player = null;
+            });
+
+            tcp.Disconnect();
+            udp.Disconnect();
+
+            ServerSend.PlayerDisconnected(id);
+        } else
         {
-            UnityEngine.Object.Destroy(player.gameObject);
-            player = null;
-        });
+            Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
 
-        tcp.Disconnect();
-        udp.Disconnect();
+            isConnected = false;
 
-        ServerSend.PlayerDisconnected(id);
+            /*ThreadManager.ExecuteOnMainThread(() =>
+            {
+                UnityEngine.Object.Destroy(player.gameObject);
+                player = null;
+            });*/
+
+            tcp.Disconnect();
+            udp.Disconnect();
+
+            //ServerSend.PlayerDisconnected(id);
+        }
     }
 }

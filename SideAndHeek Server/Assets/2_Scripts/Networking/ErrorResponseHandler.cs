@@ -5,14 +5,14 @@ using UnityEngine;
 
 public enum ErrorResponseCode
 {
-    A
+    NotAllPlayersReady = 101
 }
 
 public class ErrorResponseHandler
 {
-    public static Dictionary<int, Action> errorResponseHandlers;
+    /*public static Dictionary<int, Action> errorResponseHandlers;
 
-    public static void InitialiseErrorResponseData()
+    public static void InitialiseErrorResponseData() - called on Server: L26
     {
         errorResponseHandlers = new Dictionary<int, Action>()
         {
@@ -23,10 +23,5 @@ public class ErrorResponseHandler
     public static void HandleErrorResponse(ErrorResponseCode errorResponseCode)
     {
         errorResponseHandlers[(int)errorResponseCode]?.Invoke();
-    }
-
-    private static void A()
-    {
-
-    }
+    }*/
 }

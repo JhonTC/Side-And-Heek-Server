@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    public static LevelManager instance;
+    public static Dictionary<string, LevelManager> levelManagers = new Dictionary<string, LevelManager>();
 
     public Transform specialSpawnpoint;
     public Transform[] spawnpoints;
@@ -14,18 +14,28 @@ public class LevelManager : MonoBehaviour
     
     private int spawnpointIndexCounter = 0;
 
+    public string sceneName;
+
     private void Awake()
     {
-        if (instance == null)
+        Debug.Log(SceneManager.GetActiveScene().name);
+        levelManagers.Add(sceneName, this);
+    }
+
+    private void OnDestroy()
+    {
+
+        levelManagers.Remove(sceneName);
+    }
+
+    public static LevelManager GetLevelManagerForScene(string _sceneName)
+    {
+        if (levelManagers.ContainsKey(_sceneName))
         {
-            instance = this;
+            return levelManagers[_sceneName];
         }
-        else if (instance != this)
-        {
-            Debug.Log("Instance already exists, disabling other object and replacing it with this!");
-            //instance.gameObject.SetActive(false);
-            instance = this;
-        }
+
+        return null;
     }
 
     public void LoadScene(string _sceneName, LevelType type)

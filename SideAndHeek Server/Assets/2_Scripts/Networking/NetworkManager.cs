@@ -10,6 +10,8 @@ public class NetworkManager : MonoBehaviour
 
     [SerializeField] private int maxPlayers = 10;
 
+    [SerializeField] private List<Client> clients;
+
     private void Awake()
     {
         if (instance == null)
@@ -31,6 +33,12 @@ public class NetworkManager : MonoBehaviour
         Application.targetFrameRate = 60;
         
         Server.Start(maxPlayers, 42069);
+
+        clients = new List<Client>();
+        foreach (Client client in Server.clients.Values)
+        {
+            clients.Add(client);
+        }
     }
 
     private void OnApplicationQuit()

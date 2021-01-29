@@ -16,9 +16,15 @@ public enum ServerPackets
     itemPickedUp,
     playerReadyToggled,
     changeScene,
+    unloadScene,
     setPlayerType,
     setSpecialCountdown,
-    setPlayerColour
+    setPlayerColour,
+    sendErrorResponseCode,
+    gameOver,
+    playerTeleported,
+    taskProgressed,
+    taskComplete
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -28,7 +34,8 @@ public enum ClientPackets
     playerMovement,
     playerReady,
     tryStartGame,
-    setPlayerColour
+    setPlayerColour,
+    taskSelected
 }
 
 public class Packet : IDisposable

@@ -29,6 +29,9 @@ public class Player : MonoBehaviour
 
     [SerializeField] private SimplePlayerController bodyPrefab;
     [SerializeField] private FootCollisionHandler largeGroundCollider;
+    [SerializeField] private Transform feetMidpoint;
+
+    public List<BaseTask> activeTasks = new List<BaseTask>();
 
     private void Awake()
     {
@@ -44,6 +47,14 @@ public class Player : MonoBehaviour
 
         //controller.TeleportPhysicalBody(_transform.position);
         //movementController.root.rotation = _transform.rotation;
+    }
+
+    private void Update()
+    {
+        for (int i = 0; i < activeTasks.Count; i++)
+        {
+            activeTasks[i].UpdateProgress();
+        }
     }
 
     public void FixedUpdate()
@@ -93,11 +104,10 @@ public class Player : MonoBehaviour
 
     public void TeleportPlayer(Transform _spawnpoint)
     {
-        //movementController.TeleportPhysicalBody(transform.position);
         DespawnPlayer();
         transform.position = _spawnpoint.position;
+        ServerSend.PlayerTeleported(id, _spawnpoint.position);
         SpawnPlayer();
-        //movementController.root.rotation = _spawnpoint.rotation;
     }
 
     public void OnCollisionWithOther(float flopTime, bool turnToHunter)
@@ -109,6 +119,7 @@ public class Player : MonoBehaviour
             {
                 playerType = PlayerType.Hunter;
                 ServerSend.SetPlayerType(id, playerType, true);
+                GameManager.instance.CheckForGameOver();
             }
         }
     }
@@ -119,6 +130,7 @@ public class Player : MonoBehaviour
         {
             movementController = Instantiate(bodyPrefab, transform);
             movementController.largeGroundCollider = largeGroundCollider;
+            movementController.feetMidpoint = feetMidpoint;
             movementController.SetupBodyCollisionHandlers(this);
             isBodyActive = true;
         }
@@ -131,6 +143,39 @@ public class Player : MonoBehaviour
             isBodyActive = false;
             Destroy(movementController.gameObject);
         }
+    }
+
+    public void ItemPickedUp(TaskSO task)
+    {
+        activeTasks.Add(TaskManager.instance.HandleTask(task, this));
+    }
+
+    public void TaskProgressed(TaskCode code, float progress)
+    {
+        ServerSend.TaskProgressed(id, code, progress);
+    }
+
+    public void TaskComplete(BaseTask task)
+    {
+        if (activeTasks.Contains(task))
+        {
+            activeTasks.Remove(task);
+        }
+
+        ServerSend.TaskComplete(id, task.task.taskCode);
+    }
+
+    private BaseTask GetActiveTaskWithCode(TaskCode code)
+    {
+        foreach (BaseTask task in activeTasks)
+        {
+            if (task.task.taskCode == code)
+            {
+                return task;
+            }
+        }
+
+        return null;
     }
 }
 

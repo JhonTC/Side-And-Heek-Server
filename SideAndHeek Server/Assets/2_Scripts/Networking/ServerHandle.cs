@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class ServerHandle
 {
@@ -6,6 +7,7 @@ public class ServerHandle
     {
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
+        string _uniqueUserCode = _packet.ReadString();
 
         Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
         if (_fromClient != _clientIdCheck)
@@ -13,6 +15,7 @@ public class ServerHandle
             Debug.Log($"Player \"{_username}\"(ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
         }
         Server.clients[_fromClient].SendIntoGame(_username);
+        Server.clients[_fromClient].uniqueUserCode = _uniqueUserCode;
     }
 
     public static void PlayerMovement(int _fromClient, Packet _packet)
@@ -48,5 +51,12 @@ public class ServerHandle
     public static void TryStartGame(int _fromClient, Packet _packet)
     {
         GameManager.instance.TryStartGame(_fromClient);
+    }
+
+    public static void TaskSelected(int _fromClient, Packet _packet)
+    {
+        int _spawnerId = _packet.ReadInt();
+
+        ItemSpawner.spawners[_spawnerId].ItemPickedUp(_fromClient);
     }
 }

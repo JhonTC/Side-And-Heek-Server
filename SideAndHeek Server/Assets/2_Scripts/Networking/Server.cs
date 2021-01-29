@@ -23,7 +23,7 @@ public class Server
 
         Debug.Log("Starting server...");
         InitialiseServerData();
-        ErrorResponseHandler.InitialiseErrorResponseData();
+        //ErrorResponseHandler.InitialiseErrorResponseData();
 
         string strHostName = Dns.GetHostName();
         IPHostEntry hostEntry = Dns.GetHostEntry(strHostName);
@@ -143,7 +143,8 @@ public class Server
             { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
             { (int)ClientPackets.playerReady, ServerHandle.PlayerReady },
             { (int)ClientPackets.tryStartGame, ServerHandle.TryStartGame },
-            { (int)ClientPackets.setPlayerColour, ServerHandle.SetPlayerColour }
+            { (int)ClientPackets.setPlayerColour, ServerHandle.SetPlayerColour },
+            { (int)ClientPackets.taskSelected, ServerHandle.TaskSelected }
         };
         Debug.Log("Initialised packets");
     }
