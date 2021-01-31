@@ -21,6 +21,7 @@ public enum ServerPackets
     setSpecialCountdown,
     setPlayerColour,
     sendErrorResponseCode,
+    gameStart,
     gameOver,
     playerTeleported,
     taskProgressed,

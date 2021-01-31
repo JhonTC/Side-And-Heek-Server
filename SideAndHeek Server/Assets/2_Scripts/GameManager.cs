@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour
 
     public string activeSceneName = "Lobby";
 
+    public int maxPlayDuration = 240;
+    public int currentTime = 0;
+
     private void Awake()
     {
         if (instance == null)
@@ -53,7 +56,6 @@ public class GameManager : MonoBehaviour
 
         if (LevelManager.GetLevelManagerForScene(activeSceneName).levelType == LevelType.Map)
         {
-            // maybe delay this...
             gameStarted = true;
         }
 
@@ -91,6 +93,22 @@ public class GameManager : MonoBehaviour
         }
 
         _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
+
+        ServerSend.GameStarted(maxPlayDuration);
+        StartCoroutine(GameTimeCountdown(maxPlayDuration));
+    }
+
+    private IEnumerator GameTimeCountdown(int _delay = 240)
+    {
+        currentTime = _delay;
+        while (currentTime > 0)
+        {
+            yield return new WaitForSeconds(1.0f);
+
+            currentTime--;
+        }
+
+        GameOver(false);
     }
 
     public void TryStartGame(int _fromClient)
@@ -156,12 +174,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        GameOver();
+        GameOver(true);
     }
 
-    public void GameOver()
+    public void GameOver(bool _isHunterVictory)
     {
-        ServerSend.GameOver(true);
+        ServerSend.GameOver(_isHunterVictory);
 
         gameStarted = false;
 

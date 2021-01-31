@@ -14,7 +14,7 @@ public class GameManagerEditor : Editor
 
         if (GUILayout.Button("END GAME"))
         {
-            gameManager.GameOver();
+            gameManager.GameOver(true);
         }
     }
 }

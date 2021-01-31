@@ -65,8 +65,12 @@ public class SimplePlayerController : MonoBehaviour
         {
             if (largeGroundCollider.isGrounded)
             {
-                leftFootCollider.foot.AddForce(Vector3.up * jumpingForce/2);
-                rightFootCollider.foot.AddForce(Vector3.up * jumpingForce/2);
+                root.AddForce(Vector3.up * jumpingForce);
+                //root.AddForceAtPosition(Vector3.up * jumpingForce / 2, leftFootCollider.foot.position);
+                //root.AddForceAtPosition(Vector3.up * jumpingForce / 2, rightFootCollider.foot.position);
+
+                //leftFootCollider.foot.AddForce(Vector3.up * jumpingForce/2);
+                //rightFootCollider.foot.AddForce(Vector3.up * jumpingForce/2);
 
                 ToggleActiveWalkingFoot();
 

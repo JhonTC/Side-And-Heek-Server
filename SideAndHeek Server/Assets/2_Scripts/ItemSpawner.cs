@@ -28,6 +28,14 @@ public class ItemSpawner : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (spawners.ContainsKey(spawnerId))
+        {
+            spawners.Remove(spawnerId);
+        }
+    }
+
     /*private void OnTriggerEnter(Collider other)
     {
         if (hasItem && other.CompareTag("BodyCollider"))

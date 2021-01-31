@@ -11,8 +11,6 @@ public class FallDetector : MonoBehaviour
             Player player = other.GetComponent<BodyCollisionDetection>().player;
             player.TeleportPlayer(LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(true));
 
-
-
             Debug.Log(player.username + " fell out of the map.");
         }
     }

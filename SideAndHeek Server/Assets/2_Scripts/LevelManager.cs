@@ -24,7 +24,6 @@ public class LevelManager : MonoBehaviour
 
     private void OnDestroy()
     {
-
         levelManagers.Remove(sceneName);
     }
 

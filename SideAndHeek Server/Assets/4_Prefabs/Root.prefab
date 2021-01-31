@@ -469,7 +469,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standingForce: 100
-  jumpingForce: 4000
+  jumpingForce: 5000
   maxFootForwardForce: 150
   footVerticalForce: 125
   flopForce: 3000
@@ -492,6 +492,7 @@ MonoBehaviour:
   - {fileID: 8411262288676932208}
   defaultFlopDuration: 3
   canKnockOutOthers: 0
+  flopCount: 0
   moveStageDuration: 0.1
   standingHeight: 1.63
   groundMask:

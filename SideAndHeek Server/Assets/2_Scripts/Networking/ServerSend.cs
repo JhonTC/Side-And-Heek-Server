@@ -315,6 +315,16 @@ public class ServerSend
         }
     }
 
+    public static void GameStarted(int gameDuration)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.gameStart))
+        {
+            _packet.Write(gameDuration);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     public static void GameOver(bool _isHunterVictory)
     {
         using (Packet _packet = new Packet((int)ServerPackets.gameOver))
