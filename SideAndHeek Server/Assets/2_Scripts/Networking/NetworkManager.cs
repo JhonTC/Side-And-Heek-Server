@@ -10,7 +10,7 @@ public class NetworkManager : MonoBehaviour
 
     [SerializeField] private int maxPlayers = 10;
 
-    [SerializeField] private List<Client> clients;
+    //[SerializeField] private List<Client> clients;
 
     private void Awake()
     {
@@ -34,11 +34,11 @@ public class NetworkManager : MonoBehaviour
         
         Server.Start(maxPlayers, 42069);
 
-        clients = new List<Client>();
+        /*clients = new List<Client>();
         foreach (Client client in Server.clients.Values)
         {
             clients.Add(client);
-        }
+        }*/
     }
 
     private void OnApplicationQuit()

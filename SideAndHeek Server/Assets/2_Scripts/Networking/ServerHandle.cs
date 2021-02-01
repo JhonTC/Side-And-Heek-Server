@@ -14,8 +14,11 @@ public class ServerHandle
         {
             Debug.Log($"Player \"{_username}\"(ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
         }
-        Server.clients[_fromClient].SendIntoGame(_username);
-        Server.clients[_fromClient].uniqueUserCode = _uniqueUserCode;
+
+        if (Server.clients.ContainsKey(_fromClient))
+        {
+            Server.clients[_fromClient].SendIntoGame(_username, _uniqueUserCode);
+        }
     }
 
     public static void PlayerMovement(int _fromClient, Packet _packet)
@@ -30,14 +33,20 @@ public class ServerHandle
 
         Quaternion _rotation = _packet.ReadQuaternion();
 
-        Server.clients[_fromClient].player.SetInput(inputSpeed, _otherInputs, _rotation);
+        if (Server.clients.ContainsKey(_fromClient))
+        {
+            Server.clients[_fromClient].player.SetInput(inputSpeed, _otherInputs, _rotation);
+        }
     }
 
     public static void PlayerReady(int _fromClient, Packet _packet)
     {
         bool _isReady = _packet.ReadBool();
 
-        Server.clients[_fromClient].player.SetReady(_isReady);
+        if (Server.clients.ContainsKey(_fromClient))
+        {
+            Server.clients[_fromClient].player.SetReady(_isReady);
+        }
     }
 
     public static void SetPlayerColour(int _fromClient, Packet _packet)

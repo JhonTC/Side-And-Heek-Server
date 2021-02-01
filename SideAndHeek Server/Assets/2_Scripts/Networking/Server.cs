@@ -9,6 +9,8 @@ public class Server
 {
     public static int MaxPlayers { get; private set; }
     public static int Port { get; private set; }
+
+    public static Dictionary<string, Player> disconnectedPlayers = new Dictionary<string, Player>();
     public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
     public delegate void PacketHandler(int _fromClient, Packet _packet);
     public static Dictionary<int, PacketHandler> packetHandlers;
@@ -55,23 +57,24 @@ public class Server
         TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
         tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
         Debug.Log($"Incoming connection from {_client.Client.RemoteEndPoint}...");
-        
-        if (!GameManager.instance.gameStarted)
+
+        foreach (Client client in clients.Values)
         {
-            for (int i = 1; i <= MaxPlayers; i++)
+            if (client.tcp.socket == null)
             {
-                if (clients[i].tcp.socket == null)
-                {
-                    clients[i].tcp.Connect(_client);
-                    return;
-                }
+                client.tcp.Connect(_client);
+                //Debug.Log($"TCPConnectCallback clientID: {client.id}.");
+                return;
             }
-            
-            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
-        else if (GameManager.instance.gameStarted)
+
+        int id = clients.Count + 1;
+        clients.Add(id, new Client(id, id == 1));
+
+        if (clients[id].tcp.socket == null)
         {
-            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Game in progress!");
+            clients[id].tcp.Connect(_client);
+            //Debug.Log($"TCPConnectCallback clientID: {id}.");
         }
     }
 
@@ -96,6 +99,13 @@ public class Server
                 {
                     return;
                 }
+
+                if (!clients.ContainsKey(_clientId))
+                {
+                    clients.Add(_clientId, new Client(_clientId, _clientId == 1));
+                }
+
+                //Debug.Log($"UDPRecieveCallback clientID: {_clientId}.");
 
                 if (clients[_clientId].udp.endPoint == null)
                 {
@@ -134,7 +144,7 @@ public class Server
     {
         for (int i = 1; i <= MaxPlayers; i++)
         {
-            clients.Add(i, new Client(i, i == 1));
+           // clients.Add(i, new Client(i, i == 1));
         }
 
         packetHandlers = new Dictionary<int, PacketHandler>()

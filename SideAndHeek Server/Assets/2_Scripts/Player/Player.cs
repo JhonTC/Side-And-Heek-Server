@@ -38,15 +38,15 @@ public class Player : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void Initialize(int _id, string _username, Transform _transform)
+    public void Initialize(int _id, string _username, bool _spawnPlayer)
     {
         id = _id;
         username = _username;
 
-        SpawnPlayer();
-
-        //controller.TeleportPhysicalBody(_transform.position);
-        //movementController.root.rotation = _transform.rotation;
+        if (_spawnPlayer)
+        {
+            SpawnPlayer();
+        }
     }
 
     private void Update()

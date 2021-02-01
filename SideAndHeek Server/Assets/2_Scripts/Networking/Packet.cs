@@ -8,6 +8,7 @@ public enum ServerPackets
 {
     welcome = 1,
     spawnPlayer,
+    updatePlayerDetails,
     playerPosition,
     playerRotation,
     playerDisconnected,

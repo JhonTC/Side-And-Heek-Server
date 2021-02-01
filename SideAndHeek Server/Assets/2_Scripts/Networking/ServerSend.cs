@@ -5,19 +5,27 @@ public class ServerSend
     private static void SendTCPData(int _toClient, Packet _packet)
     {
         _packet.WriteLength();
-        Server.clients[_toClient].tcp.SendData(_packet);
+
+        if (Server.clients.ContainsKey(_toClient))
+        {
+            Server.clients[_toClient].tcp.SendData(_packet);
+        }
     }
 
     private static void SendUDPData(int _toClient, Packet _packet)
     {
         _packet.WriteLength();
-        Server.clients[_toClient].udp.SendData(_packet);
+
+        if (Server.clients.ContainsKey(_toClient))
+        {
+            Server.clients[_toClient].udp.SendData(_packet);
+        }
     }
 
     private static void SendTCPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
+        for (int i = 1; i <= Server.clients.Count; i++)
         {
             Server.clients[i].tcp.SendData(_packet);
         }
@@ -26,7 +34,7 @@ public class ServerSend
     private static void SendTCPDataToAll(int _exeptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
+        for (int i = 1; i <= Server.clients.Count; i++)
         {
             if (i != _exeptClient)
             {
@@ -38,7 +46,7 @@ public class ServerSend
     private static void SendUDPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
+        for (int i = 1; i <= Server.clients.Count; i++)
         {
             Server.clients[i].udp.SendData(_packet);
         }
@@ -47,7 +55,7 @@ public class ServerSend
     private static void SendUDPDataToAll(int _exeptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
+        for (int i = 1; i <= Server.clients.Count; i++)
         {
             if (i != _exeptClient)
             {
@@ -77,6 +85,24 @@ public class ServerSend
             _packet.Write(_player.isReady);
             _packet.Write(_player.transform.position);
             _packet.Write(_player.transform.rotation);
+            _packet.Write((int)_player.playerType);
+            _packet.Write(_player.activeTasks.Count);
+            foreach (BaseTask task in _player.activeTasks)
+            {
+                _packet.Write((int)task.task.taskCode);
+            }
+
+            SendTCPData(_toClient, _packet);
+        }
+    }
+
+    public static void UpdatePlayerDetails(int _toClient, int _oldPlayerId, int _newPlayerId, string _username)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.updatePlayerDetails))
+        {
+            _packet.Write(_oldPlayerId);
+            _packet.Write(_newPlayerId);
+            _packet.Write(_username);
 
             SendTCPData(_toClient, _packet);
         }
@@ -119,11 +145,12 @@ public class ServerSend
         }
     }
 
-    public static void PlayerDisconnected(int _playerId)
+    public static void PlayerDisconnected(int _playerId, bool _fullQuit)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerDisconnected))
         {
             _packet.Write(_playerId);
+            _packet.Write(_fullQuit);
             
             SendTCPDataToAll(_packet);
         }
@@ -243,6 +270,15 @@ public class ServerSend
         }
     }
 
+    public static void ChangeScene(int _toClient, string _sceneToLoad)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.changeScene))
+        {
+            _packet.Write(_sceneToLoad);
+
+            SendTCPData(_toClient, _packet);
+        }
+    }
     public static void ChangeScene(string _sceneToLoad)
     {
         using (Packet _packet = new Packet((int)ServerPackets.changeScene))

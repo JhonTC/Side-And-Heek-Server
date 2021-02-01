@@ -194,11 +194,28 @@ public class Client
         }
     }
 
-    public void SendIntoGame(string _playerName)
+    public void SendIntoGame(string _playerName, string _uniqueUserCode)
     {
-        Transform _transform = LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(Server.GetPlayerCount() == 0);
-        player = NetworkManager.instance.InstantiatePlayer(_transform.position);
-        player.Initialize(id, _playerName, _transform);
+        uniqueUserCode = _uniqueUserCode;
+
+        Player disconnectedPlayer = GetDisconnectedPlayerWithUUC(uniqueUserCode);
+        int oldPlayerId = -1;
+        if (disconnectedPlayer != null)
+        {
+            player = disconnectedPlayer;
+            oldPlayerId = player.id;
+        }
+        else
+        {
+            Transform _transform = LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(Server.GetPlayerCount() == 0);
+            player = NetworkManager.instance.InstantiatePlayer(_transform.position);
+        }
+        player.Initialize(id, _playerName, disconnectedPlayer == null);
+
+        if (GameManager.instance.gameStarted)
+        {
+            ServerSend.ChangeScene(id, GameManager.instance.activeSceneName);
+        }
 
         foreach (Client _client in Server.clients.Values)
         {
@@ -211,11 +228,30 @@ public class Client
             }
         }
 
-        foreach (Client _client in Server.clients.Values)
+        if (disconnectedPlayer != null)
         {
-            if (_client.player != null)
+            foreach (Client _client in Server.clients.Values)
             {
-                ServerSend.SpawnPlayer(_client.id, player);
+                if (_client.player != null)
+                {
+                    if (_client.id != id)
+                    {
+                        ServerSend.UpdatePlayerDetails(_client.id, oldPlayerId, id, _playerName);
+                    }
+                    else
+                    {
+                        ServerSend.SpawnPlayer(id, player);
+                    }
+                }
+            }
+        } else
+        {
+            foreach (Client _client in Server.clients.Values)
+            {
+                if (_client.player != null)
+                {
+                    ServerSend.SpawnPlayer(_client.id, player);
+                }
             }
         }
 
@@ -225,9 +261,22 @@ public class Client
         }
     }
 
+    private Player GetDisconnectedPlayerWithUUC(string _uniqueUserCode)
+    {
+        foreach (string key in Server.disconnectedPlayers.Keys)
+        {
+            if (key == _uniqueUserCode)
+            {
+                return Server.disconnectedPlayers[key];
+            }
+        }
+
+        return null;
+    }
+
     public void Disconnect()
     {
-        if (/*GameManager.instance.gameStarted*/true) {
+        if (/*GameManager.instance.gameStarted*/false) {
 
             Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
 
@@ -242,23 +291,34 @@ public class Client
             tcp.Disconnect();
             udp.Disconnect();
 
-            ServerSend.PlayerDisconnected(id);
+            ServerSend.PlayerDisconnected(id, true);
         } else
         {
             Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
 
             isConnected = false;
 
-            /*ThreadManager.ExecuteOnMainThread(() =>
+            if (!Server.disconnectedPlayers.ContainsKey(uniqueUserCode))
             {
-                UnityEngine.Object.Destroy(player.gameObject);
+                Server.disconnectedPlayers.Add(uniqueUserCode, player);
+            }
+
+            ThreadManager.ExecuteOnMainThread(() =>
+            {
                 player = null;
-            });*/
+            });
 
             tcp.Disconnect();
             udp.Disconnect();
 
-            //ServerSend.PlayerDisconnected(id);
+            ServerSend.PlayerDisconnected(id, false);
+            //TODO: send disconnection to clients so all users get a message
+        }
+
+        if (Server.clients.ContainsKey(id))
+        {
+            Debug.Log($"Removed client with id {id}.");
+            Server.clients.Remove(id);
         }
     }
 }

@@ -39,7 +39,6 @@ public class TaskManager : MonoBehaviour
             { TaskCode.TestTaskHard, TestTaskHard },
             { TaskCode.TestTaskExtreme, TestTaskExtreme }
         };
-        Debug.Log("Initialised packets.");
     }
 
     public BaseTask HandleTask(TaskSO _task, Player _player)
