@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4404309366411333500}
   - component: {fileID: 5428407159845291866}
   m_Layer: 0
-  m_Name: ItemSpawner
+  m_Name: PickupSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,9 +54,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4404309366411333442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b35e8996e4afd949b8211889db2cf4c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3fecdd712f54de443b052d10ef012298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerId: 0
   hasItem: 0
-  collection: {fileID: 11400000, guid: 15239df9d4d18eb4b81eb45ec6ed8953, type: 2}
+  pickupType: 0
+  activeTaskDetails:
+    task: {fileID: 0}
+    numberOfUses: 0
+  activeItemDetails:
+    item: {fileID: 0}
+    numberOfUses: 0
+  maxSpawnCount: 0

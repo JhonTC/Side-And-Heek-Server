@@ -28,10 +28,11 @@ public class Player : MonoBehaviour
     public bool isBodyActive = false;
 
     [SerializeField] private SimplePlayerController bodyPrefab;
-    [SerializeField] private FootCollisionHandler largeGroundCollider;
+    [SerializeField] private FootCollisionHandler largeGroundColliderPrefab;
     [SerializeField] private Transform feetMidpoint;
 
     public List<BaseTask> activeTasks = new List<BaseTask>();
+    public BaseItem activeItem;
 
     private void Awake()
     {
@@ -53,7 +54,7 @@ public class Player : MonoBehaviour
     {
         for (int i = 0; i < activeTasks.Count; i++)
         {
-            activeTasks[i].UpdateProgress();
+            activeTasks[i].UpdateTask();
         }
     }
 
@@ -117,11 +118,24 @@ public class Player : MonoBehaviour
             movementController.OnCollisionWithOther(flopTime);
             if (turnToHunter)
             {
-                playerType = PlayerType.Hunter;
-                ServerSend.SetPlayerType(id, playerType, true);
+                SetPlayerType(PlayerType.Hunter);
                 GameManager.instance.CheckForGameOver();
             }
         }
+    }
+
+    public void SetPlayerType(PlayerType type)
+    {
+        playerType = type;
+        if (playerType == PlayerType.Hunter)
+        {
+            movementController.forwardForceMultipler = GameManager.instance.hunterSpeedMultiplier;
+        } else
+        {
+            movementController.forwardForceMultipler = 1;
+        }
+
+        ServerSend.SetPlayerType(id, playerType, true);
     }
 
     public void SpawnPlayer()
@@ -129,7 +143,7 @@ public class Player : MonoBehaviour
         if (!isBodyActive)
         {
             movementController = Instantiate(bodyPrefab, transform);
-            movementController.largeGroundCollider = largeGroundCollider;
+            movementController.largeGroundCollider = Instantiate(largeGroundColliderPrefab, transform);
             movementController.feetMidpoint = feetMidpoint;
             movementController.SetupBodyCollisionHandlers(this);
             isBodyActive = true;
@@ -141,13 +155,22 @@ public class Player : MonoBehaviour
         if (isBodyActive)
         {
             isBodyActive = false;
+            Destroy(movementController.largeGroundCollider.gameObject);
             Destroy(movementController.gameObject);
         }
     }
 
-    public void ItemPickedUp(TaskSO task)
+    public void PickupPickedUp(BasePickup pickup)
     {
-        activeTasks.Add(TaskManager.instance.HandleTask(task, this));
+        if (pickup.pickupType == PickupType.Task)
+        {
+            TaskPickup taskPickup = pickup as TaskPickup;
+            activeTasks.Add(PickupManager.instance.HandleTask(taskPickup, this));
+        } else if (pickup.pickupType == PickupType.Item)
+        {
+            ItemPickup itemPickup = pickup as ItemPickup;
+            activeItem = PickupManager.instance.HandleItem(itemPickup, this);
+        }
     }
 
     public void TaskProgressed(TaskCode code, float progress)
@@ -159,16 +182,26 @@ public class Player : MonoBehaviour
     {
         if (activeTasks.Contains(task))
         {
+            ServerSend.TaskComplete(id, task.task.taskCode);
             activeTasks.Remove(task);
         }
+    }
 
-        ServerSend.TaskComplete(id, task.task.taskCode);
+    public void ItemUsed()
+    {
+        if (activeItem != null)
+        {
+            Debug.Log("Item Used");
+            activeItem.ItemUsed();
+            activeItem = null;
+        }
     }
 
     private BaseTask GetActiveTaskWithCode(TaskCode code)
     {
         foreach (BaseTask task in activeTasks)
         {
+            TaskPickup taskPickup = task.task as TaskPickup;
             if (task.task.taskCode == code)
             {
                 return task;

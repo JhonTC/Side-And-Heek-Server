@@ -219,9 +219,25 @@ public class Client
             }
         }
 
-        foreach (ItemSpawner _itemSpawner in ItemSpawner.spawners.Values)
+        foreach (PickupSpawner _pickupSpawner in PickupSpawner.spawners.Values)
         {
-            ServerSend.CreateItemSpawner(id, _itemSpawner.spawnerId, _itemSpawner.transform.position, _itemSpawner.activeTaskDetails);
+            BasePickup pickup = null;
+            if (_pickupSpawner.pickupType == PickupType.Task)
+            {
+                if (_pickupSpawner.activeTaskDetails != null)
+                {
+                    pickup = _pickupSpawner.activeTaskDetails.task;
+                }
+            }
+            else if (_pickupSpawner.pickupType == PickupType.Item)
+            {
+                if (_pickupSpawner.activeItemDetails != null)
+                {
+                    pickup = _pickupSpawner.activeItemDetails.item;
+                }
+            }
+
+            ServerSend.CreatePickupSpawner(_pickupSpawner.spawnerId, _pickupSpawner.transform.position, _pickupSpawner.pickupType, _pickupSpawner.hasPickup, pickup, id);
         }
     }
 

@@ -129,53 +129,16 @@ public class ServerSend
         }
     }
 
-    public static void CreateItemSpawner(int _playerId, int _spawnerId, Vector3 _position, TaskDetails taskDetails)
+    public static void CreatePickupSpawner(int _spawnerId, Vector3 _position, PickupType _pickupType, bool hasPickup, BasePickup _pickup, int _playerId = -1)
     {
         using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
         {
             _packet.Write(_spawnerId);
             _packet.Write(_position);
+            _packet.Write((int)_pickupType);
+            _packet.Write(hasPickup);
 
-            if (taskDetails == null)
-            {
-                _packet.Write((int)TaskCode.NULL_TASK);
-                _packet.Write("");
-                _packet.Write("");
-                _packet.Write(Color.white);
-            }
-            else if (taskDetails.task == null)
-            {
-                _packet.Write((int)TaskCode.NULL_TASK);
-                _packet.Write("");
-                _packet.Write("");
-                _packet.Write(Color.white);
-            }
-            else
-            {
-                _packet.Write((int)taskDetails.task.taskCode);
-                _packet.Write(taskDetails.task.taskName);
-                _packet.Write(taskDetails.task.taskContent);
-                _packet.Write(taskDetails.task.taskDifficulty.color);
-            }
-
-            SendTCPData(_playerId, _packet);
-        }
-    }
-    public static void CreateItemSpawner(int _spawnerId, Vector3 _position, TaskDetails taskDetails)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
-        {
-            _packet.Write(_spawnerId);
-            _packet.Write(_position);
-
-            if (taskDetails == null)
-            {
-                _packet.Write((int)TaskCode.NULL_TASK);
-                _packet.Write("");
-                _packet.Write("");
-                _packet.Write(Color.white);
-            }
-            else if (taskDetails.task == null)
+            if (_pickup == null)
             {
                 _packet.Write((int)TaskCode.NULL_TASK);
                 _packet.Write("");
@@ -184,38 +147,67 @@ public class ServerSend
             } 
             else
             {
-                _packet.Write((int)taskDetails.task.taskCode);
-                _packet.Write(taskDetails.task.taskName);
-                _packet.Write(taskDetails.task.taskContent);
-                _packet.Write(taskDetails.task.taskDifficulty.color);
+                if (_pickup.pickupType == PickupType.Task)
+                {
+                    TaskPickup taskPickup = _pickup as TaskPickup;
+                    _packet.Write((int)taskPickup.taskCode);
+                }
+                else if (_pickup.pickupType == PickupType.Item)
+                {
+                    ItemPickup itemPickup = _pickup as ItemPickup;
+                    _packet.Write((int)itemPickup.itemCode);
+                }
+
+                _packet.Write(_pickup.pickupName);
+                _packet.Write(_pickup.pickupContent);
+                _packet.Write(_pickup.pickupLevel.color);
             }
 
-            SendTCPDataToAll(_packet);
+            if (_playerId == -1)
+            {
+                SendTCPDataToAll(_packet);
+            }
+            else
+            {
+                SendTCPData(_playerId, _packet);
+            }
         }
     }
 
-    public static void ItemSpawned(int _spawnerId, TaskSO task)
+    public static void PickupSpawned(int _spawnerId, BasePickup _pickup)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemSpawned))
         {
             _packet.Write(_spawnerId);
+            _packet.Write((int)_pickup.pickupType);
 
-            _packet.Write((int)task.taskCode);
-            _packet.Write(task.taskName);
-            _packet.Write(task.taskContent);
-            _packet.Write(task.taskDifficulty.color);
+            if (_pickup.pickupType == PickupType.Task)
+            {
+                TaskPickup taskPickup = _pickup as TaskPickup;
+                _packet.Write((int)taskPickup.taskCode);
+            } 
+            else if (_pickup.pickupType == PickupType.Item)
+            {
+                ItemPickup itemPickup = _pickup as ItemPickup;
+                _packet.Write((int)itemPickup.itemCode);
+            }
+
+            _packet.Write(_pickup.pickupName);
+            _packet.Write(_pickup.pickupContent);
+            _packet.Write(_pickup.pickupLevel.color);
 
             SendTCPDataToAll(_packet);
         }
     }
 
-    public static void ItemPickedUp(int _spawnerId, int _byPlayer, TaskCode _code)
+    public static void ItemPickedUp(int _spawnerId, int _byPlayer, PickupType _pickupType, int _code)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemPickedUp))
         {
             _packet.Write(_spawnerId);
             _packet.Write(_byPlayer);
-            _packet.Write((int)_code);
+            _packet.Write((int)_pickupType);
+            _packet.Write(_code);
 
             SendTCPDataToAll(_packet);
         }

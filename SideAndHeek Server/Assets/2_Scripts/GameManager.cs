@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     
     private LevelManager levelManager;
 
-    public TaskCollection collection;
+    public PickupCollection collection;
 
     [SerializeField] private int specialSpawnDelay = 20;
     private int specialSpawnCount = 0;
@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
 
     public int maxPlayDuration = 240;
     public int currentTime = 0;
+
+    public float hunterSpeedMultiplier = 1f;
+
+    private bool tryStartGameActive = false;
 
     private void Awake()
     {
@@ -94,6 +98,7 @@ public class GameManager : MonoBehaviour
 
         _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
 
+        tryStartGameActive = false;
         ServerSend.GameStarted(maxPlayDuration);
         StartCoroutine(GameTimeCountdown(maxPlayDuration));
     }
@@ -101,47 +106,59 @@ public class GameManager : MonoBehaviour
     private IEnumerator GameTimeCountdown(int _delay = 240)
     {
         currentTime = _delay;
-        while (currentTime > 0)
+        while (currentTime > 0 && gameStarted)
         {
             yield return new WaitForSeconds(1.0f);
 
             currentTime--;
         }
 
-        GameOver(false);
+        if (gameStarted)
+        {
+            GameOver(false);
+        }
     }
 
     public void TryStartGame(int _fromClient)
     {
-        bool areAllPlayersReady = AreAllPlayersReady();
-        if (areAllPlayersReady)
+        if (!tryStartGameActive)
         {
-            int _randPlayerId = Server.clients.ElementAt(Random.Range(0, Server.GetPlayerCount() - 1)).Value.id;
-
-            foreach (Client client in Server.clients.Values)
+            bool areAllPlayersReady = AreAllPlayersReady();
+            if (areAllPlayersReady)
             {
-                if (client.player != null)
-                {
-                    PlayerType _playerType = PlayerType.Default;
-                    if (client.player.id == _randPlayerId)
-                    {
-                        _playerType = PlayerType.Hunter;
-                    }
-                    else
-                    {
-                        _playerType = PlayerType.Hider;
-                    }
-                    client.player.playerType = _playerType;
+                int _randPlayerId = Server.clients.ElementAt(Random.Range(0, Server.GetPlayerCount())).Value.id;
 
-                    ServerSend.SetPlayerType(client.player);
+                foreach (Client client in Server.clients.Values)
+                {
+                    if (client.player != null)
+                    {
+                        PlayerType _playerType = PlayerType.Default;
+                        if (client.player.id == _randPlayerId)
+                        {
+                            _playerType = PlayerType.Hunter;
+                        }
+                        else
+                        {
+                            _playerType = PlayerType.Hider;
+                        }
+                        client.player.SetPlayerType(_playerType);
+                    }
                 }
+
+                tryStartGameActive = true;
+
+                LevelManager.GetLevelManagerForScene(activeSceneName).LoadScene("Map_1", LevelType.Map);
+                ServerSend.ChangeScene("Map_1");
             }
-            
-            LevelManager.GetLevelManagerForScene(activeSceneName).LoadScene("Map_1", LevelType.Map);
-            ServerSend.ChangeScene("Map_1");
+            else
+            {
+                ServerSend.SendErrorResponse(ErrorResponseCode.NotAllPlayersReady); 
+                tryStartGameActive = false;
+            }
         } else
         {
-            ServerSend.SendErrorResponse(ErrorResponseCode.NotAllPlayersReady);
+            ServerSend.SendErrorResponse(ErrorResponseCode.NotAllPlayersReady); //TODO:Change to different message(game already trying to start)
+            tryStartGameActive = false;
         }
     }
 

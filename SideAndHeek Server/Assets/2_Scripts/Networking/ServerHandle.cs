@@ -53,10 +53,16 @@ public class ServerHandle
         GameManager.instance.TryStartGame(_fromClient);
     }
 
-    public static void TaskSelected(int _fromClient, Packet _packet)
+    public static void PickupSelected(int _fromClient, Packet _packet)
     {
         int _spawnerId = _packet.ReadInt();
 
-        ItemSpawner.spawners[_spawnerId].ItemPickedUp(_fromClient);
+        PickupSpawner.spawners[_spawnerId].PickupPickedUp(_fromClient);
+    }
+
+    public static void ItemUsed(int _fromClient, Packet _packet)
+    {
+        Debug.Log("Server Handle: ITEM USED");
+        Server.clients[_fromClient].player.ItemUsed();
     }
 }

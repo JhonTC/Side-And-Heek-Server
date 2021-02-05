@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36088a31707670e498233d6c4f1a5008, type: 3}
   m_Name: TestTaskEasy
   m_EditorClassIdentifier: 
+  pickupName: Easy
+  pickupContent: Easy Test Task
+  pickupIcon: {fileID: 0}
+  pickupLevel: {fileID: 11400000, guid: ab9139635b7e0044980ed8eaa2d4fb9f, type: 2}
+  pickupType: 1
   taskCode: 1
-  taskName: Easy
-  taskContent: This is an easy test task.
-  taskIcon: {fileID: 0}
-  taskDifficulty: {fileID: 11400000, guid: ab9139635b7e0044980ed8eaa2d4fb9f, type: 2}
   maxProgress: 1

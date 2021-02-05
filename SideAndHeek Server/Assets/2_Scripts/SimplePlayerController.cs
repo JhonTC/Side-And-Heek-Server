@@ -17,6 +17,8 @@ public class SimplePlayerController : MonoBehaviour
     [HideInInspector] public Rigidbody root;
 
     [SerializeField] private float turnSpeed;
+
+    public float forwardForceMultipler = 1;
     
     public Transform rightLeg;
     public Transform leftLeg;
@@ -54,18 +56,23 @@ public class SimplePlayerController : MonoBehaviour
         otherFootDisplacement = rightFootInitialDisplacement;
 
         lastRotation = root.rotation;
+        jumpForceMultiplier = 1;
+        flopForceMultiplier = 1;
     }
 
     bool isJumping= false;
     float jumpTimer = 0f;
     float minJumpDuration = 0.5f;
+    [HideInInspector] public float jumpForceMultiplier;
+
+    public int jumpCount = 0;
     public void OnJump()
     {
         if (!isFlopping && !isJumping)
         {
             if (largeGroundCollider.isGrounded)
             {
-                root.AddForce(Vector3.up * jumpingForce);
+                root.AddForce((Vector3.up * jumpingForce) * jumpForceMultiplier);
                 //root.AddForceAtPosition(Vector3.up * jumpingForce / 2, leftFootCollider.foot.position);
                 //root.AddForceAtPosition(Vector3.up * jumpingForce / 2, rightFootCollider.foot.position);
 
@@ -75,6 +82,8 @@ public class SimplePlayerController : MonoBehaviour
                 ToggleActiveWalkingFoot();
 
                 isJumping = true;
+                jumpForceMultiplier = 1;
+                jumpCount++;
             }
         }
     }
@@ -84,6 +93,7 @@ public class SimplePlayerController : MonoBehaviour
     float maxFlopDuration = 3f;
     public float defaultFlopDuration = 3f;
     public bool canKnockOutOthers = false;
+    [HideInInspector] public float flopForceMultiplier;
 
     public int flopCount = 0;
 
@@ -99,17 +109,18 @@ public class SimplePlayerController : MonoBehaviour
         {
             maxFlopDuration = duration;
 
-            if (applyFlopForce && largeGroundCollider.isGrounded)
+            if (applyFlopForce/* && largeGroundCollider.isGrounded*/)
             {
                 Vector3 forward = root.transform.forward;
                 forward.y = 0f;
-                root.AddForce(forward * flopForce + Vector3.up * (flopForce / 2f));
+                root.AddForce((forward * flopForce + Vector3.up * (flopForce / 2f)) * flopForceMultiplier);
                 canKnockOutOthers = true;
             }
 
             ToggleActiveWalkingFoot();
 
             isFlopping = true;
+            flopForceMultiplier = 1;
             flopCount++;
 
             return true;
@@ -229,7 +240,7 @@ public class SimplePlayerController : MonoBehaviour
                         Vector3 forward = root.transform.forward;
                         forward.y = 0;
 
-                        force = forward * (maxFootForwardForce * inputSpeed) + Vector3.up * footVerticalForce;
+                        force = forward * (maxFootForwardForce * forwardForceMultipler * inputSpeed) + Vector3.up * footVerticalForce;
 
                         otherWalkingFoot.foot.position = Vector3.Lerp(otherWalkingFoot.foot.position, root.transform.position - activeFootDisplacement, footReturnSpeed * Time.fixedDeltaTime);
                     }

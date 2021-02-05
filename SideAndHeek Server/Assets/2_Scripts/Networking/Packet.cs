@@ -36,7 +36,8 @@ public enum ClientPackets
     playerReady,
     tryStartGame,
     setPlayerColour,
-    taskSelected
+    taskSelected,
+    itemUsed
 }
 
 public class Packet : IDisposable

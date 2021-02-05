@@ -144,7 +144,8 @@ public class Server
             { (int)ClientPackets.playerReady, ServerHandle.PlayerReady },
             { (int)ClientPackets.tryStartGame, ServerHandle.TryStartGame },
             { (int)ClientPackets.setPlayerColour, ServerHandle.SetPlayerColour },
-            { (int)ClientPackets.taskSelected, ServerHandle.TaskSelected }
+            { (int)ClientPackets.taskSelected, ServerHandle.PickupSelected },
+            { (int)ClientPackets.itemUsed, ServerHandle.ItemUsed }
         };
         Debug.Log("Initialised packets");
     }

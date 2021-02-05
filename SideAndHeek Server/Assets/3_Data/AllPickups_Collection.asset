@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43e50fc22602ade4fbccca0df4b6b38c, type: 3}
-  m_Name: AllTasks_Collection
+  m_Name: AllPickups_Collection
   m_EditorClassIdentifier: 
-  details:
+  taskDetails:
   - task: {fileID: 11400000, guid: d8ea33eeea56b894bb49be003e25e407, type: 2}
     numberOfUses: 4
   - task: {fileID: 11400000, guid: 00a1c4b6012729a4c8c69ba97f0cabb9, type: 2}
@@ -21,3 +21,8 @@ MonoBehaviour:
     numberOfUses: 2
   - task: {fileID: 11400000, guid: 08a6a43cd1605f14bb8e4e30315c155c, type: 2}
     numberOfUses: 1
+  itemDetails:
+  - item: {fileID: 11400000, guid: b7c546730e950754ebfc872279ff85a3, type: 2}
+    numberOfUses: 10
+  - item: {fileID: 11400000, guid: 73d79d556290040498316feacbfb52fb, type: 2}
+    numberOfUses: 10
