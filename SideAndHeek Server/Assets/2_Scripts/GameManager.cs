@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
     private void OnLevelFinishedUnloading(Scene _scene)
     {
         activeSceneName = "Lobby";
+        PickupSpawner.itemsLog.Clear();
+        PickupSpawner.tasksLog.Clear();
     }
 
     private IEnumerator SpawnSpecial(Player _player, int _delay = 60)

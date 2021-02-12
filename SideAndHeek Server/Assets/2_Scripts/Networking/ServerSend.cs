@@ -200,7 +200,7 @@ public class ServerSend
         }
     }
 
-    public static void ItemPickedUp(int _spawnerId, int _byPlayer, PickupType _pickupType, int _code)
+    public static void PickupPickedUp(int _spawnerId, int _byPlayer, PickupType _pickupType, int _code)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemPickedUp))
         {

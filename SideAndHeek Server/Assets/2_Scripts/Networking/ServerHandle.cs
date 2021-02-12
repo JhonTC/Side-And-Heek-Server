@@ -45,6 +45,10 @@ public class ServerHandle
         Color _colour = _packet.ReadColour();
         bool _isSeekerColour = _packet.ReadBool();
 
+        if (GameManager.instance.gameStarted) {
+            Debug.Log("");
+        }
+
         ServerSend.SetPlayerColour(_fromClient, _colour, _isSeekerColour);
     }
 

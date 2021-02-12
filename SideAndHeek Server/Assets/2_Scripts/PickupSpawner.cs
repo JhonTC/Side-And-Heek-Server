@@ -5,8 +5,8 @@ using UnityEngine;
 public class PickupSpawner : MonoBehaviour
 {
     public static Dictionary<int, PickupSpawner> spawners = new Dictionary<int, PickupSpawner>();
-    public static Dictionary<TaskDetails, int> tasksLog = new Dictionary<TaskDetails, int>();
-    public static Dictionary<ItemDetails, int> itemsLog = new Dictionary<ItemDetails, int>();
+    public static Dictionary<TaskCode, int> tasksLog = new Dictionary<TaskCode, int>();
+    public static Dictionary<ItemCode, int> itemsLog = new Dictionary<ItemCode, int>();
     private static int nextSpawnerId = 1;
 
     public int spawnerId;
@@ -17,7 +17,6 @@ public class PickupSpawner : MonoBehaviour
     public ItemDetails activeItemDetails;
 
     public int maxSpawnCount = 0;
-
 
     private void Start()
     {
@@ -44,10 +43,7 @@ public class PickupSpawner : MonoBehaviour
 
         ServerSend.CreatePickupSpawner(spawnerId, transform.position, pickupType, hasPickup, pickup);
 
-        if (!HaveAllPickupsOfTypeBeenSpawned(pickupType))
-        {
-            StartCoroutine(SpawnPickup());
-        }
+        StartCoroutine(SpawnPickup());
     }
 
     private void OnDestroy()
@@ -70,108 +66,99 @@ public class PickupSpawner : MonoBehaviour
         }
     }*/
 
-    private IEnumerator SpawnPickup(int spawnDelay = 10)
+    private IEnumerator SpawnPickup(int spawnDelay = 1)
     {
         yield return new WaitForSeconds(spawnDelay);
 
-         //(PickupType)Random.Range(1, 3);
-
-        if (pickupType == PickupType.Task)
+        if (!HaveAllPickupsOfTypeBeenSpawned(pickupType))
         {
-            activeTaskDetails = GameManager.instance.collection.GetRandomTask();
-
-            while (!CanTaskCodeBeUsed(activeTaskDetails))
+            if (pickupType == PickupType.Task)
             {
                 activeTaskDetails = GameManager.instance.collection.GetRandomTask();
+
+                while (!CanTaskCodeBeUsed(activeTaskDetails))
+                {
+                    activeTaskDetails = GameManager.instance.collection.GetRandomTask();
+                }
+
+                if (tasksLog.ContainsKey(activeTaskDetails.task.taskCode))
+                {
+                    tasksLog[activeTaskDetails.task.taskCode]++;
+                }
+                else
+                {
+                    tasksLog.Add(activeTaskDetails.task.taskCode, 1);
+                }
+
+                hasPickup = true;
+
+                ServerSend.PickupSpawned(spawnerId, activeTaskDetails.task);
             }
-
-            if (tasksLog.ContainsKey(activeTaskDetails))
-            {
-                tasksLog[activeTaskDetails]++;
-            }
-            else
-            {
-                tasksLog.Add(activeTaskDetails, 1);
-            }
-
-            hasPickup = true;
-
-            ServerSend.PickupSpawned(spawnerId, activeTaskDetails.task);
-        } 
-        else if (pickupType == PickupType.Item)
-        {
-            activeItemDetails = GameManager.instance.collection.GetRandomItem();
-
-            while (!CanItemCodeBeUsed(activeItemDetails))
+            else if (pickupType == PickupType.Item)
             {
                 activeItemDetails = GameManager.instance.collection.GetRandomItem();
-            }
 
-            if (itemsLog.ContainsKey(activeItemDetails))
-            {
-                itemsLog[activeItemDetails]++;
-            }
-            else
-            {
-                itemsLog.Add(activeItemDetails, 1);
-            }
+                while (!CanItemCodeBeUsed(activeItemDetails))
+                {
+                    activeItemDetails = GameManager.instance.collection.GetRandomItem();
+                }
 
-            hasPickup = true;
+                if (itemsLog.ContainsKey(activeItemDetails.item.itemCode))
+                {
+                    itemsLog[activeItemDetails.item.itemCode]++;
+                }
+                else
+                {
+                    itemsLog.Add(activeItemDetails.item.itemCode, 1);
+                }
 
-            ServerSend.PickupSpawned(spawnerId, activeItemDetails.item);
+                hasPickup = true;
+
+                ServerSend.PickupSpawned(spawnerId, activeItemDetails.item);
+            }
         }
     }
 
     private bool CanTaskCodeBeUsed(TaskDetails taskDetails)
     {
-        if (tasksLog.ContainsKey(taskDetails))
+        if (tasksLog.ContainsKey(taskDetails.task.taskCode))
         {
-            if (tasksLog[taskDetails] < taskDetails.numberOfUses)
-            {
-                return true;
-            } else
+            if (tasksLog[taskDetails.task.taskCode] >= taskDetails.numberOfUses)
             {
                 return false;
-            }
-        } else
-        {
-            return true;
+            } 
         }
+            
+        return true;
     }
 
     private bool CanItemCodeBeUsed(ItemDetails itemDetails)
     {
-        if (itemsLog.ContainsKey(itemDetails))
+        if (itemsLog.ContainsKey(itemDetails.item.itemCode))
         {
-            if (itemsLog[itemDetails] < itemDetails.numberOfUses)
-            {
-                return true;
-            }
-            else
+            if (itemsLog[itemDetails.item.itemCode] >= itemDetails.numberOfUses)
             {
                 return false;
             }
         }
-        else
-        {
-            return true;
-        }
+        
+        return true;
     }
 
     private bool HaveAllPickupsOfTypeBeenSpawned(PickupType pickupType)
     {
         if (pickupType == PickupType.Task)
         {
-            if (tasksLog.Count == 0)
+            if (tasksLog.Count < GameManager.instance.collection.taskDetails.Count)
             {
                 return false;
             }
 
-            foreach (TaskDetails taskDetails in tasksLog.Keys)
+            foreach (TaskCode taskCode in tasksLog.Keys)
             {
-                if (tasksLog.ContainsKey(taskDetails))
+                if (tasksLog.ContainsKey(taskCode))
                 {
-                    if (tasksLog[taskDetails] < taskDetails.numberOfUses)
+                    if (tasksLog[taskCode] < GameManager.instance.collection.GetTaskByCode(taskCode).numberOfUses)
                     {
                         return false;
                     }
@@ -181,21 +168,19 @@ public class PickupSpawner : MonoBehaviour
                     return false;
                 }
             }
-
-            return true;
         }
         else if (pickupType == PickupType.Item)
         {
-            if (itemsLog.Count == 0)
+            if (itemsLog.Count < GameManager.instance.collection.itemDetails.Count)
             {
                 return false;
             }
 
-            foreach (ItemDetails itemDetails in itemsLog.Keys)
+            foreach (ItemCode itemCode in itemsLog.Keys)
             {
-                if (itemsLog.ContainsKey(itemDetails))
+                if (itemsLog.ContainsKey(itemCode))
                 {
-                    if (itemsLog[itemDetails] < itemDetails.numberOfUses)
+                    if (itemsLog[itemCode] < GameManager.instance.collection.GetItemByCode(itemCode).numberOfUses)
                     {
                         return false;
                     }
@@ -205,8 +190,6 @@ public class PickupSpawner : MonoBehaviour
                     return false;
                 }
             }
-
-            return true;
         } 
 
         return true;
@@ -236,11 +219,8 @@ public class PickupSpawner : MonoBehaviour
         }
 
         Server.clients[_byPlayer].player.PickupPickedUp(pickup);
-        ServerSend.ItemPickedUp(spawnerId, _byPlayer, pickupType, code);
+        ServerSend.PickupPickedUp(spawnerId, _byPlayer, pickupType, code);
 
-        if (!HaveAllPickupsOfTypeBeenSpawned(pickupType))
-        {
-            StartCoroutine(SpawnPickup());
-        }
+        StartCoroutine(SpawnPickup());
     }
 }

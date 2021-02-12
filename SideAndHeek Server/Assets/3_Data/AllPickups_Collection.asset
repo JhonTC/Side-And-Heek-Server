@@ -23,6 +23,6 @@ MonoBehaviour:
     numberOfUses: 1
   itemDetails:
   - item: {fileID: 11400000, guid: b7c546730e950754ebfc872279ff85a3, type: 2}
-    numberOfUses: 10
+    numberOfUses: 2
   - item: {fileID: 11400000, guid: 73d79d556290040498316feacbfb52fb, type: 2}
-    numberOfUses: 10
+    numberOfUses: 2
