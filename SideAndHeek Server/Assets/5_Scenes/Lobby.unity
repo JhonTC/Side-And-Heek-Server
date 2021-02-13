@@ -199,7 +199,7 @@ MonoBehaviour:
   collection: {fileID: 11400000, guid: d4e6de60ac9c13d4787376905ad3eaa1, type: 2}
   specialSpawnDelay: 20
   activeSceneName: Lobby
-  maxPlayDuration: 240
+  maxPlayDuration: 180
   currentTime: 0
   hunterSpeedMultiplier: 1.1
 --- !u!4 &217739930

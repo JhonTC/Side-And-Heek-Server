@@ -94,11 +94,12 @@ public class SimplePlayerController : MonoBehaviour
     public float defaultFlopDuration = 3f;
     public bool canKnockOutOthers = false;
     [HideInInspector] public float flopForceMultiplier;
+    public bool lastIsFlopping = false;
 
     public int flopCount = 0;
 
-    public bool OnFlop() { return OnFlop(true, false, defaultFlopDuration); }
-    public bool OnFlop(bool applyFlopForce, bool resetFlop, float duration)
+    public void OnFlop() { OnFlop(true, false, defaultFlopDuration); }
+    public void OnFlop(bool applyFlopForce, bool resetFlop, float duration)
     {
         if (resetFlop)
         {
@@ -122,11 +123,9 @@ public class SimplePlayerController : MonoBehaviour
             isFlopping = true;
             flopForceMultiplier = 1;
             flopCount++;
-
-            return true;
         }
 
-        return false;
+        lastIsFlopping = isFlopping;
     }
 
     [SerializeField] private float moveStageDuration;
@@ -189,42 +188,6 @@ public class SimplePlayerController : MonoBehaviour
                 root.AddForceAtPosition(Vector3.up * standingForce * 2, rayPosition);
                 Debug.DrawRay(rayPosition, rayDirection, Color.green, standingHeight);
             }
-
-            //Vector3 rayPosition = new Vector3(leftFootCollider.foot.position.x, root.position.y, root.position.z/*leftFootCollider.foot.position.z*/);
-            //Vector3 rayDirection = Vector3.down;
-            //RaycastHit rayhit;
-            //if (Physics.Raycast(rayPosition, rayDirection, out rayhit, standingHeight, groundMask))
-            //{
-            /*Vector3 footLocalPos = leftFootCollider.foot.transform.localPosition;
-            Vector3 temp = rigidbody.transform.right * (leftFootCollider.foot.transform.parent.localPosition.x + footLocalPos.x);
-            Vector3 temp2 = rigidbody.transform.forward * (leftFootCollider.foot.transform.parent.localPosition.z + footLocalPos.z);
-            Vector3 forcePosition = new Vector3(rigidbody.position.x, leftFootCollider.foot.position.y, rigidbody.position.z) - temp2 / 4;
-
-            footCentrePos.y = standingHeight;
-
-            Vector3 forceDirection = rigidbody.position - forcePosition;*/
-
-            //    root.AddForceAtPosition(Vector3.up * standingForce, rayPosition);
-            //    Debug.DrawRay(rayPosition, rayDirection, Color.green, standingHeight);
-            //}
-
-            //rayPosition = new Vector3(rightFootCollider.foot.position.x, root.position.y, root.position.z/*rightFootCollider.foot.position.z*/); // if rigidbody is tiled in the z, this position won't account for that!
-            //if (Physics.Raycast(rayPosition, rayDirection, out rayhit, standingHeight, groundMask))
-            //{
-            //float distance = Vector2.Distance(new Vector2(root.position.x, root.position.z), new Vector2(rightFootCollider.foot.position.x, rightFootCollider.foot.position.z));
-
-            /*Vector3 footLocalPos = rightFootCollider.foot.transform.localPosition;
-            Vector3 temp = rigidbody.transform.right * (rightFootCollider.foot.transform.parent.localPosition.x + footLocalPos.x);
-            Vector3 temp2 = rigidbody.transform.forward * (rightFootCollider.foot.transform.parent.localPosition.z + footLocalPos.z);
-            Vector3 forcePosition = new Vector3(rigidbody.position.x, rightFootCollider.foot.position.y, rigidbody.position.z) - temp2 / 4;
-
-            footCentrePos.y = standingHeight;
-
-            Vector3 forceDirection = rigidbody.position - forcePosition;*/
-
-            //    root.AddForceAtPosition(Vector3.up * standingForce, rayPosition);
-            //    Debug.DrawRay(rayPosition, rayDirection, Color.green, standingHeight);
-            //}
 
             if (inputSpeed > 0 || isJumping)
             {
