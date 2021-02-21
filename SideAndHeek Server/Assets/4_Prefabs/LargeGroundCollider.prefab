@@ -61,6 +61,10 @@ MonoBehaviour:
   foot: {fileID: 3483688863450905780}
   IsGrounded: 0
   activeCollisionCount: 0
+  lastCollisionLayer: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!54 &3483688863450905780
 Rigidbody:
   m_ObjectHideFlags: 0

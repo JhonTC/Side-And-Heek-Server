@@ -13,18 +13,24 @@ public class GameManager : MonoBehaviour
     private LevelManager levelManager;
 
     public PickupCollection collection;
+    public GameRules gameRules;
 
-    [SerializeField] private int specialSpawnDelay = 20;
+    //[SerializeField] private int specialSpawnDelay = 20;
     private int specialSpawnCount = 0;
 
     public string activeSceneName = "Lobby";
 
-    public int maxPlayDuration = 240;
+    //public int maxPlayDuration = 240;
     public int currentTime = 0;
 
-    public float hunterSpeedMultiplier = 1f;
+    //public float hunterSpeedMultiplier = 1f;
 
     private bool tryStartGameActive = false;
+
+    public Color defaultColour;
+
+    public Color[] hiderColours;
+    public Dictionary<Color, bool> chosenHiderColours = new Dictionary<Color, bool>();
 
     private void Awake()
     {
@@ -39,6 +45,16 @@ public class GameManager : MonoBehaviour
         }
         
         DontDestroyOnLoad(this);
+    }
+
+    private void Start()
+    {
+        gameRules = new GameRules();
+
+        foreach (Color colour in hiderColours)
+        {
+            chosenHiderColours.Add(colour, false);
+        }
     }
 
     void OnEnable()
@@ -73,7 +89,7 @@ public class GameManager : MonoBehaviour
                 } 
                 else
                 {
-                    StartCoroutine(SpawnSpecial(client.player, specialSpawnDelay));
+                    StartCoroutine(SpawnSpecial(client.player, gameRules.hidingTime));
                 }
             }
         }
@@ -84,6 +100,15 @@ public class GameManager : MonoBehaviour
         activeSceneName = "Lobby";
         PickupSpawner.itemsLog.Clear();
         PickupSpawner.tasksLog.Clear();
+
+        foreach (Client client in Server.clients.Values)
+        {
+            if (client.player != null)
+            {
+                client.player.activeTasks.Clear();
+                client.player.activeItem = null;
+            }
+        }
     }
 
     private IEnumerator SpawnSpecial(Player _player, int _delay = 60)
@@ -101,8 +126,8 @@ public class GameManager : MonoBehaviour
         _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
 
         tryStartGameActive = false;
-        ServerSend.GameStarted(maxPlayDuration);
-        StartCoroutine(GameTimeCountdown(maxPlayDuration));
+        ServerSend.GameStarted(gameRules.gameLength);
+        StartCoroutine(GameTimeCountdown(gameRules.gameLength));
     }
 
     private IEnumerator GameTimeCountdown(int _delay = 240)
@@ -143,7 +168,7 @@ public class GameManager : MonoBehaviour
                         {
                             _playerType = PlayerType.Hider;
                         }
-                        client.player.SetPlayerType(_playerType);
+                        client.player.SetPlayerType(_playerType, true);
                     }
                 }
 
@@ -218,5 +243,56 @@ public class GameManager : MonoBehaviour
         ServerSend.UnloadScene("Map_1");
 
         Debug.Log("Game Over, Hunters Win!");
+    }
+
+    public void GameRulesChanged(GameRules _gameRules)
+    {
+        gameRules = _gameRules;
+    }
+
+    public bool ClaimHiderColour(Color previousColour, Color newColour)
+    {
+        if (chosenHiderColours.ContainsKey(newColour))
+        {
+            if (!chosenHiderColours[newColour])
+            {
+                if (chosenHiderColours.ContainsKey(previousColour))
+                {
+                    if (chosenHiderColours[previousColour])
+                    {
+                        chosenHiderColours[previousColour] = false;
+                    }
+                }
+
+                return chosenHiderColours[newColour] = true;
+            }
+        }
+
+        return false;
+    }
+
+    public void UnclaimHiderColour(Color colour)
+    {
+        if (chosenHiderColours.ContainsKey(colour))
+        {
+            if (chosenHiderColours[colour])
+            {
+                chosenHiderColours[colour] = false;
+            }
+        }
+    }
+
+    public Color GetNextAvaliableColour()
+    {
+        foreach (Color colour in chosenHiderColours.Keys)
+        {
+            if (!chosenHiderColours[colour])
+            {
+                chosenHiderColours[colour] = true;
+                return colour;
+            }
+        }
+
+        throw new System.Exception("ERROR: No colours are left to choose from");
     }
 }

@@ -232,6 +232,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foot: {fileID: 9137595158127800340}
   IsGrounded: 0
+  activeCollisionCount: 0
+  lastCollisionLayer: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!1 &2675866047266033571
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +482,7 @@ MonoBehaviour:
   rootReturnSpeed: 10
   root: {fileID: 6856796757339971072}
   turnSpeed: 15
+  forwardForceMultipler: 1
   rightLeg: {fileID: 2919172654464300929}
   leftLeg: {fileID: 4235132065886321174}
   leftFootCollider: {fileID: 7156983642541161564}
@@ -490,15 +496,21 @@ MonoBehaviour:
   - {fileID: 6841714984496121421}
   - {fileID: 8909292605335433777}
   - {fileID: 8411262288676932208}
+  footstepType: 0
+  jumpForceMultiplier: 0
+  jumpCount: 0
   defaultFlopDuration: 3
   canKnockOutOthers: 0
+  flopForceMultiplier: 0
+  lastIsFlopping: 0
   flopCount: 0
   moveStageDuration: 0.1
   standingHeight: 1.63
   groundMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1536
   gravity: 5000
+  lastWalkedLayer: 
 --- !u!1 &6027035267375238829
 GameObject:
   m_ObjectHideFlags: 0
@@ -889,6 +901,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foot: {fileID: 5934092170071023492}
   IsGrounded: 0
+  activeCollisionCount: 0
+  lastCollisionLayer: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 1536
 --- !u!1 &8021574179871415059
 GameObject:
   m_ObjectHideFlags: 0

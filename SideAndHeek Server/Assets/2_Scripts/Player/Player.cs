@@ -34,15 +34,18 @@ public class Player : MonoBehaviour
     public List<BaseTask> activeTasks = new List<BaseTask>();
     public BaseItem activeItem;
 
+    [HideInInspector] public Color activeColour;
+
     private void Awake()
     {
         DontDestroyOnLoad(this);
     }
 
-    public void Initialize(int _id, string _username, Transform _transform)
+    public void Initialize(int _id, string _username, Transform _transform, Color _activeColour)
     {
         id = _id;
         username = _username;
+        activeColour = _activeColour;
 
         SpawnPlayer();
 
@@ -66,10 +69,15 @@ public class Player : MonoBehaviour
             {
                 movementController.OnJump();
             }
+
             if (otherInputs[1])
             {
-                movementController.OnFlop();
+                movementController.OnFlopKey(true);
+            } else
+            {
+                movementController.OnFlopKeyUp();
             }
+
             movementController.CustomFixedUpdate(inputSpeed);
             movementController.SetRotation(rotation);
         }
@@ -118,22 +126,35 @@ public class Player : MonoBehaviour
             movementController.OnCollisionWithOther(flopTime);
             if (turnToHunter)
             {
-                SetPlayerType(PlayerType.Hunter);
+                SetPlayerType(PlayerType.Hunter, false);
                 GameManager.instance.CheckForGameOver();
             }
         }
     }
 
-    public void SetPlayerType(PlayerType type)
+    public void SetPlayerType(PlayerType type, bool isFirstHunter)
     {
         playerType = type;
+
+        float speedMultiplier = 1;
+
         if (playerType == PlayerType.Hunter)
         {
-            movementController.forwardForceMultipler = GameManager.instance.hunterSpeedMultiplier;
-        } else
-        {
-            movementController.forwardForceMultipler = 1;
+            switch(GameManager.instance.gameRules.speedBoostType)
+            {
+                case SpeedBoostType.FirstHunter:
+                    if (isFirstHunter)
+                    {
+                        speedMultiplier = GameManager.instance.gameRules.speedMultiplier;
+                    }
+                    break;
+                case SpeedBoostType.AllHunters:
+                    speedMultiplier = GameManager.instance.gameRules.speedMultiplier;
+                    break;
+            }
         }
+
+        movementController.forwardForceMultipler = speedMultiplier;
 
         ServerSend.SetPlayerType(id, playerType, true);
     }

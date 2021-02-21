@@ -42,14 +42,24 @@ public class ServerHandle
 
     public static void SetPlayerColour(int _fromClient, Packet _packet)
     {
-        Color _colour = _packet.ReadColour();
+        Color _newColour = _packet.ReadColour(); 
         bool _isSeekerColour = _packet.ReadBool();
 
-        if (GameManager.instance.gameStarted) {
-            Debug.Log("");
+        bool isColourChangeAllowed = true;
+        if (!GameManager.instance.gameStarted && !_isSeekerColour)
+        {
+            Color previousColour = Server.clients[_fromClient].player.activeColour;
+            isColourChangeAllowed = GameManager.instance.ClaimHiderColour(previousColour, _newColour);
         }
 
-        ServerSend.SetPlayerColour(_fromClient, _colour, _isSeekerColour);
+        if (isColourChangeAllowed)
+        {
+            Server.clients[_fromClient].player.activeColour = _newColour;
+            ServerSend.SetPlayerColour(_fromClient, _newColour, _isSeekerColour);
+        } else
+        {
+            //todo: send error response - colour already chosen
+        }
     }
 
     public static void TryStartGame(int _fromClient, Packet _packet)
@@ -66,7 +76,16 @@ public class ServerHandle
 
     public static void ItemUsed(int _fromClient, Packet _packet)
     {
-        Debug.Log("Server Handle: ITEM USED");
         Server.clients[_fromClient].player.ItemUsed();
+    }
+
+    public static void GameRulesChanged(int _fromClient, Packet _packet)
+    {
+        GameRules gameRules = _packet.ReadGameRules();
+
+        GameManager.instance.GameRulesChanged(gameRules);
+        ServerSend.GameRulesChanged(_fromClient, gameRules);
+
+        Debug.Log($"Game Rules Changed by player with id {_fromClient}");
     }
 }

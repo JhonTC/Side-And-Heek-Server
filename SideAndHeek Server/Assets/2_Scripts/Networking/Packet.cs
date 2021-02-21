@@ -25,7 +25,8 @@ public enum ServerPackets
     gameOver,
     playerTeleported,
     taskProgressed,
-    taskComplete
+    taskComplete,
+    gameRulesChanged
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -36,8 +37,9 @@ public enum ClientPackets
     playerReady,
     tryStartGame,
     setPlayerColour,
-    taskSelected,
-    itemUsed
+    pickupSelected,
+    itemUsed,
+    gameRulesChanged
 }
 
 public class Packet : IDisposable
@@ -207,6 +209,18 @@ public class Packet : IDisposable
         Write(_value.g);
         Write(_value.b);
         Write(_value.a);
+    }
+
+    /// <summary>Adds a Colour to the packet.</summary>
+    /// <param name="_value">The Colour to add.</param>
+    public void Write(GameRules _value)
+    {
+        Write(_value.gameLength);
+        Write(_value.numberOfHunters);
+        Write((int)_value.catchType);
+        Write(_value.hidingTime);
+        Write((int)_value.speedBoostType);
+        Write(_value.speedMultiplier);
     }
     #endregion
 
@@ -399,6 +413,13 @@ public class Packet : IDisposable
     public Color ReadColour(bool _moveReadPos = true)
     {
         return new Color(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+    }
+
+    /// <summary>Reads GameRules from the packet.</summary>
+    /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+    public GameRules ReadGameRules(bool _moveReadPos = true)
+    {
+        return new GameRules(ReadInt(_moveReadPos), ReadInt(_moveReadPos), (CatchType)ReadInt(_moveReadPos), ReadInt(_moveReadPos), (SpeedBoostType)ReadInt(_moveReadPos), ReadFloat(_moveReadPos));
     }
     #endregion
 

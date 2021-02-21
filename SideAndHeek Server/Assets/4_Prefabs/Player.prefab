@@ -59,6 +59,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foot: {fileID: 8734516257975041142}
   IsGrounded: 0
+  activeCollisionCount: 0
+  lastCollisionTag: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!1 &533784928717415267
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,8 +271,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   username: 
-  controller: {fileID: 1049385129381049642}
+  isReady: 0
+  playerType: 0
+  movementController: {fileID: 0}
   test: 0
+  itemAmount: 0
+  maxItemCount: 100
+  activePlayerCollisionIds: 
+  isBodyActive: 0
+  bodyPrefab: {fileID: 0}
+  largeGroundColliderPrefab: {fileID: 0}
+  feetMidpoint: {fileID: 0}
+  activeTasks: []
+  activeItem:
+    item: {fileID: 0}
+  activeColour: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &1049385129381049642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,16 +300,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   standingForce: 90
   jumpingForce: 3000
-  footForwardForce: 150
+  maxFootForwardForce: 0
   footVerticalForce: 90
   flopForce: 3000
   footReturnSpeed: 5
-  rigidbody: {fileID: 1541200375114271762}
+  rootReturnSpeed: 0
+  root: {fileID: 0}
   turnSpeed: 5
+  forwardForceMultipler: 1
+  rightLeg: {fileID: 0}
+  leftLeg: {fileID: 0}
   leftFootCollider: {fileID: 7253830689290907710}
   rightFootCollider: {fileID: 8187885186095113122}
   largeGroundCollider: {fileID: 9026516247645577644}
+  feetMidpoint: {fileID: 0}
   isPlayerControlled: 1
+  bodyCollisionDetectors: []
+  footstepType: 0
+  jumpForceMultiplier: 0
+  jumpCount: 0
+  defaultFlopDuration: 3
+  canKnockOutOthers: 0
+  flopForceMultiplier: 0
+  lastIsFlopping: 0
+  flopCount: 0
   moveStageDuration: 0.1
   standingHeight: 1.63
   groundMask:
@@ -1192,6 +1224,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foot: {fileID: 6170599181648008166}
   IsGrounded: 0
+  activeCollisionCount: 0
+  lastCollisionTag: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!1 &7890678513608513351
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,6 +1561,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foot: {fileID: 9026516247645577647}
   IsGrounded: 0
+  activeCollisionCount: 0
+  lastCollisionTag: 
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!54 &9026516247645577647
 Rigidbody:
   m_ObjectHideFlags: 0

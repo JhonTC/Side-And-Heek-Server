@@ -7,6 +7,7 @@ public class FootCollisionHandler : MonoBehaviour
     public Rigidbody foot;
     public bool isGrounded { get { return activeCollisionCount > 0; } }
     public bool IsGrounded;
+
     public int activeCollisionCount = 0;
 
     private void Start()

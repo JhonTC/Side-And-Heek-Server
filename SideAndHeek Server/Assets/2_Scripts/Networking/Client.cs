@@ -53,7 +53,7 @@ public class Client
 
             stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
-            ServerSend.Welcome(id, "Welcome to the server");
+            ServerSend.Welcome(id, "Welcome to the server", GameManager.instance.gameRules, GameManager.instance.hiderColours);
 
             Server.clients[id].isConnected = true;
         }
@@ -198,7 +198,7 @@ public class Client
     {
         Transform _transform = LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(Server.GetPlayerCount() == 0);
         player = NetworkManager.instance.InstantiatePlayer(_transform.position);
-        player.Initialize(id, _playerName, _transform);
+        player.Initialize(id, _playerName, _transform, GameManager.instance.GetNextAvaliableColour());
 
         foreach (Client _client in Server.clients.Values)
         {
@@ -206,7 +206,7 @@ public class Client
             {
                 if (_client.id != id)
                 {
-                    ServerSend.SpawnPlayer(id, _client.player);
+                    ServerSend.SpawnPlayer(id, _client.player, _client.isHost);
                 }
             }
         }
@@ -215,7 +215,7 @@ public class Client
         {
             if (_client.player != null)
             {
-                ServerSend.SpawnPlayer(_client.id, player);
+                ServerSend.SpawnPlayer(_client.id, player, _client.isHost);
             }
         }
 
@@ -249,6 +249,11 @@ public class Client
 
             isConnected = false;
 
+            if (player.playerType != PlayerType.Hunter)
+            {
+                GameManager.instance.UnclaimHiderColour(player.activeColour); //todo: split up hider and hunter colours
+            }
+
             ThreadManager.ExecuteOnMainThread(() =>
             {
                 UnityEngine.Object.Destroy(player.gameObject);
@@ -264,6 +269,11 @@ public class Client
             Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has Disconnected.");
 
             isConnected = false;
+
+            if (player.playerType != PlayerType.Hunter)
+            {
+                GameManager.instance.UnclaimHiderColour(player.activeColour); //todo: split up hider and hunter colours
+            }
 
             /*ThreadManager.ExecuteOnMainThread(() =>
             {

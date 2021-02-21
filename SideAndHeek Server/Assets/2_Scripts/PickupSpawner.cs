@@ -66,7 +66,7 @@ public class PickupSpawner : MonoBehaviour
         }
     }*/
 
-    private IEnumerator SpawnPickup(int spawnDelay = 1)
+    private IEnumerator SpawnPickup(int spawnDelay = 10)
     {
         yield return new WaitForSeconds(spawnDelay);
 

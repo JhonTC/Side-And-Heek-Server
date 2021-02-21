@@ -33,7 +33,7 @@ public class SimplePlayerController : MonoBehaviour
     private Vector3 otherFootDisplacement;
 
     //private bool isWKeyPressed = false;
-    private bool isFlopKeyPressed = false;
+    private bool isFlopKeyDown = false;
     private FootCollisionHandler activeWalkingFoot;
     private FootCollisionHandler otherWalkingFoot;
 
@@ -98,9 +98,14 @@ public class SimplePlayerController : MonoBehaviour
 
     public int flopCount = 0;
 
-    public void OnFlop() { OnFlop(true, false, defaultFlopDuration); }
-    public void OnFlop(bool applyFlopForce, bool resetFlop, float duration)
+    public void OnFlopKey(bool flopKeyPressed) { OnFlop(true, false, defaultFlopDuration, flopKeyPressed); }
+    public void OnFlop(bool applyFlopForce, bool resetFlop, float duration, bool flopKeyPressed)
     {
+        if (flopKeyPressed)
+        {
+            isFlopKeyDown = true;
+        }
+
         if (resetFlop)
         {
             flopTimer = 0;
@@ -126,6 +131,11 @@ public class SimplePlayerController : MonoBehaviour
         }
 
         lastIsFlopping = isFlopping;
+    }
+
+    public void OnFlopKeyUp()
+    {
+        isFlopKeyDown = false;
     }
 
     [SerializeField] private float moveStageDuration;
@@ -154,11 +164,11 @@ public class SimplePlayerController : MonoBehaviour
     {
         if (!isFlopping)
         {
-            if (inputSpeed > 0)
-            {
+            //if (inputSpeed > 0)
+            //{
                 root.rotation = Quaternion.Lerp(root.rotation, _rotation, Time.fixedDeltaTime * turnSpeed);
                 lastRotation = _rotation;
-            }
+            //}
         }
     }
 
@@ -298,7 +308,7 @@ public class SimplePlayerController : MonoBehaviour
         } else
         {
             flopTimer += Time.fixedDeltaTime;
-            if (flopTimer >= maxFlopDuration)
+            if (flopTimer >= maxFlopDuration && !isFlopKeyDown)
             {
                 flopTimer = 0;
                 isFlopping = false;
@@ -370,7 +380,7 @@ public class SimplePlayerController : MonoBehaviour
     
     public void OnCollisionWithOther(float flopTime)
     {
-        OnFlop(false, true, flopTime);
+        OnFlop(false, true, flopTime, false);
     }
 
     public void SetupBodyCollisionHandlers(Player owner)

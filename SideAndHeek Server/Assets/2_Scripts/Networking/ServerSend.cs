@@ -57,26 +57,35 @@ public class ServerSend
     }
 
     #region Packets
-    public static void Welcome(int _toClient, string _msg)
+    public static void Welcome(int _toClient, string _msg, GameRules _gameRules, Color[] _hiderColours)
     {
         using (Packet _packet = new Packet((int)ServerPackets.welcome))
         {
             _packet.Write(_msg);
             _packet.Write(_toClient);
 
+            _packet.Write(_gameRules);
+            _packet.Write(_hiderColours.Length);
+            for (int i = 0; i < _hiderColours.Length; i++)
+            {
+                _packet.Write(_hiderColours[i]);
+            }
+
             SendTCPData(_toClient, _packet);
         }
     }
 
-    public static void SpawnPlayer(int _toClient, Player _player)
+    public static void SpawnPlayer(int _toClient, Player _player, bool _isHost)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
             _packet.Write(_player.isReady);
+            _packet.Write(_isHost);
             _packet.Write(_player.transform.position);
             _packet.Write(_player.transform.rotation);
+            _packet.Write(_player.activeColour);
 
             SendTCPData(_toClient, _packet);
         }
@@ -293,7 +302,7 @@ public class ServerSend
             _packet.Write(_colour);
             _packet.Write(_isSeekerColour);
 
-            SendTCPDataToAll(_playerId, _packet);
+            SendTCPDataToAll(_packet);
         }
     }
 
@@ -358,6 +367,17 @@ public class ServerSend
             _packet.Write((int)_code);
 
             SendTCPData(_playerId, _packet);
+        }
+    }
+
+    public static void GameRulesChanged(int _playerId, GameRules gameRules)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.gameRulesChanged))
+        {
+            _packet.Write(_playerId);
+            _packet.Write(gameRules);
+
+            SendTCPDataToAll(_playerId, _packet);
         }
     }
 

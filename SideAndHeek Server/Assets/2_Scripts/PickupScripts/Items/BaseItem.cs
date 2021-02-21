@@ -27,7 +27,7 @@ public class SuperFlop : BaseItem
     public override void ItemUsed()
     {
         owner.movementController.flopForceMultiplier = item.power;
-        owner.movementController.OnFlop();
+        owner.movementController.OnFlopKey(false);
     }
 }
 
