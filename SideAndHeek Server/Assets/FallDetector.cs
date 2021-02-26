@@ -9,7 +9,14 @@ public class FallDetector : MonoBehaviour
         if (other.tag == "BodyCollider")
         {
             Player player = other.GetComponent<BodyCollisionDetection>().player;
-            player.TeleportPlayer(LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(true));
+
+            string activeSceneName = GameManager.instance.activeSceneName;
+            if (player.playerType == PlayerType.Hunter)
+            {
+                activeSceneName = GameManager.instance.activeHunterSceneName;
+            }
+
+            player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
 
             Debug.Log(player.username + " fell out of the map.");
         }

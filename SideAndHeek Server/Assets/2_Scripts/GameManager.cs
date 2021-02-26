@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private int specialSpawnCount = 0;
 
     public string activeSceneName = "Lobby";
+    public string activeHunterSceneName = "Lobby";
 
     //public int maxPlayDuration = 240;
     public int currentTime = 0;
@@ -98,6 +99,8 @@ public class GameManager : MonoBehaviour
     private void OnLevelFinishedUnloading(Scene _scene)
     {
         activeSceneName = "Lobby";
+        activeHunterSceneName = activeSceneName;
+
         PickupSpawner.itemsLog.Clear();
         PickupSpawner.tasksLog.Clear();
 
@@ -122,8 +125,9 @@ public class GameManager : MonoBehaviour
 
             specialSpawnCount--;
         }
+        activeHunterSceneName = activeSceneName;
 
-        _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
+        _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeHunterSceneName).GetNextSpawnpoint(true));
 
         tryStartGameActive = false;
         ServerSend.GameStarted(gameRules.gameLength);
