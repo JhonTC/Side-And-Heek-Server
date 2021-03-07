@@ -29,8 +29,10 @@ public class BodyCollisionDetection : MonoBehaviour
                         {
                             player.activePlayerCollisionIds.Add(other.id);
 
-                            other.OnCollisionWithOther(5f, true);
-                            //send caught to other player
+                            if (GameManager.instance.gameRules.catchType == CatchType.OnTouch || (GameManager.instance.gameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
+                            {
+                                other.OnCollisionWithOther(5f, true);
+                            }
                         }
                     }
                 }
@@ -80,8 +82,10 @@ public class BodyCollisionDetection : MonoBehaviour
                             {
                                 player.activePlayerCollisionIds.Add(other.id);
 
-                                other.OnCollisionWithOther(5f, true);
-                                //send caught to other player
+                                if (GameManager.instance.gameRules.catchType == CatchType.OnTouch || (GameManager.instance.gameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
+                                {
+                                    other.OnCollisionWithOther(5f, true);
+                                }
                             }
                         }
                     }

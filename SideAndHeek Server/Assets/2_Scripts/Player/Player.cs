@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 
     private float moveSpeed = 5f / Constants.TICKS_PER_SEC;
 
-    private float inputSpeed = 0;
+    public float inputSpeed = 0;
     private bool[] otherInputs = { false, false };
     private Quaternion rotation = Quaternion.identity;
 
@@ -84,6 +84,7 @@ public class Player : MonoBehaviour
 
         ServerSend.PlayerPositions(this);
         ServerSend.PlayerRotations(this);
+        ServerSend.PlayerState(this);
     }
 
     public void SetReady(bool _isReady)
@@ -179,6 +180,11 @@ public class Player : MonoBehaviour
             Destroy(movementController.largeGroundCollider.gameObject);
             Destroy(movementController.gameObject);
         }
+    }
+
+    public void PickupSpawned(int code)
+    {
+        PickupManager.instance.SpawnPickup(PickupType.Item, id, code, transform.position, transform.rotation);
     }
 
     public void PickupPickedUp(BasePickup pickup)

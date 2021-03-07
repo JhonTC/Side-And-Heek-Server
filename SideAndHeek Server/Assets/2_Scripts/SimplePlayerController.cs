@@ -60,7 +60,7 @@ public class SimplePlayerController : MonoBehaviour
         flopForceMultiplier = 1;
     }
 
-    bool isJumping= false;
+    public bool isJumping= false;
     float jumpTimer = 0f;
     float minJumpDuration = 0.5f;
     [HideInInspector] public float jumpForceMultiplier;
@@ -88,7 +88,7 @@ public class SimplePlayerController : MonoBehaviour
         }
     }
 
-    bool isFlopping = false;
+    public bool isFlopping = false;
     float flopTimer = 0f;
     float maxFlopDuration = 3f;
     public float defaultFlopDuration = 3f;
@@ -103,7 +103,9 @@ public class SimplePlayerController : MonoBehaviour
     {
         if (flopKeyPressed)
         {
-            isFlopKeyDown = true;
+            if (GameManager.instance.gameRules.continuousFlop) {
+                isFlopKeyDown = true;
+            }
         }
 
         if (resetFlop)

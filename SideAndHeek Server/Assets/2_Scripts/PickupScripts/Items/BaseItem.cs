@@ -46,3 +46,18 @@ public class SuperJump : BaseItem
         owner.movementController.OnJump();
     }
 }
+
+public class JellyBombItem : BaseItem
+{
+    Player owner;
+
+    public JellyBombItem(ItemPickup _item, Player _owner) : base(_item)
+    {
+        owner = _owner;
+    }
+
+    public override void ItemUsed()
+    {
+        PickupManager.instance.SpawnPickup(PickupType.Item, owner.id, (int)item.itemCode, owner.transform.position, owner.transform.rotation);
+    }
+}

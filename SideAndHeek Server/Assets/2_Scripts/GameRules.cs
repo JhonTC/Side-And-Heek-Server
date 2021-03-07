@@ -5,19 +5,29 @@ using UnityEngine;
 [System.Serializable]
 public class GameRules
 {
-    public int gameLength;                          
+    [Range(60, 360)]
+    public int gameLength;
 
     [HideInInspector] public int numberOfHunters;                     //* - requires more hunter spawns
-    public CatchType catchType;                     
-    public int hidingTime;                          
+    public CatchType catchType;
+    [Range(0, 60)]
+    public int hidingTime;
 
-    public SpeedBoostType speedBoostType;           
+    public SpeedBoostType speedBoostType;
+    [Range(0.8f, 1.2f)]
+    public float speedMultiplier;
 
-    public float speedMultiplier;                   
-    //private float maxSpeedMultiplier = 1.25f;
-    //private float minSpeedMultiplier = 0.75f;
+    public HiderFallRespawnType fallRespawnType;
+    public FallRespawnLocation fallRespawnLocation;
 
-    public GameRules(int _gameLength = 180, int _numberOfHunters = 1, CatchType _catchType = CatchType.OnTouch, int _hidingTime = 20, SpeedBoostType _speedBoostType = SpeedBoostType.FirstHunter, float _speedMultiplier = 1.1f)
+    public bool continuousFlop;
+
+
+    public GameRules(int _gameLength = 180, 
+        int _numberOfHunters = 1, CatchType _catchType = CatchType.OnTouch, int _hidingTime = 20, 
+        SpeedBoostType _speedBoostType = SpeedBoostType.FirstHunter, float _speedMultiplier = 1.1f,
+        HiderFallRespawnType _fallRespawnType = HiderFallRespawnType.Hider, FallRespawnLocation _fallRespawnLocation = FallRespawnLocation.Centre,
+        bool _continuousFlop = false)
     {
         gameLength = _gameLength;
 
@@ -27,6 +37,11 @@ public class GameRules
 
         speedBoostType = _speedBoostType;
         speedMultiplier = _speedMultiplier; // Mathf.Clamp(_speedMultiplier, minSpeedMultiplier, maxSpeedMultiplier);
+
+        fallRespawnType = _fallRespawnType;
+        fallRespawnLocation = _fallRespawnLocation;
+
+        continuousFlop = _continuousFlop;
     }
 }
 
@@ -41,4 +56,17 @@ public enum SpeedBoostType
     FirstHunter,
     AllHunters,
     None
+}
+
+public enum FallRespawnLocation
+{
+    Centre,
+    Random
+}
+
+public enum HiderFallRespawnType
+{
+    Hider,
+    Hunter,
+    Spectator
 }

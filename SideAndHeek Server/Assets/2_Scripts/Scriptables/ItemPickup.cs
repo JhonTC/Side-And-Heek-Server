@@ -15,4 +15,5 @@ public enum ItemCode
     NULL_ITEM,
     SuperFlop,
     SuperJump,
+    JellyBomb
 }

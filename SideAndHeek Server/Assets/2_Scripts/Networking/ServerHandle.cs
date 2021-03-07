@@ -69,9 +69,9 @@ public class ServerHandle
 
     public static void PickupSelected(int _fromClient, Packet _packet)
     {
-        int _spawnerId = _packet.ReadInt();
+        int _pickupId = _packet.ReadInt();
 
-        PickupSpawner.spawners[_spawnerId].PickupPickedUp(_fromClient);
+        PickupManager.pickups[_pickupId].PickupPickedUp(_fromClient);
     }
 
     public static void ItemUsed(int _fromClient, Packet _packet)

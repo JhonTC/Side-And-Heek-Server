@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        gameRules = new GameRules();
+        //gameRules = new GameRules();
 
         foreach (Color colour in hiderColours)
         {
@@ -101,8 +101,8 @@ public class GameManager : MonoBehaviour
         activeSceneName = "Lobby";
         activeHunterSceneName = activeSceneName;
 
-        PickupSpawner.itemsLog.Clear();
-        PickupSpawner.tasksLog.Clear();
+        PickupManager.itemsLog.Clear();
+        PickupManager.tasksLog.Clear();
 
         foreach (Client client in Server.clients.Values)
         {

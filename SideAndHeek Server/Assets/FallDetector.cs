@@ -14,9 +14,15 @@ public class FallDetector : MonoBehaviour
             if (player.playerType == PlayerType.Hunter)
             {
                 activeSceneName = GameManager.instance.activeHunterSceneName;
+            } else
+            {
+                if (GameManager.instance.gameRules.fallRespawnType == HiderFallRespawnType.Hunter)
+                {
+                    player.SetPlayerType(PlayerType.Hunter, false);
+                }
             }
 
-            player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(true));
+            player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(GameManager.instance.gameRules.fallRespawnLocation == FallRespawnLocation.Centre));
 
             Debug.Log(player.username + " fell out of the map.");
         }

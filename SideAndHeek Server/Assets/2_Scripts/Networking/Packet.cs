@@ -10,6 +10,7 @@ public enum ServerPackets
     spawnPlayer,
     playerPosition,
     playerRotation,
+    playerState,
     playerDisconnected,
     createItemSpawner,
     itemSpawned,
@@ -216,11 +217,18 @@ public class Packet : IDisposable
     public void Write(GameRules _value)
     {
         Write(_value.gameLength);
+
         Write(_value.numberOfHunters);
         Write((int)_value.catchType);
         Write(_value.hidingTime);
+
         Write((int)_value.speedBoostType);
         Write(_value.speedMultiplier);
+
+        Write((int)_value.fallRespawnType);
+        Write((int)_value.fallRespawnLocation);
+
+        Write(_value.continuousFlop);
     }
     #endregion
 
@@ -419,7 +427,11 @@ public class Packet : IDisposable
     /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
     public GameRules ReadGameRules(bool _moveReadPos = true)
     {
-        return new GameRules(ReadInt(_moveReadPos), ReadInt(_moveReadPos), (CatchType)ReadInt(_moveReadPos), ReadInt(_moveReadPos), (SpeedBoostType)ReadInt(_moveReadPos), ReadFloat(_moveReadPos));
+        return new GameRules(ReadInt(_moveReadPos), 
+            ReadInt(_moveReadPos), (CatchType)ReadInt(_moveReadPos), ReadInt(_moveReadPos), 
+            (SpeedBoostType)ReadInt(_moveReadPos), ReadFloat(_moveReadPos), 
+            (HiderFallRespawnType)ReadInt(_moveReadPos), (FallRespawnLocation)ReadInt(_moveReadPos), 
+            ReadBool(_moveReadPos));
     }
     #endregion
 

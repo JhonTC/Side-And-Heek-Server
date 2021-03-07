@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4404309366411333443}
-  - component: {fileID: 4404309366411333500}
   - component: {fileID: 5428407159845291866}
   m_Layer: 0
   m_Name: PickupSpawner
@@ -32,19 +31,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4404309366411333500
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4404309366411333442}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5428407159845291866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,12 +44,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerId: 0
-  hasItem: 0
+  hasPickup: 0
   pickupType: 0
-  activeTaskDetails:
-    task: {fileID: 0}
-    numberOfUses: 0
-  activeItemDetails:
-    item: {fileID: 0}
-    numberOfUses: 0
   maxSpawnCount: 0
+  pickupPrefab: {fileID: 5727015819816308131, guid: aa552f0b4bc6d7c488c27ffb725ccf68,
+    type: 3}
+  activePickup: {fileID: 0}
