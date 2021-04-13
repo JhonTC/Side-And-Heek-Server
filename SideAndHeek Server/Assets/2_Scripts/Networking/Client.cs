@@ -221,27 +221,11 @@ public class Client
 
         foreach (PickupSpawner _pickupSpawner in PickupSpawner.spawners.Values)
         {
-            ServerSend.CreatePickupSpawner(_pickupSpawner.spawnerId, _pickupSpawner.transform.position, _pickupSpawner.pickupType, id);
+            ServerSend.CreatePickupSpawner(_pickupSpawner.spawnerId, _pickupSpawner.transform.position, id);
         }
 
-        foreach (Pickup _pickup in PickupManager.pickups.Values)
+        foreach (Pickup _pickup in PickupHandler.pickups.Values)
         {
-            BasePickup basePickup = null;
-            if (_pickup.pickupType == PickupType.Task)
-            {
-                if (_pickup.activeTaskDetails != null)
-                {
-                    basePickup = _pickup.activeTaskDetails.task;
-                }
-            }
-            else if (_pickup.pickupType == PickupType.Item)
-            {
-                if (_pickup.activeItemDetails != null)
-                {
-                    basePickup = _pickup.activeItemDetails.item;
-                }
-            }
-
             int spawnerId = 0;
             if (_pickup.spawner != null) {
                 spawnerId = _pickup.spawner.spawnerId;
@@ -249,7 +233,7 @@ public class Client
             {
 
             }
-            ServerSend.PickupSpawned(_pickup.pickupId, _pickup.spawner != null, spawnerId, basePickup, _pickup.transform.position, _pickup.transform.rotation);
+            ServerSend.PickupSpawned(_pickup.objectId, _pickup.spawner != null, spawnerId, _pickup.activeItemDetails.pickupSO, _pickup.transform.position, _pickup.transform.rotation);
         }
     }
 

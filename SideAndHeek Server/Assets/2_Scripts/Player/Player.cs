@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     private float moveSpeed = 5f / Constants.TICKS_PER_SEC;
 
     public float inputSpeed = 0;
-    private bool[] otherInputs = { false, false };
+    private bool[] otherInputs = { false, false, false};
     private Quaternion rotation = Quaternion.identity;
 
     [HideInInspector] public SimplePlayerController movementController;
@@ -26,13 +26,13 @@ public class Player : MonoBehaviour
     public List<int> activePlayerCollisionIds = new List<int>();
 
     public bool isBodyActive = false;
+    public bool isAcceptingInput = true;
 
     [SerializeField] private SimplePlayerController bodyPrefab;
     [SerializeField] private FootCollisionHandler largeGroundColliderPrefab;
     [SerializeField] private Transform feetMidpoint;
 
-    public List<BaseTask> activeTasks = new List<BaseTask>();
-    public BaseItem activeItem;
+    public BasePickup activePickup;
 
     [HideInInspector] public Color activeColour;
 
@@ -53,17 +53,9 @@ public class Player : MonoBehaviour
         //movementController.root.rotation = _transform.rotation;
     }
 
-    private void Update()
-    {
-        for (int i = 0; i < activeTasks.Count; i++)
-        {
-            activeTasks[i].UpdateTask();
-        }
-    }
-
     public void FixedUpdate()
     {
-        if (isBodyActive)
+        if (isBodyActive && isAcceptingInput)
         {
             if (otherInputs[0])
             {
@@ -78,6 +70,7 @@ public class Player : MonoBehaviour
                 movementController.OnFlopKeyUp();
             }
 
+            movementController.isSneaking = otherInputs[2];
             movementController.CustomFixedUpdate(inputSpeed);
             movementController.SetRotation(rotation);
         }
@@ -103,12 +96,14 @@ public class Player : MonoBehaviour
 
     public bool AttemptPickupItem()
     {
-        if (itemAmount >= maxItemCount)
+        if (activePickup != null)
         {
-            return false;
+            if (activePickup.pickupSO != null)
+            {
+                return false;
+            }
         }
 
-        itemAmount++;
         return true;
     }
 
@@ -184,58 +179,27 @@ public class Player : MonoBehaviour
 
     public void PickupSpawned(int code)
     {
-        PickupManager.instance.SpawnPickup(PickupType.Item, id, code, transform.position, transform.rotation);
+        NetworkObjectsManager.instance.pickupHandler.SpawnPickup(id, code, transform.position, transform.rotation);
     }
 
-    public void PickupPickedUp(BasePickup pickup)
+    public void PickupPickedUp(PickupSO pickup)
     {
-        if (pickup.pickupType == PickupType.Task)
-        {
-            TaskPickup taskPickup = pickup as TaskPickup;
-            activeTasks.Add(PickupManager.instance.HandleTask(taskPickup, this));
-        } else if (pickup.pickupType == PickupType.Item)
-        {
-            ItemPickup itemPickup = pickup as ItemPickup;
-            activeItem = PickupManager.instance.HandleItem(itemPickup, this);
-        }
+        activePickup = NetworkObjectsManager.instance.pickupHandler.HandlePickup(pickup, this);
     }
 
-    public void TaskProgressed(TaskCode code, float progress)
+    public void PickupUsed()
     {
-        ServerSend.TaskProgressed(id, code, progress);
-    }
-
-    public void TaskComplete(BaseTask task)
-    {
-        if (activeTasks.Contains(task))
-        {
-            ServerSend.TaskComplete(id, task.task.taskCode);
-            activeTasks.Remove(task);
-        }
-    }
-
-    public void ItemUsed()
-    {
-        if (activeItem != null)
+        if (activePickup != null)
         {
             Debug.Log("Item Used");
-            activeItem.ItemUsed();
-            activeItem = null;
+            activePickup.PickupUsed();
         }
     }
 
-    private BaseTask GetActiveTaskWithCode(TaskCode code)
+    public void ItemUseComplete()
     {
-        foreach (BaseTask task in activeTasks)
-        {
-            TaskPickup taskPickup = task.task as TaskPickup;
-            if (task.task.taskCode == code)
-            {
-                return task;
-            }
-        }
-
-        return null;
+        activePickup = null;
+        ServerSend.ItemUseComplete(id);
     }
 }
 
@@ -245,4 +209,10 @@ public enum PlayerType
     Hunter,
     Hider,
     Spectator
+}
+
+public enum MaterialType
+{
+    Default = 0,
+    Invisible
 }

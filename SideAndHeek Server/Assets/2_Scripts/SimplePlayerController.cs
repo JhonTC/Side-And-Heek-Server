@@ -9,19 +9,23 @@ public class SimplePlayerController : MonoBehaviour
 {
     [SerializeField] private float standingForce;
     [SerializeField] private float jumpingForce;
-    [SerializeField] private float maxFootForwardForce;
+    [SerializeField] private float walkFootForwardForce;
+    [SerializeField] private float sneakFootForwardForce;
     [SerializeField] private float footVerticalForce;
     [SerializeField] private float flopForce;
     [SerializeField] private float footReturnSpeed;
     [SerializeField] private float rootReturnSpeed;
+
+    public bool useGravity = true;
     [HideInInspector] public Rigidbody root;
 
     [SerializeField] private float turnSpeed;
 
-    public float forwardForceMultipler = 1;
+    public float maxForwardForceMultipler = 1;
+    [HideInInspector] public float forwardForceMultipler = 1;
     
-    public Transform rightLeg;
-    public Transform leftLeg;
+    public Rigidbody rightLeg;
+    public Rigidbody leftLeg;
     public FootCollisionHandler leftFootCollider;
     public FootCollisionHandler rightFootCollider;
     [HideInInspector] public FootCollisionHandler largeGroundCollider;
@@ -56,8 +60,10 @@ public class SimplePlayerController : MonoBehaviour
         otherFootDisplacement = rightFootInitialDisplacement;
 
         lastRotation = root.rotation;
+
         jumpForceMultiplier = 1;
         flopForceMultiplier = 1;
+        forwardForceMultipler = maxForwardForceMultipler;
     }
 
     public bool isJumping= false;
@@ -137,8 +143,13 @@ public class SimplePlayerController : MonoBehaviour
 
     public void OnFlopKeyUp()
     {
-        isFlopKeyDown = false;
+        if (isFlopKeyDown)
+        {
+            isFlopKeyDown = false;
+        }
     }
+
+    [HideInInspector] public bool isSneaking = false;
 
     [SerializeField] private float moveStageDuration;
     float moveStageTimer = 0f;
@@ -154,7 +165,7 @@ public class SimplePlayerController : MonoBehaviour
 
     [SerializeField] private float standingHeight;
     [SerializeField] private LayerMask groundMask;
-    [SerializeField] private float gravity;
+    public float gravity;
     private Quaternion lastRotation;
 
     private bool toggleWalkingFoot = false;
@@ -215,7 +226,13 @@ public class SimplePlayerController : MonoBehaviour
                         Vector3 forward = root.transform.forward;
                         forward.y = 0;
 
-                        force = forward * (maxFootForwardForce * forwardForceMultipler * inputSpeed) + Vector3.up * footVerticalForce;
+                        float currentFootForwardForce = walkFootForwardForce;
+                        if (isSneaking)
+                        {
+                            currentFootForwardForce = sneakFootForwardForce;
+                        }
+
+                        force = forward * (currentFootForwardForce * forwardForceMultipler * inputSpeed) + Vector3.up * footVerticalForce;
 
                         otherWalkingFoot.foot.position = Vector3.Lerp(otherWalkingFoot.foot.position, root.transform.position - activeFootDisplacement, footReturnSpeed * Time.fixedDeltaTime);
                     }
@@ -317,19 +334,22 @@ public class SimplePlayerController : MonoBehaviour
             }
         }
 
-        float tempGravity = gravity;
-        if (inputSpeed > 0 || isFlopping || isJumping)
+        if (useGravity)
         {
-            tempGravity *= 0.5f;
+            float tempGravity = gravity;
+            if (inputSpeed > 0 || isFlopping || isJumping)
+            {
+                tempGravity *= 0.5f;
+            }
+
+            Vector3 rightDisplacement = root.position - (root.transform.right * leftFootInitialDisplacement.x);
+            Vector3 forcePosition = new Vector3(rightDisplacement.x, leftFootCollider.foot.position.y, rightDisplacement.z);
+            leftFootCollider.foot.AddForceAtPosition(Vector3.down * tempGravity * Time.fixedDeltaTime, forcePosition);
+
+            rightDisplacement = root.position - (root.transform.right * rightFootInitialDisplacement.x);
+            forcePosition = new Vector3(rightDisplacement.x, rightFootCollider.foot.position.y, rightDisplacement.z);
+            rightFootCollider.foot.AddForceAtPosition(Vector3.down * tempGravity * Time.fixedDeltaTime, forcePosition);
         }
-
-        Vector3 rightDisplacement = root.position - (root.transform.right * leftFootInitialDisplacement.x);
-        Vector3 forcePosition = new Vector3(rightDisplacement.x, leftFootCollider.foot.position.y, rightDisplacement.z);
-        leftFootCollider.foot.AddForceAtPosition(Vector3.down * tempGravity * Time.fixedDeltaTime, forcePosition);
-
-        rightDisplacement = root.position - (root.transform.right * rightFootInitialDisplacement.x);
-        forcePosition = new Vector3(rightDisplacement.x, rightFootCollider.foot.position.y, rightDisplacement.z);
-        rightFootCollider.foot.AddForceAtPosition(Vector3.down * tempGravity * Time.fixedDeltaTime, forcePosition);
 
         if (toggleWalkingFoot && largeGroundCollider.isGrounded)
         {

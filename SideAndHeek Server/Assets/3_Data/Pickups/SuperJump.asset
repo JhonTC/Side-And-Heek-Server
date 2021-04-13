@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83824e7b59396bb45bebbeac35e86e0f, type: 3}
+  m_Name: SuperJump
+  m_EditorClassIdentifier: 
+  pickupName: Super Jump
+  pickupContent: 'Jump force: 2x'
+  pickupIcon: {fileID: 0}
+  pickupLevel: {fileID: 11400000, guid: 765344ff287344943a170ffcd9c90f64, type: 2}
+  pickupCode: 2
+  power: 2

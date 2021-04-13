@@ -224,6 +224,7 @@ MonoBehaviour:
   - {r: 0.9254902, g: 0.9254902, b: 0.9254902, a: 1}
   - {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
   - {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 1}
+  hunterColour: {r: 0.94509804, g: 0.3254902, b: 0.27450982, a: 1}
 --- !u!4 &217739930
 Transform:
   m_ObjectHideFlags: 0
@@ -250,9 +251,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7b0a688fe23cd74696242131374fb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPickupId: 0
   pickupPrefab: {fileID: 5727015819816308131, guid: aa552f0b4bc6d7c488c27ffb725ccf68,
     type: 3}
+  itemDetails:
+  - itemPrefab: {fileID: 2424058124560369487, guid: 35df8d20612d7d94f99c2d7da3a87a65,
+      type: 3}
+    pickupCode: 3
 --- !u!1001 &394274069
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -344,6 +348,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PickupSpawner (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -598,158 +607,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c6893964d3d6345be3af906ca913ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &752223875
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 752223879}
-  - component: {fileID: 752223880}
-  - component: {fileID: 752223881}
-  - component: {fileID: 752223878}
-  - component: {fileID: 752223877}
-  - component: {fileID: 752223876}
-  m_Layer: 0
-  m_Name: Sphere
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!135 &752223876
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &752223877
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
---- !u!33 &752223878
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &752223879
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1000, y: 22, z: -17}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &752223880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfbef397447ce1546bd8babfca3763f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosionRadius: 7
-  explosionSpeed: 80
-  explosionCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  explosionForce: 500
-  throwForceMultiplier: 1
-  lifeDuration: 5
---- !u!54 &752223881
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752223875}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &769237907
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,6 +761,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PickupSpawner (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -1274,6 +1136,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PickupSpawner (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1353,6 +1220,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PickupSpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}

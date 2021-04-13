@@ -4,27 +4,26 @@ using UnityEngine;
 
 public class SpawnableObject : MonoBehaviour
 {
-    public int pickupId;
+    public int objectId;
     public int creatorId;
-    public PickupType pickupType = PickupType.NULL;
+    public bool sendMovement;
 
-    public TaskDetails activeTaskDetails;
-    public ItemDetails activeItemDetails;
+    public PickupDetails activeItemDetails;
 
-    public void Init(int _creatorId, PickupType _pickupType, int _code, bool _sendMovement)
+    public void Init(int _id, int _creatorId, int _code, bool _sendMovement)
     {
-        pickupId = PickupManager.pickups.Count + 1;
+        objectId = _id;
         creatorId = _creatorId;
+        sendMovement = _sendMovement;
 
-        pickupType = _pickupType;
+        activeItemDetails = GameManager.instance.collection.GetPickupByCode((PickupCode)_code);
+    }
 
-        if (pickupType == PickupType.Task)
+    protected virtual void FixedUpdate()
+    {
+        if (sendMovement)
         {
-            activeTaskDetails = GameManager.instance.collection.GetTaskByCode((TaskCode)_code);
-        }
-        else if (pickupType == PickupType.Item)
-        {
-            activeItemDetails = GameManager.instance.collection.GetItemByCode((ItemCode)_code);
+            ServerSend.ItemTransform(objectId, transform.position, transform.rotation, transform.localScale);
         }
     }
 }

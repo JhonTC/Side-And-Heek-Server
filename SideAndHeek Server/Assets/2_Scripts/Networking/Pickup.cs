@@ -6,52 +6,44 @@ public class Pickup : SpawnableObject
 {
     public PickupSpawner spawner;
 
-    public void Init(PickupSpawner _spawner, int _creatorId, PickupType _pickupType, int _code, bool _sendMovement)
+    public void Init(int _pickupId, PickupSpawner _spawner, int _creatorId, int _code)
     {
-        base.Init(_creatorId, _pickupType, _code, true);
+        base.Init(_pickupId, _creatorId, _code, false);
 
         spawner = _spawner;
     }
 
-    /*private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (hasItem && other.CompareTag("BodyCollider"))
+        if (activeItemDetails != null && other.CompareTag("BodyCollider"))
         {
             Player _player = other.GetComponentInParent<Player>();
-            if (_player.AttemptPickupItem())
+            if (_player.playerType == activeItemDetails.pickupSO.userType || activeItemDetails.pickupSO.userType == PlayerType.Default)
             {
-                ItemPickedUp(_player.id);
+                if (_player.AttemptPickupItem())
+                {
+                    PickupPickedUp(_player.id);
+                }
             }
         }
-    }*/
+    }
 
     public void PickupPickedUp(int _byPlayer)
     {
         int code = 0;
-        BasePickup pickup = null;
-        if (pickupType == PickupType.Task)
+        PickupSO pickup = null;
+        if (activeItemDetails != null)
         {
-            if (activeTaskDetails != null)
-            {
-                pickup = activeTaskDetails.task;
-                code = (int)activeTaskDetails.task.taskCode;
-            }
-        }
-        else if (pickupType == PickupType.Item)
-        {
-            if (activeItemDetails != null)
-            {
-                pickup = activeItemDetails.item;
-                code = (int)activeItemDetails.item.itemCode;
-            }
+            pickup = activeItemDetails.pickupSO;
+            code = (int)activeItemDetails.pickupSO.pickupCode;
         }
 
         Server.clients[_byPlayer].player.PickupPickedUp(pickup);
-        ServerSend.PickupPickedUp(pickupId, _byPlayer, pickupType, code);
+        ServerSend.PickupPickedUp(objectId, _byPlayer, code);
 
-        if (PickupManager.pickups.ContainsKey(pickupId))
+        if (PickupHandler.pickups.ContainsKey(objectId))
         {
-            PickupManager.pickups.Remove(pickupId);
+            PickupHandler.pickups.Remove(objectId);
         }
 
         if (spawner != null)

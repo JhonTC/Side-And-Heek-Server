@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     public Color defaultColour;
 
     public Color[] hiderColours;
+    public Color hunterColour;
+
     public Dictionary<Color, bool> chosenHiderColours = new Dictionary<Color, bool>();
 
     private void Awake()
@@ -101,15 +103,13 @@ public class GameManager : MonoBehaviour
         activeSceneName = "Lobby";
         activeHunterSceneName = activeSceneName;
 
-        PickupManager.itemsLog.Clear();
-        PickupManager.tasksLog.Clear();
+        PickupHandler.pickupLog.Clear();
 
         foreach (Client client in Server.clients.Values)
         {
             if (client.player != null)
             {
-                client.player.activeTasks.Clear();
-                client.player.activeItem = null;
+                client.player.activePickup = null;
             }
         }
     }

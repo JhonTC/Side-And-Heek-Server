@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "new task",menuName = "Data/Task")]
-public class TaskPickup : BasePickup
+public class TaskPickup : PickupSO
 {
     public TaskCode taskCode;
 

@@ -5,61 +5,32 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "new pickup collection", menuName = "Data/Pickup Collection")]
 public class PickupCollection : ScriptableObject
 {
-    public List<TaskDetails> taskDetails;
-    public List<ItemDetails> itemDetails;
+    public List<PickupDetails> pickupDetails;
 
-    public TaskDetails GetTaskByCode(TaskCode code)
+    public PickupDetails GetPickupByCode(PickupCode code)
     {
-        foreach (TaskDetails taskDetails in taskDetails)
+        foreach (PickupDetails pickupDetails in pickupDetails)
         {
-            TaskPickup taskPickup = taskDetails.task as TaskPickup;
-
-            if (taskPickup.taskCode == code)
+            if (pickupDetails.pickupSO.pickupCode == code)
             {
-                return taskDetails;
+                return pickupDetails;
             }
         }
 
         throw new System.Exception($"ERROR: No task exists with code {code}.");
     }
 
-    public ItemDetails GetItemByCode(ItemCode code)
+
+    public PickupDetails GetRandomItem()
     {
-        foreach (ItemDetails itemDetails in itemDetails)
-        {
-            ItemPickup itemPickup = itemDetails.item as ItemPickup;
-
-            if (itemPickup.itemCode == code)
-            {
-                return itemDetails;
-            }
-        }
-
-        throw new System.Exception($"ERROR: No task exists with code {code}.");
-    }
-
-    public TaskDetails GetRandomTask()
-    {
-        return taskDetails[Random.Range(0, taskDetails.Count)];
-    }
-
-    public ItemDetails GetRandomItem()
-    {
-        return itemDetails[Random.Range(0, itemDetails.Count)];
+        return pickupDetails[Random.Range(0, pickupDetails.Count)];
     }
 }
 
 [System.Serializable]
-public class TaskDetails
+public class PickupDetails
 {
-    public TaskPickup task;
-    public int numberOfUses;
-}
-
-[System.Serializable]
-public class ItemDetails
-{
-    public ItemPickup item;
+    public PickupSO pickupSO;
     public int numberOfUses;
 }
 

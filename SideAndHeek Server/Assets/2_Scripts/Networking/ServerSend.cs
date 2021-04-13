@@ -140,6 +140,7 @@ public class ServerSend
 
                 _packet.Write(_player.movementController.isJumping);
                 _packet.Write(_player.movementController.isFlopping);
+                _packet.Write(_player.movementController.isSneaking);
 
                 SendUDPDataToAll(_packet);
             }
@@ -157,13 +158,12 @@ public class ServerSend
         }
     }
 
-    public static void CreatePickupSpawner(int _spawnerId, Vector3 _position, PickupType _pickupType, int _playerId = -1)
+    public static void CreatePickupSpawner(int _spawnerId, Vector3 _position, int _playerId = -1)
     {
         using (Packet _packet = new Packet((int)ServerPackets.createItemSpawner))
         {
             _packet.Write(_spawnerId);
             _packet.Write(_position);
-            _packet.Write((int)_pickupType);
 
             if (_playerId == -1)
             {
@@ -176,39 +176,63 @@ public class ServerSend
         }
     }
 
-    public static void PickupSpawned(int _pickupId, bool _bySpawner, int _id, BasePickup _pickup, Vector3 _position, Quaternion _rotation)
+    public static void PickupSpawned(int _pickupId, bool _bySpawner, int _id, PickupSO _pickup, Vector3 _position, Quaternion _rotation)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.itemSpawned))
+        using (Packet _packet = new Packet((int)ServerPackets.pickupSpawned))
         {
             _packet.Write(_pickupId);
             _packet.Write(_bySpawner);
             _packet.Write(_id);
-            _packet.Write((int)_pickup.pickupType);
             _packet.Write(_position);
             _packet.Write(_rotation);
+            _packet.Write((int)_pickup.pickupCode);
 
-            if (_pickup.pickupType == PickupType.Task)
-            {
-                TaskPickup taskPickup = _pickup as TaskPickup;
-                _packet.Write((int)taskPickup.taskCode);
-            } 
-            else if (_pickup.pickupType == PickupType.Item)
-            {
-                ItemPickup itemPickup = _pickup as ItemPickup;
-                _packet.Write((int)itemPickup.itemCode);
-            }
+            SendTCPDataToAll(_packet);
+        }
+    }
+    public static void ItemSpawned(int _pickupId, int _id, PickupSO _pickup, Vector3 _position, Quaternion _rotation)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.itemSpawned))
+        {
+            _packet.Write(_pickupId);
+            _packet.Write(_id);
+            _packet.Write(_position);
+            _packet.Write(_rotation);
+            _packet.Write((int)_pickup.pickupCode);
 
             SendTCPDataToAll(_packet);
         }
     }
 
-    public static void PickupPickedUp(int _pickupId, int _byPlayer, PickupType _pickupType, int _code)
+    public static void ItemTransform(int _id, Vector3 _position, Quaternion _rotation, Vector3 _scale)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.itemPickedUp))
+        using (Packet _packet = new Packet((int)ServerPackets.itemTransform))
+        {
+            _packet.Write(_id);
+            _packet.Write(_position);
+            _packet.Write(_rotation);
+            _packet.Write(_scale);
+
+            SendUDPDataToAll(_packet);
+        }
+    }
+
+    public static void ItemUseComplete(int _clientId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.itemUseComplete))
+        {
+            _packet.Write(_clientId);
+
+            SendTCPData(_clientId, _packet);
+        }
+    }
+
+    public static void PickupPickedUp(int _pickupId, int _byPlayer, int _code)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.pickupPickedUp))
         {
             _packet.Write(_pickupId);
             _packet.Write(_byPlayer);
-            _packet.Write((int)_pickupType);
             _packet.Write(_code);
 
             SendTCPDataToAll(_packet);
@@ -273,6 +297,8 @@ public class ServerSend
                 SendTCPData(_playerId, _packet);
             }
         }
+        
+        SetPlayerMaterialType(_playerId, MaterialType.Default);
     }
 
     public static void SetSpecialCountdown(int _specialId, int _countdownValue, bool _isCountdownActive)
@@ -287,13 +313,25 @@ public class ServerSend
         }
     }
 
-    public static void SetPlayerColour(int _playerId, Color _colour, bool _isSeekerColour)
+    public static void SetPlayerColour(int _playerId, Color _colour, bool _isSeekerColour, bool _isSpecialColour = false)
     {
         using (Packet _packet = new Packet((int)ServerPackets.setPlayerColour))
         {
             _packet.Write(_playerId);
             _packet.Write(_colour);
             _packet.Write(_isSeekerColour);
+            _packet.Write(_isSpecialColour);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    public static void SetPlayerMaterialType(int _playerId, MaterialType _materialType)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.setPlayerMaterialType))
+        {
+            _packet.Write(_playerId);
+            _packet.Write((int)_materialType);
 
             SendTCPDataToAll(_packet);
         }
@@ -335,29 +373,6 @@ public class ServerSend
         {
             _packet.Write(_playerId);
             _packet.Write(_position);
-
-            SendTCPData(_playerId, _packet);
-        }
-    }
-
-    public static void TaskProgressed(int _playerId, TaskCode _code, float progression)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.taskProgressed))
-        {
-            _packet.Write(_playerId);
-            _packet.Write((int)_code);
-            _packet.Write(progression);
-
-            SendTCPData(_playerId, _packet);
-        }
-    }
-
-    public static void TaskComplete(int _playerId, TaskCode _code)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.taskComplete))
-        {
-            _packet.Write(_playerId);
-            _packet.Write((int)_code);
 
             SendTCPData(_playerId, _packet);
         }

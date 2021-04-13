@@ -71,12 +71,18 @@ public class ServerHandle
     {
         int _pickupId = _packet.ReadInt();
 
-        PickupManager.pickups[_pickupId].PickupPickedUp(_fromClient);
+        if (PickupHandler.pickups.ContainsKey(_pickupId))
+        {
+            PickupHandler.pickups[_pickupId].PickupPickedUp(_fromClient);
+        } else
+        {
+            Debug.Log($"ERROR: No pickup with id {_pickupId}");
+        }
     }
 
     public static void ItemUsed(int _fromClient, Packet _packet)
     {
-        Server.clients[_fromClient].player.ItemUsed();
+        Server.clients[_fromClient].player.PickupUsed();
     }
 
     public static void GameRulesChanged(int _fromClient, Packet _packet)

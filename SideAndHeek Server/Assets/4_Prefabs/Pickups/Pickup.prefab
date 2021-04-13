@@ -44,16 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e771017ba10b7394cb996e076ba3e629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupId: 0
+  objectId: 0
   creatorId: 0
-  spawner: {fileID: 0}
-  pickupType: 0
-  activeTaskDetails:
-    task: {fileID: 0}
-    numberOfUses: 0
+  sendMovement: 0
   activeItemDetails:
-    item: {fileID: 0}
+    pickupSO: {fileID: 0}
     numberOfUses: 0
+  spawner: {fileID: 0}
 --- !u!65 &4783647439730919352
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -62,7 +59,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6891291863073886393}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}

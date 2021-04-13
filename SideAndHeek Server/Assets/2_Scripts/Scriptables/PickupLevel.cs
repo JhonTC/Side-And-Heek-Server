@@ -11,8 +11,7 @@ public class PickupLevel : ScriptableObject
 
 public enum Level
 {
-    Easy,
-    Normal,
-    Hard,
-    Extreme
+    Common,
+    Rare,
+    Legendary
 }
