@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class PickupHandler
 {
-    public int currentPickupId = 0;
-
-    public static Dictionary<int, Pickup> pickups = new Dictionary<int, Pickup>();
+    public static Dictionary<ushort, Pickup> pickups = new Dictionary<ushort, Pickup>();
 
     public static Dictionary<PickupCode, int> pickupLog = new Dictionary<PickupCode, int>();
 
@@ -37,21 +35,19 @@ public class PickupHandler
         Debug.Log("Initialised packets.");
     }
 
-    public Pickup SpawnPickup(int _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
+    public Pickup SpawnPickup(ushort _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
     {
         Pickup pickup = null;
 
-        int pickupId = currentPickupId + 1;
-        if (!pickups.ContainsKey(pickupId))
-        {
+        //if (!pickups.ContainsKey(pickupId))
+        //{
             pickup = NetworkObjectsManager.instance.SpawnPickup(_position, _rotation);
-            pickup.Init(pickupId, _spawner, _creatorId, _code);
+            pickup.Init(_spawner, _creatorId, _code);
             pickups.Add(pickup.objectId, pickup);
 
             ServerSend.PickupSpawned(pickup.objectId, true, pickup.creatorId, pickup.activeItemDetails.pickupSO, _position, _rotation);
 
-            currentPickupId++;
-        }
+        //}
 
         return pickup;
     }

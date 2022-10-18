@@ -1,15 +1,64 @@
-﻿using System.Collections;
+﻿using Riptide;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int id;
-    public string username;
+    public static Dictionary<ushort, Player> list = new Dictionary<ushort, Player>();
+
+    public ushort Id { get; private set; }
+    public string Username { get; private set; }
+
+    private void OnDestroy()
+    {
+        list.Remove(Id);
+    }
+
+    public static void Spawn(ushort id, string username)
+    {
+        foreach (Player otherPlayer in list.Values)
+        {
+            otherPlayer.SendSpawned(id);
+        }
+
+        Transform spawnpoint = LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(list.Count <= 0);
+        //player.transform.rotation = spawnpoint.rotation;
+
+        Player player = Instantiate(GameLogic.Instance.PlayerPrefab, spawnpoint.position, Quaternion.identity);
+        player.name = $"Player {id} ({(string.IsNullOrEmpty(username) ? "Guest" : username)}";
+        player.Id = id;
+        player.Username = string.IsNullOrEmpty(username) ? $"Guest {id}" : username;
+        player.activeColour = GameManager.instance.GetNextAvaliableColour();
+        player.isHost = list.Count <= 0;
+
+        player.SpawnBody();
+        player.SendSpawned();
+
+        list.Add(id, player);
+    }
+
+    private void SendSpawned()
+    {
+        NetworkManager.Instance.Server.SendToAll(AddSpawnData(Message.Create(MessageSendMode.Reliable, ServerToClientId.playerSpawned)));
+    }
+    private void SendSpawned(ushort toClientId)
+    {
+        NetworkManager.Instance.Server.Send(AddSpawnData(Message.Create(MessageSendMode.Reliable, ServerToClientId.playerSpawned)), toClientId);
+    }
+    private Message AddSpawnData(Message message)
+    {
+        message.AddUShort(Id);
+        message.AddString(Username);
+        message.AddBool(isHost);
+        message.AddVector3(transform.position);
+        message.AddColour(activeColour);
+
+        return message;
+    }
+
+    public bool isHost;
     public bool isReady = false;
     public PlayerType playerType = PlayerType.Default;
-
-    private float moveSpeed = 5f / Constants.TICKS_PER_SEC;
 
     public float inputSpeed = 0;
     private bool[] otherInputs = { false, false, false};
@@ -39,18 +88,6 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(this);
-    }
-
-    public void Initialize(int _id, string _username, Transform _transform, Color _activeColour)
-    {
-        id = _id;
-        username = _username;
-        activeColour = _activeColour;
-
-        SpawnPlayer();
-
-        //controller.TeleportPhysicalBody(_transform.position);
-        //movementController.root.rotation = _transform.rotation;
     }
 
     public void FixedUpdate()
@@ -84,7 +121,7 @@ public class Player : MonoBehaviour
     {
         isReady = _isReady;
 
-        ServerSend.PlayerReadyToggled(id, isReady);
+        ServerSend.PlayerReadyToggled(Id, isReady);
     }
 
     public void SetInput(float _inputSpeed, bool[] _otherInputs, Quaternion _rotation)
@@ -111,8 +148,8 @@ public class Player : MonoBehaviour
     {
         DespawnPlayer();
         transform.position = _spawnpoint.position;
-        ServerSend.PlayerTeleported(id, _spawnpoint.position);
-        SpawnPlayer();
+        ServerSend.PlayerTeleported(Id, _spawnpoint.position);
+        SpawnBody();
     }
 
     public void OnCollisionWithOther(float flopTime, bool turnToHunter)
@@ -152,10 +189,10 @@ public class Player : MonoBehaviour
 
         movementController.forwardForceMultipler = speedMultiplier;
 
-        ServerSend.SetPlayerType(id, playerType, true);
+        ServerSend.SetPlayerType(Id, playerType, true);
     }
 
-    public void SpawnPlayer()
+    public void SpawnBody()
     {
         if (!isBodyActive)
         {
@@ -179,7 +216,7 @@ public class Player : MonoBehaviour
 
     public void PickupSpawned(int code)
     {
-        NetworkObjectsManager.instance.pickupHandler.SpawnPickup(id, code, transform.position, transform.rotation);
+        NetworkObjectsManager.instance.pickupHandler.SpawnPickup(Id, code, transform.position, transform.rotation);
     }
 
     public void PickupPickedUp(PickupSO pickup)
@@ -199,7 +236,7 @@ public class Player : MonoBehaviour
     public void ItemUseComplete()
     {
         activePickup = null;
-        ServerSend.ItemUseComplete(id);
+        ServerSend.ItemUseComplete(Id);
     }
 }
 

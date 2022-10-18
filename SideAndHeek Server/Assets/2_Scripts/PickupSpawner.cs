@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class PickupSpawner : MonoBehaviour
 {
-    public static Dictionary<int, PickupSpawner> spawners = new Dictionary<int, PickupSpawner>();
-    private static int nextSpawnerId = 1;
+    public static Dictionary<ushort, PickupSpawner> spawners = new Dictionary<ushort, PickupSpawner>();
 
-    public int spawnerId;
+    public ushort spawnerId;
     public bool hasPickup = false;
 
     public Pickup activePickup;
@@ -15,8 +14,6 @@ public class PickupSpawner : MonoBehaviour
     private void Start()
     {
         hasPickup = false;
-        spawnerId = nextSpawnerId;
-        nextSpawnerId++;
         spawners.Add(spawnerId, this);
 
         ServerSend.CreatePickupSpawner(spawnerId, transform.position);

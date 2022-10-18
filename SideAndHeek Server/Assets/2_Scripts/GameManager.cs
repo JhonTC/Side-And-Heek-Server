@@ -82,18 +82,15 @@ public class GameManager : MonoBehaviour
             gameStarted = true;
         }
 
-        foreach (Client client in Server.clients.Values)
+        foreach (Player player in Player.list.Values)
         {
-            if (client.player != null)
+            if (player.playerType != PlayerType.Hunter)
             {
-                if (client.player.playerType != PlayerType.Hunter)
-                {
-                    client.player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(!gameStarted && client.isHost));
-                } 
-                else
-                {
-                    StartCoroutine(SpawnSpecial(client.player, gameRules.hidingTime));
-                }
+                player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(!gameStarted && player.isHost));
+            }
+            else
+            {
+                StartCoroutine(SpawnSpecial(player, gameRules.hidingTime));
             }
         }
     }
@@ -105,12 +102,9 @@ public class GameManager : MonoBehaviour
 
         PickupHandler.pickupLog.Clear();
 
-        foreach (Client client in Server.clients.Values)
+        foreach (Player player in Player.list.Values)
         {
-            if (client.player != null)
-            {
-                client.player.activePickup = null;
-            }
+            player.activePickup = null;
         }
     }
 
@@ -121,7 +115,7 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
             
-            ServerSend.SetSpecialCountdown(_player.id, specialSpawnCount, specialSpawnCount > 1);
+            ServerSend.SetSpecialCountdown(_player.Id, specialSpawnCount, specialSpawnCount > 1);
 
             specialSpawnCount--;
         }
@@ -157,14 +151,14 @@ public class GameManager : MonoBehaviour
             bool areAllPlayersReady = AreAllPlayersReady();
             if (areAllPlayersReady)
             {
-                int _randPlayerId = Server.clients.ElementAt(Random.Range(0, Server.GetPlayerCount())).Value.id;
+                ushort _randPlayerId = Player.list.ElementAt(Random.Range(0, Player.list.Count)).Value.Id;
 
-                foreach (Client client in Server.clients.Values)
+                foreach (Player player in Player.list.Values)
                 {
-                    if (client.player != null)
+                    if (player != null)
                     {
                         PlayerType _playerType = PlayerType.Default;
-                        if (client.player.id == _randPlayerId)
+                        if (player.Id == _randPlayerId)
                         {
                             _playerType = PlayerType.Hunter;
                         }
@@ -172,7 +166,7 @@ public class GameManager : MonoBehaviour
                         {
                             _playerType = PlayerType.Hider;
                         }
-                        client.player.SetPlayerType(_playerType, true);
+                        player.SetPlayerType(_playerType, true);
                     }
                 }
 
@@ -195,14 +189,11 @@ public class GameManager : MonoBehaviour
 
     private bool AreAllPlayersReady()
     {
-        foreach (Client client in Server.clients.Values)
+        foreach (Player player in Player.list.Values)
         {
-            if (client.player != null)
+            if (!player.isReady)
             {
-                if (!client.player.isReady)
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -211,14 +202,11 @@ public class GameManager : MonoBehaviour
 
     public void CheckForGameOver()
     {
-        foreach (Client client in Server.clients.Values)
+        foreach (Player player in Player.list.Values)
         {
-            if (client.player != null)
+            if (player.playerType == PlayerType.Hider)
             {
-                if (client.player.playerType == PlayerType.Hider)
-                {
-                    return;
-                }
+                return;
             }
         }
 
@@ -231,16 +219,14 @@ public class GameManager : MonoBehaviour
 
         gameStarted = false;
 
-        foreach (Client client in Server.clients.Values)
+        foreach (Player player in Player.list.Values)
         {
-            if (client.player != null)
-            { 
-                client.player.playerType = PlayerType.Default;
-                ServerSend.SetPlayerType(client.player);
-                ServerSend.PlayerReadyReset(client.id, false);
+            player.playerType = PlayerType.Default;
+            ServerSend.SetPlayerType(player);
+            ServerSend.PlayerReadyReset(player.Id, false);
 
-                client.player.TeleportPlayer(LevelManager.GetLevelManagerForScene("Lobby").GetNextSpawnpoint(!gameStarted && client.isHost));
-            }
+            player.TeleportPlayer(LevelManager.GetLevelManagerForScene("Lobby").GetNextSpawnpoint(!gameStarted && player.isHost));
+
         }
 
         SceneManager.UnloadSceneAsync("Map_1");

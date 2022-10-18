@@ -104,9 +104,9 @@ public class JellyBomb : SpawnableObject
         }
     }
 
-    public void Init(int _id, int _creatorId, int _code, Vector3 throwDirection, float throwForce)
+    public void Init(ushort _creatorId, int _code, Vector3 throwDirection, float throwForce)
     {
-        base.Init(_id, _creatorId, _code, true);
+        base.Init(_creatorId, _code, true);
 
         rigidbody.AddForce(throwDirection * throwForce * throwForceMultiplier);
     }
@@ -118,7 +118,7 @@ public class JellyBomb : SpawnableObject
             if (other.CompareTag("BodyCollider"))
             {
                 Player player = other.GetComponentInParent<Player>();
-                if (player.id == creatorId)
+                if (player.Id == creatorId)
                 {
                     return;
                 } else
@@ -162,7 +162,7 @@ public class JellyBomb : SpawnableObject
                 if (TrappedBodiesIndexOf(other.attachedRigidbody) == null)
                 {
                     Player player = other.GetComponentInParent<Player>();
-                    if (player.id == creatorId)
+                    if (player.Id == creatorId)
                     {
                         TrappedBody trappedBody = new TrappedBody(player.movementController.root, other.attachedRigidbody == player.movementController.root ? player : null);
                         trappedBody.Stick();

@@ -24,7 +24,7 @@ public class FallDetector : MonoBehaviour
 
             player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(GameManager.instance.gameRules.fallRespawnLocation == FallRespawnLocation.Centre));
 
-            Debug.Log(player.username + " fell out of the map.");
+            Debug.Log(player.Username + " fell out of the map.");
         }
     }
 }

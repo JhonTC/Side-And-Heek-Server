@@ -60,7 +60,7 @@ public class JellyBombItem : BasePickup
 
     public override void PickupUsed()
     {
-        NetworkObjectsManager.instance.itemHandler.SpawnItem(owner.id, (int)pickupSO.pickupCode, owner.movementController.transform.position, owner.movementController.transform.rotation);
+        NetworkObjectsManager.instance.itemHandler.SpawnItem(owner.Id, (int)pickupSO.pickupCode, owner.movementController.transform.position, owner.movementController.transform.rotation);
     }
 }
 
@@ -98,14 +98,14 @@ public class Invisibility : BasePickup
 
     public override void PickupUsed()
     {
-        ServerSend.SetPlayerMaterialType(owner.id, MaterialType.Invisible);
+        ServerSend.SetPlayerMaterialType(owner.Id, MaterialType.Invisible);
 
         NetworkObjectsManager.instance.PerformSecondsCountdown((int)pickupSO.duration, OnComplete);
     }
 
     public void OnComplete()
     {
-        ServerSend.SetPlayerMaterialType(owner.id, MaterialType.Default);
+        ServerSend.SetPlayerMaterialType(owner.Id, MaterialType.Default);
         owner.ItemUseComplete();
     }
 }
@@ -139,14 +139,14 @@ public class Morph : BasePickup
     {
         playerOGColour = owner.activeColour;
 
-        ServerSend.SetPlayerColour(owner.id, GameManager.instance.hunterColour, false, true);
+        ServerSend.SetPlayerColour(owner.Id, GameManager.instance.hunterColour, false, true);
 
         NetworkObjectsManager.instance.PerformSecondsCountdown((int)pickupSO.duration, OnComplete);
     }
 
     public void OnComplete()
     {
-        ServerSend.SetPlayerColour(owner.id, playerOGColour, false, true);
+        ServerSend.SetPlayerColour(owner.Id, playerOGColour, false, true);
         owner.ItemUseComplete();
     }
 }

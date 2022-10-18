@@ -25,9 +25,9 @@ public class BodyCollisionDetection : MonoBehaviour
                     }
                     else if (player.playerType == PlayerType.Hunter)
                     {
-                        if (!player.activePlayerCollisionIds.Contains(other.id))
+                        if (!player.activePlayerCollisionIds.Contains(other.Id))
                         {
-                            player.activePlayerCollisionIds.Add(other.id);
+                            player.activePlayerCollisionIds.Add(other.Id);
 
                             if (GameManager.instance.gameRules.catchType == CatchType.OnTouch || (GameManager.instance.gameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
                             {
@@ -49,9 +49,9 @@ public class BodyCollisionDetection : MonoBehaviour
                 Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
                 if (other != player)
                 {
-                    if (player.activePlayerCollisionIds.Contains(other.id))
+                    if (player.activePlayerCollisionIds.Contains(other.Id))
                     {
-                        player.activePlayerCollisionIds.Remove(other.id);
+                        player.activePlayerCollisionIds.Remove(other.Id);
                     }
                 }
             }
@@ -78,9 +78,9 @@ public class BodyCollisionDetection : MonoBehaviour
                         }
                         else if (player.playerType == PlayerType.Hunter)
                         {
-                            if (!player.activePlayerCollisionIds.Contains(other.id))
+                            if (!player.activePlayerCollisionIds.Contains(other.Id))
                             {
-                                player.activePlayerCollisionIds.Add(other.id);
+                                player.activePlayerCollisionIds.Add(other.Id);
 
                                 if (GameManager.instance.gameRules.catchType == CatchType.OnTouch || (GameManager.instance.gameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
                                 {
@@ -117,9 +117,9 @@ public class BodyCollisionDetection : MonoBehaviour
                 Player other = collider.GetComponent<BodyCollisionDetection>().player;
                 if (other != player)
                 {
-                    if (player.activePlayerCollisionIds.Contains(other.id))
+                    if (player.activePlayerCollisionIds.Contains(other.Id))
                     {
-                        player.activePlayerCollisionIds.Remove(other.id);
+                        player.activePlayerCollisionIds.Remove(other.Id);
                     }
                 }
             }

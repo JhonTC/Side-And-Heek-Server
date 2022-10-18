@@ -6,9 +6,9 @@ public class Pickup : SpawnableObject
 {
     public PickupSpawner spawner;
 
-    public void Init(int _pickupId, PickupSpawner _spawner, int _creatorId, int _code)
+    public void Init(PickupSpawner _spawner, ushort _creatorId, int _code)
     {
-        base.Init(_pickupId, _creatorId, _code, false);
+        base.Init(_creatorId, _code, false);
 
         spawner = _spawner;
     }
@@ -22,13 +22,13 @@ public class Pickup : SpawnableObject
             {
                 if (_player.AttemptPickupItem())
                 {
-                    PickupPickedUp(_player.id);
+                    PickupPickedUp(_player.Id);
                 }
             }
         }
     }
 
-    public void PickupPickedUp(int _byPlayer)
+    public void PickupPickedUp(ushort _byPlayer)
     {
         int code = 0;
         PickupSO pickup = null;
@@ -38,7 +38,7 @@ public class Pickup : SpawnableObject
             code = (int)activeItemDetails.pickupSO.pickupCode;
         }
 
-        Server.clients[_byPlayer].player.PickupPickedUp(pickup);
+        Player.list[_byPlayer].PickupPickedUp(pickup);
         ServerSend.PickupPickedUp(objectId, _byPlayer, code);
 
         if (PickupHandler.pickups.ContainsKey(objectId))

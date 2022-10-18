@@ -60,7 +60,7 @@ public class ItemHandler
         return null;
     }*/
 
-    public SpawnableObject SpawnItem(int _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
+    public SpawnableObject SpawnItem(ushort _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
     {
         SpawnableObject item = null;
 
@@ -72,10 +72,10 @@ public class ItemHandler
             {
                 case PickupCode.JellyBomb:
                     JellyBomb jellybomb = item as JellyBomb;
-                    jellybomb.Init(pickupId, _creatorId, _code, Server.clients[_creatorId].player.movementController.root.transform.forward, 80);
+                    jellybomb.Init(_creatorId, _code, Player.list[_creatorId].movementController.root.transform.forward, 80);
                     break;
                 default:
-                    item.Init(pickupId, _creatorId, _code, true);
+                    item.Init(_creatorId, _code, true);
                     break;
             }
 
