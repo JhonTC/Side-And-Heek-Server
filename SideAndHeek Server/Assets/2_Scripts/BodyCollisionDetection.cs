@@ -94,16 +94,24 @@ public class BodyCollisionDetection : MonoBehaviour
 
             if (isHeadCollider)
             {
+                bool canSend = true;
+
                 if (collider.tag == "BodyCollider")
                 {
                     Player other = collider.GetComponent<BodyCollisionDetection>().player;
-                    if (other == player)
+                    if (other != player)
                     {
-                        return;
+                        player.movementController.canKnockOutOthers = false;
+                    } else
+                    {
+                        canSend = false;
                     }
                 }
-                
-                player.movementController.canKnockOutOthers = false;
+
+                if (canSend)
+                {
+                    player.headCollided = true;
+                }
             }
         }
     }

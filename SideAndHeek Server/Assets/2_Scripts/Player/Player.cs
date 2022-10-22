@@ -94,6 +94,8 @@ public class Player : MonoBehaviour
     public bool isBodyActive = false;
     public bool isAcceptingInput = true;
 
+    [HideInInspector] public bool headCollided = false;
+
     [SerializeField] private SimplePlayerController bodyPrefab;
     [SerializeField] private FootCollisionHandler largeGroundColliderPrefab;
     [SerializeField] private Transform feetMidpoint;

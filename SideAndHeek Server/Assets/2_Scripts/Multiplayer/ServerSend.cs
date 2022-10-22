@@ -74,6 +74,8 @@ public class ServerSend
             Message message = Message.Create(MessageSendMode.Unreliable, ServerToClientId.playerState);
             message.AddUShort(_player.Id);
             message.AddBool(_player.movementController.largeGroundCollider.isGrounded);
+            message.AddBool(_player.headCollided);
+            message.AddFloat(_player.movementController.root.velocity.magnitude);
             message.AddFloat(_player.inputSpeed);
 
             message.AddBool(_player.movementController.isJumping);
@@ -81,6 +83,11 @@ public class ServerSend
             message.AddBool(_player.movementController.isSneaking);
 
             NetworkManager.Instance.Server.SendToAll(message);
+
+            if (_player.headCollided)
+            {
+                _player.headCollided = false;
+            }
         }
     }
 
