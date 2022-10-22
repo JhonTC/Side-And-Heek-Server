@@ -16,6 +16,7 @@ MonoBehaviour:
   pickupContent: First boom, then jelly
   pickupIcon: {fileID: 0}
   pickupLevel: {fileID: 11400000, guid: 11267e2058cdfcd449954910c6f8067f, type: 2}
+  userType: 0
   pickupCode: 3
   power: 0
-  duration: 0
+  duration: 10

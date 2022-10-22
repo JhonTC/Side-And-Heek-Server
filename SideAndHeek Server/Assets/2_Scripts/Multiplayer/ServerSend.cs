@@ -89,14 +89,22 @@ public class ServerSend
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.createItemSpawner);
         message.AddUShort(_spawnerId);
         message.AddVector3(_position);
+        message.AddBool(false);
 
         NetworkManager.Instance.Server.SendToAll(message);
     }
-    public static void CreatePickupSpawner(ushort _spawnerId, Vector3 _position, ushort _playerId)
+    public static void CreatePickupSpawner(ushort _spawnerId, Vector3 _position, ushort _playerId, Pickup _pickup = null)
     {
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.createItemSpawner);
         message.AddUShort(_spawnerId);
         message.AddVector3(_position);
+        message.AddBool(_pickup != null);
+        if (_pickup != null)
+        {
+            message.AddUShort(_pickup.objectId);
+            message.AddInt((int)_pickup.activeItemDetails.pickupSO.pickupCode);
+        }
+
         NetworkManager.Instance.Server.Send(message, _playerId);
     }
 

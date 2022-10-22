@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
 
         foreach (PickupSpawner spawner in PickupSpawner.spawners.Values)
         {
-            ServerSend.CreatePickupSpawner(spawner.id, spawner.transform.position, id);
+            ServerSend.CreatePickupSpawner(spawner.id, spawner.transform.position, id, spawner.activePickup);
         }
     }
 

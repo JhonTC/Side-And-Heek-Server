@@ -9,8 +9,8 @@ public class JellyBomb : SpawnableObject
     public AnimationCurve explosionCurve;
     public float explosionForce;
     public float throwForceMultiplier;
-    public int lifeDuration;
 
+    private float lifeDuration;
     private Rigidbody rigidbody;
     private float currentExplosionSize;
     private float smoothCES;
@@ -22,7 +22,7 @@ public class JellyBomb : SpawnableObject
 
     private class TrappedBody
     {
-        public Rigidbody rigibody;
+        public Rigidbody rigidbody;
         public Player owner;
         public bool initialUseGravity;
         public float intialDrag;
@@ -31,11 +31,11 @@ public class JellyBomb : SpawnableObject
 
         public TrappedBody(Rigidbody _rigidbody, Player _owner = null)
         {
-            rigibody = _rigidbody;
+            rigidbody = _rigidbody;
             owner = _owner;
-            initialUseGravity = rigibody.useGravity;
-            intialDrag = rigibody.drag;
-            intialAngularDrag = rigibody.angularDrag;
+            initialUseGravity = rigidbody.useGravity;
+            intialDrag = rigidbody.drag;
+            intialAngularDrag = rigidbody.angularDrag;
 
             if (owner != null)
             {
@@ -45,27 +45,28 @@ public class JellyBomb : SpawnableObject
 
         public void Stick()
         {
-            rigibody.useGravity = false;
-            rigibody.drag = 2f;
-            rigibody.angularDrag = 1.5f;
+            rigidbody.useGravity = false;
+            rigidbody.drag = 5f;
+            rigidbody.angularDrag = 5f;
 
             if (owner != null)
             {
-                owner.movementController.gravity = 0f;
-                owner.isAcceptingInput = false;
+                owner.movementController.useGravity = false;
+                //owner.isAcceptingInput = false;
             }
         }
 
         public void Reset()
         {
-            rigibody.useGravity = initialUseGravity;
-            rigibody.drag = intialDrag;
-            rigibody.angularDrag = intialAngularDrag;
+            rigidbody.useGravity = initialUseGravity;
+            rigidbody.drag = intialDrag;
+            rigidbody.angularDrag = intialAngularDrag;
 
             if (owner != null)
             {
-                owner.movementController.gravity = initialOwnerGravity;
-                owner.isAcceptingInput = true;
+                Debug.Log(owner.name);
+                owner.movementController.useGravity = true;
+                //owner.isAcceptingInput = true;
             }
         }
     }
@@ -91,12 +92,17 @@ public class JellyBomb : SpawnableObject
             if (currentExplosionSize < explosionRadius)
             {
                 transform.localScale = Vector3.one * currentExplosionSize;
-                currentExplosionSize += explosionSpeed * Time.fixedDeltaTime;
+                currentExplosionSize += Mathf.Clamp(explosionSpeed * Time.fixedDeltaTime, startExplosionSize, explosionRadius);
                 //smoothCES = explosionRadius * (explosionCurve.Evaluate((explosionRadius - startExplosionSize) / currentExplosionSize));
+                foreach (TrappedBody body in trappedBodies)
+                {
+                    float multiplier = explosionRadius - currentExplosionSize;
+                    body.rigidbody.AddForce(Vector3.up * explosionForce * multiplier);
+                }
             }
             else
             {
-                currentExplosionSize = startExplosionSize;
+                //currentExplosionSize = startExplosionSize;
                 isExploding = false;
                 hasExploded = true;
                 StartCoroutine(StartLifetimeCoundown());
@@ -108,12 +114,49 @@ public class JellyBomb : SpawnableObject
     {
         base.Init(_objectId, _creatorId, _code, true);
 
+        lifeDuration = activeItemDetails.pickupSO.duration;
         rigidbody.AddForce(throwDirection * throwForce * throwForceMultiplier);
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        if (!hasExploded)
+        if (other.CompareTag("BodyCollider"))
+        {
+            if (TrappedBodiesIndexOf(other.attachedRigidbody) == null)
+            {
+                Player player = other.GetComponentInParent<Player>();
+                if (player.Id == creatorId && !isExploding && !hasExploded)
+                {
+                    return;
+                }
+
+                Transform rigidbodyObject = other.transform;
+                if (rigidbodyObject.name == "Head")
+                {
+                    rigidbodyObject = rigidbodyObject.transform.parent;
+                }
+
+                Rigidbody trappedRigidbody = rigidbodyObject.GetComponent<Rigidbody>();
+                if (trappedRigidbody == null)
+                {
+                    return;
+                }
+
+                TrappedBody trappedBody = new TrappedBody(trappedRigidbody, player);
+                trappedBody.Stick();
+                trappedBodies.Add(trappedBody);
+            }
+        }
+
+        if (!isExploding && !hasExploded)
+        {
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.useGravity = false;
+
+            isExploding = true;
+        }
+
+        /*if (!hasExploded)
         {
             if (other.CompareTag("BodyCollider"))
             {
@@ -157,27 +200,21 @@ public class JellyBomb : SpawnableObject
             }
         } else
         {
-            if (other.CompareTag("BodyCollider"))
-            {
-                if (TrappedBodiesIndexOf(other.attachedRigidbody) == null)
-                {
-                    Player player = other.GetComponentInParent<Player>();
-                    if (player.Id == creatorId)
-                    {
-                        TrappedBody trappedBody = new TrappedBody(player.movementController.root, other.attachedRigidbody == player.movementController.root ? player : null);
-                        trappedBody.Stick();
-                        trappedBodies.Add(trappedBody);
-                    }
-                }
-            }
-        }
+            
+        }*/
     }
 
     public void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("BodyCollider"))
         {
-            TrappedBody trappedBody = TrappedBodiesIndexOf(other.attachedRigidbody);
+            Transform rigidbodyObject = other.transform;
+            if (rigidbodyObject.name == "Head")
+            {
+                rigidbodyObject = rigidbodyObject.transform.parent;
+            }
+
+            TrappedBody trappedBody = TrappedBodiesIndexOf(rigidbodyObject.GetComponent<Rigidbody>());
             if (trappedBody != null) {
                 trappedBody.Reset();
                 trappedBodies.Remove(trappedBody);
@@ -189,7 +226,7 @@ public class JellyBomb : SpawnableObject
     {
         for (int i = 0; i < trappedBodies.Count; i++)
         {
-            if (trappedBodies[i].rigibody == _rigidbody)
+            if (trappedBodies[i].rigidbody == _rigidbody)
             {
                 return trappedBodies[i];
             }
@@ -200,8 +237,8 @@ public class JellyBomb : SpawnableObject
 
     IEnumerator StartLifetimeCoundown()
     {
-        int currentLifetimeCount = lifeDuration;
-        while (currentLifetimeCount > 0)
+        int currentLifetimeCount = Mathf.FloorToInt(lifeDuration);
+        while (currentLifetimeCount >= 0)
         {
             yield return new WaitForSeconds(1);
 

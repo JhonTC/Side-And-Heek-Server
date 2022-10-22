@@ -61,6 +61,11 @@ public class JellyBombItem : BasePickup
     public override void PickupUsed()
     {
         NetworkObjectsManager.instance.itemHandler.SpawnItem(owner.Id, (int)pickupSO.pickupCode, owner.movementController.transform.position, owner.movementController.transform.rotation);
+        NetworkObjectsManager.instance.PerformSecondsCountdown((int)pickupSO.duration, OnComplete);
+    }
+    public void OnComplete()
+    {
+        owner.ItemUseComplete();
     }
 }
 

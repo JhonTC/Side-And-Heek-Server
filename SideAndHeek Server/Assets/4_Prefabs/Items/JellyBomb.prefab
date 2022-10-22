@@ -79,9 +79,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  explosionForce: 3000
-  throwForceMultiplier: 10
-  lifeDuration: 5
+  explosionForce: 2200
+  throwForceMultiplier: 6.5
 --- !u!54 &2424058124560369486
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -121,6 +120,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -145,6 +145,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &2424058124560369475
 SphereCollider:
   m_ObjectHideFlags: 0

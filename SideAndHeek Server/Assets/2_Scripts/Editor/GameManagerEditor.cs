@@ -12,6 +12,11 @@ public class GameManagerEditor : Editor
 
         base.OnInspectorGUI();
 
+        if (GUILayout.Button("SpawnNPC"))
+        {
+            Player.Spawn(100, "NPC");
+        }
+
         if (GUILayout.Button("END GAME"))
         {
             gameManager.GameOver(true);
