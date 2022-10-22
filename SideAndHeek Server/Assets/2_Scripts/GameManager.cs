@@ -202,15 +202,18 @@ public class GameManager : MonoBehaviour
 
     public void CheckForGameOver()
     {
-        foreach (Player player in Player.list.Values)
+        if (gameStarted)
         {
-            if (player.playerType == PlayerType.Hider)
+            foreach (Player player in Player.list.Values)
             {
-                return;
+                if (player.playerType == PlayerType.Hider)
+                {
+                    return;
+                }
             }
-        }
 
-        GameOver(true);
+            GameOver(true);
+        }
     }
 
     public void GameOver(bool _isHunterVictory)

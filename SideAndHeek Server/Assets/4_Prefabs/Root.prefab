@@ -60,6 +60,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,6 +85,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &7774533233791854575
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -122,6 +124,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 40563942146715393}
   m_ConnectedBody: {fileID: 2720964804479546000}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 1.0000005, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -293,6 +296,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -317,6 +321,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &5645268108080741916
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -355,6 +360,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2675866047266033571}
   m_ConnectedBody: {fileID: 6856796757339971072}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 1.0000005, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -472,14 +478,15 @@ MonoBehaviour:
   standingForce: 100
   jumpingForce: 5000
   walkFootForwardForce: 150
-  sneakFootForwardForce: 75
+  sneakFootForwardForce: 100
   footVerticalForce: 125
-  flopForce: 3000
+  flopForce: 4000
   footReturnSpeed: 5
   rootReturnSpeed: 10
   useGravity: 1
   root: {fileID: 6856796757339971072}
   turnSpeed: 15
+  maxForwardForceMultipler: 1
   forwardForceMultipler: 1
   rightLeg: {fileID: 2720964804479546000}
   leftLeg: {fileID: 2516670798440383303}
@@ -504,8 +511,6 @@ MonoBehaviour:
   lastIsFlopping: 0
   flopCount: 0
   isSneaking: 0
-  lastForwardForceMultiplier: 0
-  sneakForwardForceMultiplier: 0.5
   moveStageDuration: 0.1
   standingHeight: 1.63
   groundMask:
@@ -572,6 +577,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -596,6 +602,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &3632396870988603147
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -634,6 +641,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6027035267375238829}
   m_ConnectedBody: {fileID: 2516670798440383303}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 1.0000005, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -740,6 +748,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -764,6 +773,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7672212288820075301
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,6 +829,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -843,6 +854,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7852779565575889805
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,6 +975,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -987,6 +1000,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &8360347353647271155
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1025,6 +1039,7 @@ CharacterJoint:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8021574179871415059}
   m_ConnectedBody: {fileID: 6856796757339971072}
+  m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 1.0000005, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
@@ -1136,6 +1151,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1160,6 +1176,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &2272575366368208955
 CapsuleCollider:
   m_ObjectHideFlags: 0

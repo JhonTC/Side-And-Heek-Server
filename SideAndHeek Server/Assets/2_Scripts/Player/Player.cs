@@ -1,6 +1,7 @@
 ﻿using Riptide;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -12,6 +13,17 @@ public class Player : MonoBehaviour
     private void OnDestroy()
     {
         list.Remove(Id);
+    }
+
+    public static void AppointNewHost()
+    {
+        if (list.Count > 0)
+        {
+            Player player = list.ElementAt(0).Value;
+            player.isHost = true;
+
+            ServerSend.SetPlayerHost(player);
+        }
     }
 
     public static void Spawn(ushort id, string username)

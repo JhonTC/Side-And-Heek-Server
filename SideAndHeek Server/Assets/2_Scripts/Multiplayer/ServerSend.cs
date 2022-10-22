@@ -84,14 +84,6 @@ public class ServerSend
         }
     }
 
-    public static void PlayerDisconnected(ushort _playerId)
-    {
-        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.playerDisconnected);
-        message.AddUShort(_playerId);
-
-        NetworkManager.Instance.Server.SendToAll(message);
-    }
-
     public static void CreatePickupSpawner(ushort _spawnerId, Vector3 _position)
     {
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.createItemSpawner);
@@ -281,6 +273,15 @@ public class ServerSend
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.gameRulesChanged);
         message.AddUShort(_playerId);
         message.AddGameRules(_gameRules);
+
+        NetworkManager.Instance.Server.SendToAll(message);
+    }
+
+    public static void SetPlayerHost(Player _player)
+    {
+        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.setPlayerHost);
+        message.AddUShort(_player.Id);
+        message.AddBool(_player.isHost);
 
         NetworkManager.Instance.Server.SendToAll(message);
     }

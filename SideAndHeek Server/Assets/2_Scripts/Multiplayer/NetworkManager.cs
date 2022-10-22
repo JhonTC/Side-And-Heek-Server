@@ -10,7 +10,6 @@ public enum ServerToClientId : ushort
     playerPosition,
     playerRotation,
     playerState,
-    playerDisconnected,
     createItemSpawner,
     pickupSpawned,
     pickupPickedUp,
@@ -28,7 +27,8 @@ public enum ServerToClientId : ushort
     gameStart,
     gameOver,
     playerTeleported,
-    gameRulesChanged
+    gameRulesChanged,
+    setPlayerHost
 }
 
 public enum ClientToServerId : ushort
@@ -95,7 +95,26 @@ public class NetworkManager : MonoBehaviour
 
     private void PlayerLeft(object sender, ServerDisconnectedEventArgs e)
     {
+        bool isLeavingPlayerHost = Player.list[e.Client.Id].isHost;
+
+        GameManager.instance.UnclaimHiderColour(Player.list[e.Client.Id].activeColour);
+
         Destroy(Player.list[e.Client.Id].gameObject);
+        Player.list.Remove(e.Client.Id);
+
+        GameManager.instance.CheckForGameOver();
+
+        if (Player.list.Count > 0)
+        {
+            if (isLeavingPlayerHost)
+            {
+                Player.AppointNewHost();
+            }
+        } else
+        {
+            //Application.Quit();
+            Debug.LogWarning("Last Player left, server should close");
+        }
     }
 }
 
