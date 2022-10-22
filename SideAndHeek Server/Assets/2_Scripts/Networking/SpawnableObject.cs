@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class SpawnableObject : MonoBehaviour
 {
-    public ushort objectId;
-    public ushort creatorId;
+    [ReadOnly] public ushort objectId;
+    [ReadOnly] public ushort creatorId;
     public bool sendMovement;
 
     public PickupDetails activeItemDetails;
 
-    public void Init(ushort _creatorId, int _code, bool _sendMovement)
+    public void Init(ushort _objectId, ushort _creatorId, int _code, bool _sendMovement)
     {
+        objectId = _objectId;
         creatorId = _creatorId;
         sendMovement = _sendMovement;
 

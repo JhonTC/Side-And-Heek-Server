@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class ItemHandler
 {
-    public int currentItemId = 0;
+    public static ushort currentItemId = 0;
 
-    public static Dictionary<int, SpawnableObject> items = new Dictionary<int, SpawnableObject>();
+    public static Dictionary<ushort, SpawnableObject> items = new Dictionary<ushort, SpawnableObject>();
 
     public static Dictionary<PickupCode, int> itemLog = new Dictionary<PickupCode, int>();
 
@@ -37,7 +37,6 @@ public class ItemHandler
             { PickupCode.Morph, Morph }
         };
 
-
         /*itemHondlers = new Dictionary<PickupCode, Type>()
         {
             { PickupCode.NULL,  null },
@@ -64,18 +63,17 @@ public class ItemHandler
     {
         SpawnableObject item = null;
 
-        int pickupId = currentItemId + 1;
-        if (!items.ContainsKey(pickupId))
+        if (!items.ContainsKey(currentItemId))
         {
             item = NetworkObjectsManager.instance.SpawnItem((PickupCode)_code, _position, _rotation);
             switch((PickupCode)_code)
             {
                 case PickupCode.JellyBomb:
                     JellyBomb jellybomb = item as JellyBomb;
-                    jellybomb.Init(_creatorId, _code, Player.list[_creatorId].movementController.root.transform.forward, 80);
+                    jellybomb.Init(currentItemId, _creatorId, _code, Player.list[_creatorId].movementController.root.transform.forward, 80); //TODO: cleanup to pass params rather than having specific calls
                     break;
                 default:
-                    item.Init(_creatorId, _code, true);
+                    item.Init(currentItemId, _creatorId, _code, true);
                     break;
             }
 
@@ -84,6 +82,7 @@ public class ItemHandler
             ServerSend.ItemSpawned(item.objectId, item.creatorId, item.activeItemDetails.pickupSO, _position, _rotation);
 
             currentItemId++;
+            //TODO: above will cause issues on server being live for a long time - after many pickup spawns value will be out of range
         }
 
         return item;

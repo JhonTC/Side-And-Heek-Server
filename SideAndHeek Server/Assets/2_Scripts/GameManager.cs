@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
         activeSceneName = "Lobby";
         activeHunterSceneName = activeSceneName;
 
-        PickupHandler.pickupLog.Clear();
+        PickupHandler.ResetPickupLog();
 
         foreach (Player player in Player.list.Values)
         {

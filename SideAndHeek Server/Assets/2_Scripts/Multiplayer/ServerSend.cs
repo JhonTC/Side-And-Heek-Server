@@ -89,6 +89,7 @@ public class ServerSend
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.createItemSpawner);
         message.AddUShort(_spawnerId);
         message.AddVector3(_position);
+
         NetworkManager.Instance.Server.SendToAll(message);
     }
     public static void CreatePickupSpawner(ushort _spawnerId, Vector3 _position, ushort _playerId)

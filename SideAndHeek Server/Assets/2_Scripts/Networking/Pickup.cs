@@ -6,9 +6,9 @@ public class Pickup : SpawnableObject
 {
     public PickupSpawner spawner;
 
-    public void Init(PickupSpawner _spawner, ushort _creatorId, int _code)
+    public void Init(PickupSpawner _spawner, ushort _objectId, ushort _creatorId, int _code)
     {
-        base.Init(_creatorId, _code, false);
+        base.Init(_objectId, _creatorId, _code, false);
 
         spawner = _spawner;
     }
@@ -18,7 +18,8 @@ public class Pickup : SpawnableObject
         if (activeItemDetails != null && other.CompareTag("BodyCollider"))
         {
             Player _player = other.GetComponentInParent<Player>();
-            if (_player.playerType == activeItemDetails.pickupSO.userType || activeItemDetails.pickupSO.userType == PlayerType.Default)
+
+            if (_player.playerType == activeItemDetails.pickupSO.userType || activeItemDetails.pickupSO.userType == PlayerType.Default || _player.playerType == PlayerType.Default)
             {
                 if (_player.AttemptPickupItem())
                 {

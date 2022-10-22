@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 4404309366411333442}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.9, y: 0.31800002, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -43,10 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fecdd712f54de443b052d10ef012298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnerId: 0
+  id: 0
   hasPickup: 0
-  pickupType: 0
-  maxSpawnCount: 0
-  pickupPrefab: {fileID: 5727015819816308131, guid: aa552f0b4bc6d7c488c27ffb725ccf68,
-    type: 3}
   activePickup: {fileID: 0}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PickupHandler
+public class PickupHandler //TODO: Make into Singleton
 {
     public static Dictionary<ushort, Pickup> pickups = new Dictionary<ushort, Pickup>();
 
@@ -11,6 +11,8 @@ public class PickupHandler
     private delegate BasePickup PickupHandlerDelegate(PickupSO _pickupSO, Player _player);
 
     private static Dictionary<PickupCode, PickupHandlerDelegate> pickupHandlers;
+
+    private static ushort currentPickupId = 0;
 
     public PickupHandler()
     {
@@ -39,20 +41,22 @@ public class PickupHandler
     {
         Pickup pickup = null;
 
-        //if (!pickups.ContainsKey(pickupId))
-        //{
+        if (!pickups.ContainsKey(currentPickupId))
+        {
             pickup = NetworkObjectsManager.instance.SpawnPickup(_position, _rotation);
-            pickup.Init(_spawner, _creatorId, _code);
-            pickups.Add(pickup.objectId, pickup);
+            pickup.Init(_spawner, currentPickupId, _creatorId, _code);
+            pickups.Add(currentPickupId, pickup);
 
             ServerSend.PickupSpawned(pickup.objectId, true, pickup.creatorId, pickup.activeItemDetails.pickupSO, _position, _rotation);
 
-        //}
+            currentPickupId++;
+            //TODO: above will cause issues on server being live for a long time - after many pickup spawns value will be out of range
+        }
 
         return pickup;
     }
 
-    public bool CanPickupCodeBeUsed(PickupDetails pickupDetails)
+    public static bool CanPickupCodeBeUsed(PickupDetails pickupDetails)
     {
         if (pickupLog.ContainsKey(pickupDetails.pickupSO.pickupCode))
         {
@@ -65,7 +69,7 @@ public class PickupHandler
         return true;
     }
 
-    public bool HaveAllPickupsBeenSpawned()
+    public static bool HaveAllPickupsBeenSpawned()
     {
         if (pickupLog.Count < GameManager.instance.collection.pickupDetails.Count)
         {
@@ -90,11 +94,15 @@ public class PickupHandler
         return true;
     }
 
-
     public BasePickup HandlePickup(PickupSO _pickupSO, Player _player)
     {
         BasePickup ret = pickupHandlers[_pickupSO.pickupCode](_pickupSO, _player);
         return ret;
+    }
+
+    public static void ResetPickupLog()
+    {
+        pickupLog.Clear();
     }
 
     private BasePickup NullPickup(PickupSO _pickupSO, Player _player)

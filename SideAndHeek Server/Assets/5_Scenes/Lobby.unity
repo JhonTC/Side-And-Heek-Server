@@ -346,7 +346,7 @@ PrefabInstance:
     - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_Name
-      value: ItemSpawner (1)
+      value: PickupSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -401,6 +401,11 @@ PrefabInstance:
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: spawnerId
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
@@ -511,7 +516,7 @@ PrefabInstance:
     - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_Name
-      value: ItemSpawner (2)
+      value: PickupSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -566,6 +571,11 @@ PrefabInstance:
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: spawnerId
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
@@ -1100,7 +1110,7 @@ PrefabInstance:
     - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_Name
-      value: ItemSpawner (3)
+      value: PickupSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -1159,6 +1169,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
+      propertyPath: spawnerId
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
       propertyPath: pickupType
       value: 2
       objectReference: {fileID: 0}
@@ -1180,7 +1195,7 @@ PrefabInstance:
     - target: {fileID: 4404309366411333442, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_Name
-      value: ItemSpawner
+      value: PickupSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
@@ -1235,6 +1250,11 @@ PrefabInstance:
     - target: {fileID: 4404309366411333443, guid: e614afdabab71a3418a891ab44cb5cc6,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
+        type: 3}
+      propertyPath: spawnerId
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5428407159845291866, guid: e614afdabab71a3418a891ab44cb5cc6,
@@ -1435,7 +1455,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2129778326
 Transform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class PickupSpawner : MonoBehaviour
 {
     public static Dictionary<ushort, PickupSpawner> spawners = new Dictionary<ushort, PickupSpawner>();
 
-    public ushort spawnerId;
+    [ReadOnly] public ushort id;
     public bool hasPickup = false;
 
     public Pickup activePickup;
@@ -14,42 +14,35 @@ public class PickupSpawner : MonoBehaviour
     private void Start()
     {
         hasPickup = false;
-        spawners.Add(spawnerId, this);
 
-        ServerSend.CreatePickupSpawner(spawnerId, transform.position);
+        id = (ushort)spawners.Count;
+        spawners.Add(id, this);
+
+        if (NetworkManager.Instance.Server != null)
+        {
+            ServerSend.CreatePickupSpawner(id, transform.position);
+        }
 
         StartCoroutine(SpawnPickup());
     }
 
     private void OnDestroy()
     {
-        if (spawners.ContainsKey(spawnerId))
+        if (spawners.ContainsKey(id))
         {
-            spawners.Remove(spawnerId);
+            spawners.Remove(id);
         }
     }
-
-    /*private void OnTriggerEnter(Collider other)
-    {
-        if (hasItem && other.CompareTag("BodyCollider"))
-        {
-            Player _player = other.GetComponentInParent<Player>();
-            if (_player.AttemptPickupItem())
-            {
-                ItemPickedUp(_player.id);
-            }
-        }
-    }*/
 
     private IEnumerator SpawnPickup(int spawnDelay = 10)
     {
         yield return new WaitForSeconds(spawnDelay);
 
-        if (!NetworkObjectsManager.instance.pickupHandler.HaveAllPickupsBeenSpawned())
+        if (!PickupHandler.HaveAllPickupsBeenSpawned())
         {
             PickupDetails activePickupDetails = GameManager.instance.collection.GetRandomItem();
 
-            while (!NetworkObjectsManager.instance.pickupHandler.CanPickupCodeBeUsed(activePickupDetails))
+            while (!PickupHandler.CanPickupCodeBeUsed(activePickupDetails))
             {
                 activePickupDetails = GameManager.instance.collection.GetRandomItem();
             }
@@ -71,7 +64,7 @@ public class PickupSpawner : MonoBehaviour
 
     public void PickupSpawned(int code)
     {
-        activePickup = NetworkObjectsManager.instance.pickupHandler.SpawnPickup(spawnerId, code, transform.position, transform.rotation, this);
+        activePickup = NetworkObjectsManager.instance.pickupHandler.SpawnPickup(id, code, transform.position, transform.rotation, this);
     }
 
     public void PickupPickedUp()

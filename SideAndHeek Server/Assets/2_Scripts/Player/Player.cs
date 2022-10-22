@@ -47,6 +47,11 @@ public class Player : MonoBehaviour
         player.SendSpawned();
 
         list.Add(id, player);
+
+        foreach (PickupSpawner spawner in PickupSpawner.spawners.Values)
+        {
+            ServerSend.CreatePickupSpawner(spawner.id, spawner.transform.position, id);
+        }
     }
 
     private void SendSpawned()
