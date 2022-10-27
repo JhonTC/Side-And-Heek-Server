@@ -45,6 +45,8 @@ public class SimplePlayerController : MonoBehaviour
 
     [SerializeField] private BodyCollisionDetection[] bodyCollisionDetectors;
 
+    [HideInInspector] public Player owner;
+
     private void Start()
     {
         root = GetComponent<Rigidbody>();
@@ -377,6 +379,8 @@ public class SimplePlayerController : MonoBehaviour
 
     private void ToggleActiveWalkingFoot()
     {
+        owner.footCollided = true;
+
         if (activeWalkingFoot == rightFootCollider)
         {
             activeWalkingFoot = leftFootCollider;

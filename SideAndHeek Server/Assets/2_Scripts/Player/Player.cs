@@ -95,6 +95,7 @@ public class Player : MonoBehaviour
     public bool isAcceptingInput = true;
 
     [HideInInspector] public bool headCollided = false;
+    [HideInInspector] public bool footCollided = false;
 
     [SerializeField] private SimplePlayerController bodyPrefab;
     [SerializeField] private FootCollisionHandler largeGroundColliderPrefab;
@@ -216,6 +217,7 @@ public class Player : MonoBehaviour
         if (!isBodyActive)
         {
             movementController = Instantiate(bodyPrefab, transform);
+            movementController.owner = this;
             movementController.largeGroundCollider = Instantiate(largeGroundColliderPrefab, transform);
             movementController.feetMidpoint = feetMidpoint;
             movementController.SetupBodyCollisionHandlers(this);

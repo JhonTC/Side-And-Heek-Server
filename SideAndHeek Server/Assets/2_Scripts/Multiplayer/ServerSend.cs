@@ -77,6 +77,7 @@ public class ServerSend
             message.AddBool(_player.headCollided);
             message.AddFloat(_player.movementController.root.velocity.magnitude);
             message.AddFloat(_player.inputSpeed);
+            message.AddBool(_player.footCollided);
 
             message.AddBool(_player.movementController.isJumping);
             message.AddBool(_player.movementController.isFlopping);
@@ -87,6 +88,11 @@ public class ServerSend
             if (_player.headCollided)
             {
                 _player.headCollided = false;
+            }
+
+            if (_player.footCollided)
+            {
+                _player.footCollided = false;
             }
         }
     }
