@@ -99,6 +99,7 @@ public class NetworkManager : MonoBehaviour
 
         GameManager.instance.UnclaimHiderColour(Player.list[e.Client.Id].activeColour);
 
+        Player.list[e.Client.Id].DespawnPlayer();
         Destroy(Player.list[e.Client.Id].gameObject);
         Player.list.Remove(e.Client.Id);
 

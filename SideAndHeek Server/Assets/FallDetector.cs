@@ -18,7 +18,7 @@ public class FallDetector : MonoBehaviour
             {
                 if (GameManager.instance.gameRules.fallRespawnType == HiderFallRespawnType.Hunter)
                 {
-                    player.SetPlayerType(PlayerType.Hunter, false);
+                    player.SetPlayerType(PlayerType.Hunter);
                 }
             }
 

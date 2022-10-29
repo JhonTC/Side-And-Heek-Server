@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemHandler
@@ -37,27 +35,8 @@ public class ItemHandler
             { PickupCode.Morph, Morph }
         };
 
-        /*itemHondlers = new Dictionary<PickupCode, Type>()
-        {
-            { PickupCode.NULL,  null },
-            { PickupCode.SuperFlop, typeof(SuperFlop) },
-            { PickupCode.SuperJump, typeof(SuperJump) },
-            { PickupCode.JellyBomb, typeof(JellyBombItem) }
-        };*/
         Debug.Log("Initialised packets.");
     }
-
-    /*public BasePickup HondlePickup(PickupSO _pickupSO, Player _player)
-    {
-        if (itemHondlers[_pickupSO.pickupCode] != null)
-        {
-            object[] parameters = { _pickupSO, _player };
-            BasePickup ret = Activator.CreateInstance(itemHondlers[_pickupSO.pickupCode], parameters) as BasePickup;
-            return ret;
-        }
-        
-        return null;
-    }*/
 
     public SpawnableObject SpawnItem(ushort _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
     {
@@ -126,6 +105,14 @@ public class ItemHandler
         return true;
     }
 
+    public static void ClearAllActiveItems()
+    {
+        foreach (SpawnableObject spawnable in items.Values)
+        {
+            Object.Destroy(spawnable.gameObject);
+        }
+        items.Clear();
+    }
 
     public BasePickup HandlePickup(PickupSO _pickupSO, Player _player)
     {

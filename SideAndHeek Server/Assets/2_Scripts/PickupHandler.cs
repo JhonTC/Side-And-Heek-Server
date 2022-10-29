@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PickupHandler //TODO: Make into Singleton
@@ -98,6 +97,15 @@ public class PickupHandler //TODO: Make into Singleton
     {
         BasePickup ret = pickupHandlers[_pickupSO.pickupCode](_pickupSO, _player);
         return ret;
+    }
+
+    public static void ClearAllActivePickups()
+    {
+        foreach (Pickup pickup in pickups.Values)
+        {
+            Object.Destroy(pickup.gameObject);
+        }
+        pickups.Clear();
     }
 
     public static void ResetPickupLog()

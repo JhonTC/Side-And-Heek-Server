@@ -189,6 +189,11 @@ public class SimplePlayerController : MonoBehaviour
 
     public void CustomFixedUpdate(float _inputSpeed)
     {
+        if (activeWalkingFoot == null || otherWalkingFoot == null)
+        {
+            return;
+        }
+
         inputSpeed = _inputSpeed;
 
         if (isJumping)
@@ -284,20 +289,10 @@ public class SimplePlayerController : MonoBehaviour
                 walkStage = WalkStage.LiftFoot;
                 moveStageTimer = 0;
 
-                if (rightFootCollider.isGrounded)
+                /*if (rightFootCollider.isGrounded)
                 {
                     Vector3 rightFootPos = footCentrePos;
                     rightFootPos -= root.transform.right * rightFootInitialDisplacement.x;
-
-
-                    //Vector3 tempRight = root.transform.right * rightFootInitialDisplacement.x;
-                    //Vector3 tempForward = root.transform.forward * rightFootInitialDisplacement.z;
-                    //Vector3 tempUp = root.transform.up * rightFootInitialDisplacement.y;
-                    //Vector3 newPos = root.position - (tempRight + tempUp);
-                    
-                    float distance = Mathf.Abs(Vector3.Distance(rightFootCollider.foot.position, rightFootPos));
-
-                    //rightFootCollider.foot.position = Vector3.Lerp(rightFootCollider.foot.position, rightFootPos, footReturnSpeed * Time.fixedDeltaTime);
                 }
 
                 if (leftFootCollider.isGrounded)
@@ -305,26 +300,15 @@ public class SimplePlayerController : MonoBehaviour
                     Vector3 leftFootPos = footCentrePos;
                     leftFootPos -= root.transform.right * leftFootInitialDisplacement.x;
 
-                    //Vector3 tempRight = root.transform.right * leftFootInitialDisplacement.x;
-                    //Vector3 tempForward = root.transform.forward * leftFootInitialDisplacement.z;
-                    //Vector3 tempUp = root.transform.up * leftFootInitialDisplacement.y;
-                    //Vector3 newPos = root.position - (tempRight + tempUp);
-
                     float distance = Mathf.Abs(Vector3.Distance(leftFootCollider.foot.position, leftFootPos));
-
-                    //leftFootCollider.foot.position = Vector3.Lerp(leftFootCollider.foot.position, leftFootPos, footReturnSpeed * Time.fixedDeltaTime);
-                }
+                }*/
 
                 Vector3 footNewPos = otherWalkingFoot.transform.position;
                 footNewPos += root.transform.right * activeFootDisplacement.x;
 
-                //Vector3 feetMidpointPos = leftFootCollider.transform.position + (rightFootCollider.transform.position - leftFootCollider.transform.position) / 2;
                 feetMidpoint.position = footNewPos;
                 Vector3 rootPos = footNewPos;
                 rootPos.y += standingHeight;
-
-                //root.position = Vector3.Lerp(root.position, rootPos, rootReturnSpeed * Time.fixedDeltaTime);
-                //root.rotation = Quaternion.Lerp(root.rotation, lastRotation, rootReturnSpeed * 10 * Time.fixedDeltaTime);
             }
         } else
         {
@@ -394,10 +378,6 @@ public class SimplePlayerController : MonoBehaviour
             otherWalkingFoot = leftFootCollider;
             activeFootDisplacement = leftFootInitialDisplacement;
             otherFootDisplacement = rightFootInitialDisplacement;
-        }
-        else
-        {
-            throw new Exception("ERROR: ActiveWalkingFoot not assigned to either left or right foot");
         }
 
         awfRigidBody = activeWalkingFoot.foot.GetComponent<Rigidbody>();

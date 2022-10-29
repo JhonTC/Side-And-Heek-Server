@@ -183,15 +183,6 @@ public class ServerSend
         NetworkManager.Instance.Server.SendToAll(message, _playerId);
     }
 
-    public static void PlayerReadyReset(ushort _playerId, bool _isReady)
-    {
-        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.playerReadyToggled);
-        message.AddUShort(_playerId);
-        message.AddBool(_isReady);
-
-        NetworkManager.Instance.Server.SendToAll(message);
-    }
-
     public static void ChangeScene(string _sceneToLoad)
     {
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.changeScene);

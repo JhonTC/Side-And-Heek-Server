@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
         player.Username = string.IsNullOrEmpty(username) ? $"Guest {id}" : username;
         player.activeColour = GameManager.instance.GetNextAvaliableColour();
         player.isHost = list.Count <= 0;
+        player.isReady = false;
 
         player.SpawnBody();
         player.SendSpawned();
@@ -67,6 +68,7 @@ public class Player : MonoBehaviour
         message.AddUShort(Id);
         message.AddString(Username);
         message.AddBool(isHost);
+        message.AddBool(isReady);
         message.AddVector3(transform.position);
         message.AddColour(activeColour);
 
@@ -137,11 +139,14 @@ public class Player : MonoBehaviour
         ServerSend.PlayerState(this);
     }
 
-    public void SetReady(bool _isReady)
+    public void SetReady(bool _isReady, bool sendMessage = true)
     {
         isReady = _isReady;
 
-        ServerSend.PlayerReadyToggled(Id, isReady);
+        if (sendMessage)
+        {
+            ServerSend.PlayerReadyToggled(Id, isReady);
+        }
     }
 
     public void SetInput(float _inputSpeed, bool[] _otherInputs, Quaternion _rotation)
@@ -179,13 +184,13 @@ public class Player : MonoBehaviour
             movementController.OnCollisionWithOther(flopTime);
             if (turnToHunter)
             {
-                SetPlayerType(PlayerType.Hunter, false);
+                SetPlayerType(PlayerType.Hunter);
                 GameManager.instance.CheckForGameOver();
             }
         }
     }
 
-    public void SetPlayerType(PlayerType type, bool isFirstHunter)
+    public void SetPlayerType(PlayerType type, bool isFirstHunter = false, bool sendMessage = true)
     {
         playerType = type;
 
@@ -209,7 +214,12 @@ public class Player : MonoBehaviour
 
         movementController.forwardForceMultipler = speedMultiplier;
 
-        ServerSend.SetPlayerType(Id, playerType, true);
+        activePickup = null;
+
+        if (sendMessage)
+        {
+            ServerSend.SetPlayerType(Id, playerType, true);
+        }
     }
 
     public void SpawnBody()

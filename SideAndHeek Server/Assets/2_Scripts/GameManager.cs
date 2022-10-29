@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
 
     public Dictionary<Color, bool> chosenHiderColours = new Dictionary<Color, bool>();
 
+    private List<Player> lastMainHunterPlayers = new List<Player>();
+
     private void Awake()
     {
         if (instance == null)
@@ -111,7 +113,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator SpawnSpecial(Player _player, int _delay = 60)
     {
         specialSpawnCount = _delay;
-        while (specialSpawnCount > 0)
+        while (specialSpawnCount > 0 && gameStarted)
         {
             yield return new WaitForSeconds(1.0f);
             
@@ -119,13 +121,16 @@ public class GameManager : MonoBehaviour
 
             specialSpawnCount--;
         }
-        activeHunterSceneName = activeSceneName;
 
-        _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeHunterSceneName).GetNextSpawnpoint(true));
+        if (gameStarted)
+        {
+            activeHunterSceneName = activeSceneName;
 
-        tryStartGameActive = false;
-        ServerSend.GameStarted(gameRules.gameLength);
-        StartCoroutine(GameTimeCountdown(gameRules.gameLength));
+            _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeHunterSceneName).GetNextSpawnpoint(true));
+
+            ServerSend.GameStarted(gameRules.gameLength);
+            StartCoroutine(GameTimeCountdown(gameRules.gameLength));
+        }
     }
 
     private IEnumerator GameTimeCountdown(int _delay = 240)
@@ -148,19 +153,20 @@ public class GameManager : MonoBehaviour
     {
         if (!tryStartGameActive)
         {
-            bool areAllPlayersReady = AreAllPlayersReady();
-            if (areAllPlayersReady)
+            if (AreAllPlayersReady())
             {
-                ushort _randPlayerId = Player.list.ElementAt(Random.Range(0, Player.list.Count)).Value.Id;
+                Player randomPlayer = GetRandomPlayerExcludingLastHunters();
+                lastMainHunterPlayers.Clear();
 
                 foreach (Player player in Player.list.Values)
                 {
                     if (player != null)
                     {
                         PlayerType _playerType = PlayerType.Default;
-                        if (player.Id == _randPlayerId)
+                        if (player.Id == randomPlayer.Id)
                         {
                             _playerType = PlayerType.Hunter;
+                            lastMainHunterPlayers.Add(player);
                         }
                         else
                         {
@@ -187,6 +193,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Player GetRandomPlayerExcludingLastHunters()
+    {
+        List<Player> randomPlayers = new List<Player>();
+        foreach (Player player in Player.list.Values)
+        {
+            if (!lastMainHunterPlayers.Contains(player))
+            {
+                randomPlayers.Add(player);
+            }
+        }
+
+        return randomPlayers[Random.Range(0, randomPlayers.Count)];
+    }
+
     private bool AreAllPlayersReady()
     {
         foreach (Player player in Player.list.Values)
@@ -204,15 +224,33 @@ public class GameManager : MonoBehaviour
     {
         if (gameStarted)
         {
+            int hunterCount = 0;
+            int hiderCount = 0;
+
             foreach (Player player in Player.list.Values)
             {
                 if (player.playerType == PlayerType.Hider)
                 {
-                    return;
+                    hiderCount++;
+                }
+                if (player.playerType == PlayerType.Hunter)
+                {
+                    hunterCount++;
                 }
             }
 
-            GameOver(true);
+            bool isGameOver = hiderCount == 0 || hunterCount == 0;
+
+            if (isGameOver)
+            {
+                bool isHunterVictory = true;
+                if (hunterCount == 0)
+                {
+                    isHunterVictory = false;
+                }
+
+                GameOver(isHunterVictory);
+            }
         }
     }
 
@@ -224,18 +262,20 @@ public class GameManager : MonoBehaviour
 
         foreach (Player player in Player.list.Values)
         {
-            player.playerType = PlayerType.Default;
-            ServerSend.SetPlayerType(player);
-            ServerSend.PlayerReadyReset(player.Id, false);
-
             player.TeleportPlayer(LevelManager.GetLevelManagerForScene("Lobby").GetNextSpawnpoint(!gameStarted && player.isHost));
-
+            player.SetReady(false, false);
+            player.SetPlayerType(PlayerType.Default, false, false);
         }
+
+        PickupHandler.ClearAllActivePickups();
+        ItemHandler.ClearAllActiveItems();
 
         SceneManager.UnloadSceneAsync("Map_1");
         ServerSend.UnloadScene("Map_1");
 
-        Debug.Log("Game Over, Hunters Win!");
+        tryStartGameActive = false;
+
+        Debug.Log($"Game Over, {(_isHunterVictory ? "Hunters" : "Hiders")} Win!");
     }
 
     public void GameRulesChanged(GameRules _gameRules)

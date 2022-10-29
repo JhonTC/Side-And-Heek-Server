@@ -5,7 +5,7 @@ using UnityEngine;
 
 public enum ErrorResponseCode
 {
-    NotAllPlayersReady = 101,
+    NotAllPlayersReady = 101
 }
 
 public class ErrorResponseHandler

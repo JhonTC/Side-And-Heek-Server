@@ -93,7 +93,6 @@ public class JellyBomb : SpawnableObject
             {
                 transform.localScale = Vector3.one * currentExplosionSize;
                 currentExplosionSize += Mathf.Clamp(explosionSpeed * Time.fixedDeltaTime, startExplosionSize, explosionRadius);
-                //smoothCES = explosionRadius * (explosionCurve.Evaluate((explosionRadius - startExplosionSize) / currentExplosionSize));
                 foreach (TrappedBody body in trappedBodies)
                 {
                     float multiplier = explosionRadius - currentExplosionSize;
@@ -102,11 +101,18 @@ public class JellyBomb : SpawnableObject
             }
             else
             {
-                //currentExplosionSize = startExplosionSize;
                 isExploding = false;
                 hasExploded = true;
                 StartCoroutine(StartLifetimeCoundown());
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < trappedBodies.Count; i++)
+        {
+            trappedBodies[i].Reset();
         }
     }
 
