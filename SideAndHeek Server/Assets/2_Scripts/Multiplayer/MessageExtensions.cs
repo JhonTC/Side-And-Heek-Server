@@ -110,37 +110,20 @@ public static class MessageExtensions
     /// <returns>The message that the <see cref="GameRules"/> was added to.</returns>
     public static Message Add(this Message message, GameRules value)
     {
-        message.AddInt(value.gameLength);
-
-        message.AddInt(value.numberOfHunters);
-        message.AddInt((int)value.catchType);
-        message.AddInt(value.hidingTime);
-
-        message.AddInt((int)value.speedBoostType);
-        message.AddFloat(value.speedMultiplier);
-
-        message.AddInt((int)value.fallRespawnType);
-        message.AddInt((int)value.fallRespawnLocation);
-
-        message.AddBool(value.continuousFlop);
-
-        return message;
+        return value.AddMessageValues(message);
     }
 
     /// <summary>Retrieves a <see cref="GameRules"/> from the message.</summary>
     /// <returns>The <see cref="GameRules"/> that was retrieved.</returns>
     public static GameRules GetGameRules(this Message message)
     {
-        return new GameRules(
-            message.GetInt(), 
-            message.GetInt(), 
-            (CatchType)message.GetInt(), 
-            message.GetInt(), 
-            (SpeedBoostType)message.GetInt(), 
-            message.GetFloat(),
-            (HiderFallRespawnType)message.GetInt(), 
-            (FallRespawnLocation)message.GetInt(),
-            message.GetBool());
+        GameRules gamerules = GameRules.CreateGameRulesFromType(GameManager.instance.gameType);
+        if (gamerules != null)
+        {
+            gamerules.ReadMessageValues(message);
+        }
+
+        return gamerules;
     }
     #endregion
 }

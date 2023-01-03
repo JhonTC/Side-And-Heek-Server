@@ -107,6 +107,9 @@ public class Player : MonoBehaviour
 
     [HideInInspector] public Color activeColour;
 
+    [HideInInspector] public Vector3 shootDirection = Vector3.zero;
+    [HideInInspector] public float throwForce = 80;
+
     private void Awake()
     {
         DontDestroyOnLoad(this);
@@ -177,42 +180,11 @@ public class Player : MonoBehaviour
         SpawnBody();
     }
 
-    public void OnCollisionWithOther(float flopTime, bool turnToHunter)
-    {
-        if (isBodyActive)
-        {
-            movementController.OnCollisionWithOther(flopTime);
-            if (turnToHunter)
-            {
-                SetPlayerType(PlayerType.Hunter);
-                GameManager.instance.CheckForGameOver();
-            }
-        }
-    }
-
     public void SetPlayerType(PlayerType type, bool isFirstHunter = false, bool sendMessage = true)
     {
         playerType = type;
 
-        float speedMultiplier = 1;
-
-        if (playerType == PlayerType.Hunter)
-        {
-            switch(GameManager.instance.gameRules.speedBoostType)
-            {
-                case SpeedBoostType.FirstHunter:
-                    if (isFirstHunter)
-                    {
-                        speedMultiplier = GameManager.instance.gameRules.speedMultiplier;
-                    }
-                    break;
-                case SpeedBoostType.AllHunters:
-                    speedMultiplier = GameManager.instance.gameRules.speedMultiplier;
-                    break;
-            }
-        }
-
-        movementController.forwardForceMultipler = speedMultiplier;
+        GameManager.instance.gameMode.OnPlayerTypeSet(this, playerType, isFirstHunter);
 
         activePickup = null;
 

@@ -5,10 +5,16 @@ public class ServerSend
 {
     public static void Welcome(ushort _toClient, string _msg, GameRules _gameRules, Color[] _hiderColours)
     {
+        bool isHost = Player.list.Count <= 0;
+
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.welcome);
         message.AddString(_msg);
         message.AddUShort(_toClient);
-        message.AddGameRules(_gameRules);
+        message.AddBool(isHost);
+        if (!isHost)
+        {
+            message.AddGameRules(_gameRules);
+        }
         message.AddInt(_hiderColours.Length);
         for (int i = 0; i < _hiderColours.Length; i++)
         {
@@ -256,18 +262,18 @@ public class ServerSend
         NetworkManager.Instance.Server.SendToAll(message);
     }
 
-    public static void GameStarted(int gameDuration)
+    public static void GameStarted()
     {
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.gameStart);
-        message.AddInt(gameDuration);
+        GameManager.instance.gameMode.AddGameStartMessageValues(ref message);
 
         NetworkManager.Instance.Server.SendToAll(message);
     }
 
-    public static void GameOver(bool _isHunterVictory)
+    public static void GameOver()
     {
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.gameOver);
-        message.AddBool(_isHunterVictory);
+        GameManager.instance.gameMode.AddGameOverMessageValues(ref message);
 
         NetworkManager.Instance.Server.SendToAll(message);
     }

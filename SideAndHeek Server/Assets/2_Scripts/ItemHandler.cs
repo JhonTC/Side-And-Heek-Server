@@ -45,16 +45,17 @@ public class ItemHandler
         if (!items.ContainsKey(currentItemId))
         {
             item = NetworkObjectsManager.instance.SpawnItem((PickupCode)_code, _position, _rotation);
-            switch((PickupCode)_code)
+            item.Init(currentItemId, _creatorId, _code, true);
+            /*switch ((PickupCode)_code)
             {
                 case PickupCode.JellyBomb:
                     JellyBomb jellybomb = item as JellyBomb;
-                    jellybomb.Init(currentItemId, _creatorId, _code, Player.list[_creatorId].movementController.root.transform.forward, 80); //TODO: cleanup to pass params rather than having specific calls
+                    jellybomb.Init(currentItemId, _creatorId, _code, ); //TODO: cleanup to pass params rather than having specific calls
                     break;
                 default:
                     item.Init(currentItemId, _creatorId, _code, true);
                     break;
-            }
+            }*/
 
             items.Add(item.objectId, item);
 

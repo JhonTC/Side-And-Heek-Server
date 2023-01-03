@@ -13,18 +13,12 @@ public class GameManager : MonoBehaviour
     private LevelManager levelManager;
 
     public PickupCollection collection;
-    public GameRules gameRules;
-
-    //[SerializeField] private int specialSpawnDelay = 20;
-    private int specialSpawnCount = 0;
+    public GameMode gameMode;
+    public GameType gameType;
 
     public string activeSceneName = "Lobby";
-    public string activeHunterSceneName = "Lobby";
 
-    //public int maxPlayDuration = 240;
     public int currentTime = 0;
-
-    //public float hunterSpeedMultiplier = 1f;
 
     private bool tryStartGameActive = false;
 
@@ -55,6 +49,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         //gameRules = new GameRules();
+        gameType = GameType.HideAndSeek;
+        gameMode = GameMode.CreateGameModeFromType(gameType);
+        gameMode.SetGameRules(GameRules.CreateGameRulesFromType(gameType)); //todo: replace with default mode?
 
         foreach (Color colour in hiderColours)
         {
@@ -82,70 +79,19 @@ public class GameManager : MonoBehaviour
         if (LevelManager.GetLevelManagerForScene(activeSceneName).levelType == LevelType.Map)
         {
             gameStarted = true;
-        }
-
-        foreach (Player player in Player.list.Values)
-        {
-            if (player.playerType != PlayerType.Hunter)
-            {
-                player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(!gameStarted && player.isHost));
-            }
-            else
-            {
-                StartCoroutine(SpawnSpecial(player, gameRules.hidingTime));
-            }
+            gameMode.GameStart();
         }
     }
 
     private void OnLevelFinishedUnloading(Scene _scene)
     {
         activeSceneName = "Lobby";
-        activeHunterSceneName = activeSceneName;
 
         PickupHandler.ResetPickupLog();
 
         foreach (Player player in Player.list.Values)
         {
             player.activePickup = null;
-        }
-    }
-
-    private IEnumerator SpawnSpecial(Player _player, int _delay = 60)
-    {
-        specialSpawnCount = _delay;
-        while (specialSpawnCount > 0 && gameStarted)
-        {
-            yield return new WaitForSeconds(1.0f);
-            
-            ServerSend.SetSpecialCountdown(_player.Id, specialSpawnCount, specialSpawnCount > 1);
-
-            specialSpawnCount--;
-        }
-
-        if (gameStarted)
-        {
-            activeHunterSceneName = activeSceneName;
-
-            _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeHunterSceneName).GetNextSpawnpoint(true));
-
-            ServerSend.GameStarted(gameRules.gameLength);
-            StartCoroutine(GameTimeCountdown(gameRules.gameLength));
-        }
-    }
-
-    private IEnumerator GameTimeCountdown(int _delay = 240)
-    {
-        currentTime = _delay;
-        while (currentTime > 0 && gameStarted)
-        {
-            yield return new WaitForSeconds(1.0f);
-
-            currentTime--;
-        }
-
-        if (gameStarted)
-        {
-            GameOver(false);
         }
     }
 
@@ -178,8 +124,8 @@ public class GameManager : MonoBehaviour
 
                 tryStartGameActive = true;
 
-                LevelManager.GetLevelManagerForScene(activeSceneName).LoadScene("Map_1", LevelType.Map);
-                ServerSend.ChangeScene("Map_1");
+                LevelManager.GetLevelManagerForScene(activeSceneName).LoadScene(gameMode.sceneName, LevelType.Map);
+                ServerSend.ChangeScene(gameMode.sceneName);
             }
             else
             {
@@ -222,43 +168,17 @@ public class GameManager : MonoBehaviour
 
     public void CheckForGameOver()
     {
-        if (gameStarted)
+        if (gameMode.CheckForGameOver())
         {
-            int hunterCount = 0;
-            int hiderCount = 0;
-
-            foreach (Player player in Player.list.Values)
-            {
-                if (player.playerType == PlayerType.Hider)
-                {
-                    hiderCount++;
-                }
-                if (player.playerType == PlayerType.Hunter)
-                {
-                    hunterCount++;
-                }
-            }
-
-            bool isGameOver = hiderCount == 0 || hunterCount == 0;
-
-            if (isGameOver)
-            {
-                bool isHunterVictory = true;
-                if (hunterCount == 0)
-                {
-                    isHunterVictory = false;
-                }
-
-                GameOver(isHunterVictory);
-            }
+            GameOver();
         }
     }
 
-    public void GameOver(bool _isHunterVictory)
+    public void GameOver()
     {
-        ServerSend.GameOver(_isHunterVictory);
-
         gameStarted = false;
+        gameMode.GameOver();
+        ServerSend.GameOver();
 
         foreach (Player player in Player.list.Values)
         {
@@ -270,17 +190,22 @@ public class GameManager : MonoBehaviour
         PickupHandler.ClearAllActivePickups();
         ItemHandler.ClearAllActiveItems();
 
-        SceneManager.UnloadSceneAsync("Map_1");
-        ServerSend.UnloadScene("Map_1");
+        SceneManager.UnloadSceneAsync(gameMode.sceneName);
+        ServerSend.UnloadScene(gameMode.sceneName);
 
         tryStartGameActive = false;
+    }
 
-        Debug.Log($"Game Over, {(_isHunterVictory ? "Hunters" : "Hiders")} Win!");
+    public void GameTypeChanged(GameType _gameType)
+    {
+        gameType = _gameType;
+        gameMode = GameMode.CreateGameModeFromType(gameType);
     }
 
     public void GameRulesChanged(GameRules _gameRules)
     {
-        gameRules = _gameRules;
+        gameMode.SetGameRules(_gameRules);
+        //GAMEMODE CHANGES?
     }
 
     public bool ClaimHiderColour(Color previousColour, Color newColour)

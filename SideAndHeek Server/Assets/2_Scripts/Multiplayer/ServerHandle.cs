@@ -7,7 +7,7 @@ public class ServerHandle
     [MessageHandler((ushort)ClientToServerId.name)]
     public static void Name(ushort fromClientId, Message message)
     {
-        ServerSend.Welcome(fromClientId, "Welcome", GameManager.instance.gameRules, GameManager.instance.hiderColours);
+        ServerSend.Welcome(fromClientId, "Welcome", GameManager.instance.gameMode.GetGameRules(), GameManager.instance.hiderColours);
         Player.Spawn(fromClientId, message.GetString());
     }
 
@@ -75,12 +75,23 @@ public class ServerHandle
     [MessageHandler((ushort)ClientToServerId.itemUsed)]
     public static void ItemUsed(ushort fromClientId, Message message)
     {
+        if (message.GetBool())
+        {
+            Player.list[fromClientId].shootDirection = message.GetVector3();
+        }
+
         Player.list[fromClientId].PickupUsed();
     }
 
     [MessageHandler((ushort)ClientToServerId.gameRulesChanged)]
     public static void GameRulesChanged(ushort fromClientId, Message message)
     {
+        GameType gameType = (GameType)message.GetInt();
+        if (GameManager.instance.gameType != gameType)
+        {
+            GameManager.instance.GameTypeChanged(gameType); //todo: this shouldnt be here
+        }
+
         GameRules gameRules = message.GetGameRules();
 
         GameManager.instance.GameRulesChanged(gameRules);

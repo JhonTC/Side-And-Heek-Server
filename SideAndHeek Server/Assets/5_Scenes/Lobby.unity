@@ -275,19 +275,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameStarted: 0
-  collection: {fileID: 11400000, guid: d4e6de60ac9c13d4787376905ad3eaa1, type: 2}
-  gameRules:
-    gameLength: 180
-    numberOfHunters: 1
-    catchType: 1
-    hidingTime: 20
-    speedBoostType: 0
-    speedMultiplier: 1.1
-    fallRespawnType: 0
-    fallRespawnLocation: 0
-    continuousFlop: 0
+  collection: {fileID: 11400000, guid: b8bbefbc1c9b9d14699ad5c36b7a2ee1, type: 2}
+  gameMode: {fileID: 11400000, guid: 81df732be949a23429f28e02ac704ff1, type: 2}
+  gameType: 1
   activeSceneName: Lobby
-  activeHunterSceneName: Lobby
   currentTime: 0
   defaultColour: {r: 0.9254902, g: 0.9254902, b: 0.9254902, a: 1}
   hiderColours:
@@ -1455,7 +1446,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2129778326
 Transform:
   m_ObjectHideFlags: 0

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupDetails:
   - pickupSO: {fileID: 11400000, guid: 46df6cfe76e327840a90a69690f28b7a, type: 2}
-    numberOfUses: 1
+    numberOfUses: 10

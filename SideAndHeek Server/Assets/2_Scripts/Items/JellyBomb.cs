@@ -8,6 +8,7 @@ public class JellyBomb : SpawnableObject
     public float explosionSpeed;
     public AnimationCurve explosionCurve;
     public float explosionForce;
+    public float throwForce;
     public float throwForceMultiplier;
 
     private float lifeDuration;
@@ -116,12 +117,12 @@ public class JellyBomb : SpawnableObject
         }
     }
 
-    public void Init(ushort _objectId, ushort _creatorId, int _code, Vector3 throwDirection, float throwForce)
+    public override void Init(ushort _objectId, ushort _creatorId, int _code, bool _sendMovement)
     {
-        base.Init(_objectId, _creatorId, _code, true);
+        base.Init(_objectId, _creatorId, _code, _sendMovement);
 
         lifeDuration = activeItemDetails.pickupSO.duration;
-        rigidbody.AddForce(throwDirection * throwForce * throwForceMultiplier);
+        rigidbody.AddForce(Player.list[_creatorId].shootDirection * Player.list[_creatorId].throwForce * throwForceMultiplier);
     }
 
     public void OnTriggerEnter(Collider other)

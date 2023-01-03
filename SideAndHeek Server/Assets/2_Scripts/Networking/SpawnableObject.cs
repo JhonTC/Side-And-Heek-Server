@@ -10,7 +10,7 @@ public class SpawnableObject : MonoBehaviour
 
     public PickupDetails activeItemDetails;
 
-    public void Init(ushort _objectId, ushort _creatorId, int _code, bool _sendMovement)
+    public virtual void Init(ushort _objectId, ushort _creatorId, int _code, bool _sendMovement)
     {
         objectId = _objectId;
         creatorId = _creatorId;

@@ -111,7 +111,7 @@ public class SimplePlayerController : MonoBehaviour
     {
         if (flopKeyPressed)
         {
-            if (GameManager.instance.gameRules.continuousFlop) {
+            if (GameManager.instance.gameMode.GetGameRules().continuousFlop) {
                 isFlopKeyDown = true;
             }
         }
