@@ -30,6 +30,44 @@ public class GM_HideAndSeek : GameMode
         }
     }
 
+    private Player GetRandomPlayerExcludingLastHunters()
+    {
+        List<Player> randomPlayers = new List<Player>();
+        foreach (Player player in Player.list.Values)
+        {
+            if (!GameManager.instance.lastMainHunterPlayers.Contains(player))
+            {
+                randomPlayers.Add(player);
+            }
+        }
+
+        return randomPlayers[Random.Range(0, randomPlayers.Count)];
+    }
+
+    public override void TryGameStartSuccess()
+    {
+        Player randomPlayer = GetRandomPlayerExcludingLastHunters();
+        GameManager.instance.lastMainHunterPlayers.Clear();
+
+        foreach (Player player in Player.list.Values)
+        {
+            if (player != null)
+            {
+                PlayerType _playerType = PlayerType.Default;
+                if (player.Id == randomPlayer.Id)
+                {
+                    _playerType = PlayerType.Hunter;
+                    GameManager.instance.lastMainHunterPlayers.Add(player);
+                }
+                else
+                {
+                    _playerType = PlayerType.Hider;
+                }
+                player.SetPlayerType(_playerType, true);
+            }
+        }
+    }
+
     public override void GameStart()
     {
         foreach (Player player in Player.list.Values)

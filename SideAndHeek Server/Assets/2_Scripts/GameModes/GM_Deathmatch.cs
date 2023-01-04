@@ -8,9 +8,12 @@ public class GM_Deathmatch : GameMode
     public GR_Deathmatch gameRules;
     private string spectatorSceneName = "Lobby";
 
+    public Transform shrinkingArea;
+    private float shrinkSpeed = 0.005f;
+
     public override void Init()
     {
-        sceneName = "Map_1";
+        sceneName = "Map_2";
     }
 
     public override GameRules GetGameRules()
@@ -30,6 +33,12 @@ public class GM_Deathmatch : GameMode
 
     public override void GameStart()
     {
+        GameObject objectSA = GameObject.FindGameObjectWithTag("ShrinkingArea");
+        if (objectSA)
+        {
+            shrinkingArea = objectSA.transform;
+        }
+
         foreach (Player player in Player.list.Values)
         {
             player.TeleportPlayer(LevelManager.GetLevelManagerForScene(GameManager.instance.activeSceneName).GetNextSpawnpoint(false));
@@ -37,6 +46,16 @@ public class GM_Deathmatch : GameMode
 
         ServerSend.GameStarted();
         GameModeUtils.StartGameTimer(GameManager.instance.GameOver, gameRules.gameLength);
+    }
+
+    public override void FixedUpdate()
+    {
+        if (shrinkingArea.localScale.x >= 0.4f)
+        {
+            shrinkingArea.localScale -= new Vector3(shrinkSpeed, 0, shrinkSpeed) * Time.fixedDeltaTime;
+        }
+
+        //NEED TO SEND NEW SCALE TO CLIENTS
     }
 
     public override void GameOver()
@@ -70,7 +89,7 @@ public class GM_Deathmatch : GameMode
                 }
             }
 
-            isGameOver = defaultCount == 1;
+            isGameOver = defaultCount <= 1;
         }
 
         return isGameOver;
@@ -108,6 +127,11 @@ public class GM_Deathmatch : GameMode
     {
         player.SetPlayerType(PlayerType.Spectator);
         player.TeleportPlayer(LevelManager.GetLevelManagerForScene(spectatorSceneName).GetNextSpawnpoint(true));
+
+        if (CheckForGameOver())
+        {
+            GameManager.instance.GameOver();
+        }
     }
 
     public override void OnPlayerTypeSet(Player player, PlayerType playerType, bool isFirstHunter)

@@ -38,6 +38,11 @@ public class GameManagerEditor : Editor
             Player.Spawn(100, "NPC");
         }
 
+        if (GUILayout.Button("Check For Gameover"))
+        {
+            gameManager.CheckForGameOver();
+        }
+
         if (GUILayout.Button("END GAME"))
         {
             gameManager.GameOver();

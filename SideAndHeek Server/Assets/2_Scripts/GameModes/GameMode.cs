@@ -40,7 +40,17 @@ public class GameMode
 
     }
 
+    public virtual void TryGameStartSuccess()
+    {
+
+    }
+
     public virtual void GameStart()
+    {
+
+    }
+
+    public virtual void FixedUpdate()
     {
 
     }
@@ -75,6 +85,11 @@ public class GameMode
     }
 
     public virtual void OnPlayerHitFallDetector(Player player)
+    {
+
+    }
+
+    public virtual void OnSceneLoaded()
     {
 
     }

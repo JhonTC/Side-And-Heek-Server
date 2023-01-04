@@ -27,9 +27,9 @@ public class GameManager : MonoBehaviour
     public Color[] hiderColours;
     public Color hunterColour;
 
-    public Dictionary<Color, bool> chosenHiderColours = new Dictionary<Color, bool>();
+    public Dictionary<Color, bool> chosenDefaultColours = new Dictionary<Color, bool>();
 
-    private List<Player> lastMainHunterPlayers = new List<Player>();
+    [HideInInspector] public List<Player> lastMainHunterPlayers = new List<Player>(); //todo:Move somewhere?? - cant go to gamemode as it gets cleared when updated
 
     private void Awake()
     {
@@ -55,7 +55,15 @@ public class GameManager : MonoBehaviour
 
         foreach (Color colour in hiderColours)
         {
-            chosenHiderColours.Add(colour, false);
+            chosenDefaultColours.Add(colour, false);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (gameStarted)
+        {
+            gameMode.FixedUpdate();
         }
     }
 
@@ -101,26 +109,7 @@ public class GameManager : MonoBehaviour
         {
             if (AreAllPlayersReady())
             {
-                Player randomPlayer = GetRandomPlayerExcludingLastHunters();
-                lastMainHunterPlayers.Clear();
-
-                foreach (Player player in Player.list.Values)
-                {
-                    if (player != null)
-                    {
-                        PlayerType _playerType = PlayerType.Default;
-                        if (player.Id == randomPlayer.Id)
-                        {
-                            _playerType = PlayerType.Hunter;
-                            lastMainHunterPlayers.Add(player);
-                        }
-                        else
-                        {
-                            _playerType = PlayerType.Hider;
-                        }
-                        player.SetPlayerType(_playerType, true);
-                    }
-                }
+                gameMode.TryGameStartSuccess();
 
                 tryStartGameActive = true;
 
@@ -137,20 +126,6 @@ public class GameManager : MonoBehaviour
             ServerSend.SendErrorResponse(ErrorResponseCode.NotAllPlayersReady); //TODO:Change to different message(game already trying to start)
             tryStartGameActive = false;
         }
-    }
-
-    private Player GetRandomPlayerExcludingLastHunters()
-    {
-        List<Player> randomPlayers = new List<Player>();
-        foreach (Player player in Player.list.Values)
-        {
-            if (!lastMainHunterPlayers.Contains(player))
-            {
-                randomPlayers.Add(player);
-            }
-        }
-
-        return randomPlayers[Random.Range(0, randomPlayers.Count)];
     }
 
     private bool AreAllPlayersReady()
@@ -205,24 +180,23 @@ public class GameManager : MonoBehaviour
     public void GameRulesChanged(GameRules _gameRules)
     {
         gameMode.SetGameRules(_gameRules);
-        //GAMEMODE CHANGES?
     }
 
     public bool ClaimHiderColour(Color previousColour, Color newColour)
     {
-        if (chosenHiderColours.ContainsKey(newColour))
+        if (chosenDefaultColours.ContainsKey(newColour))
         {
-            if (!chosenHiderColours[newColour])
+            if (!chosenDefaultColours[newColour])
             {
-                if (chosenHiderColours.ContainsKey(previousColour))
+                if (chosenDefaultColours.ContainsKey(previousColour))
                 {
-                    if (chosenHiderColours[previousColour])
+                    if (chosenDefaultColours[previousColour])
                     {
-                        chosenHiderColours[previousColour] = false;
+                        chosenDefaultColours[previousColour] = false;
                     }
                 }
 
-                return chosenHiderColours[newColour] = true;
+                return chosenDefaultColours[newColour] = true;
             }
         }
 
@@ -231,22 +205,22 @@ public class GameManager : MonoBehaviour
 
     public void UnclaimHiderColour(Color colour)
     {
-        if (chosenHiderColours.ContainsKey(colour))
+        if (chosenDefaultColours.ContainsKey(colour))
         {
-            if (chosenHiderColours[colour])
+            if (chosenDefaultColours[colour])
             {
-                chosenHiderColours[colour] = false;
+                chosenDefaultColours[colour] = false;
             }
         }
     }
 
     public Color GetNextAvaliableColour()
     {
-        foreach (Color colour in chosenHiderColours.Keys)
+        foreach (Color colour in chosenDefaultColours.Keys)
         {
-            if (!chosenHiderColours[colour])
+            if (!chosenDefaultColours[colour])
             {
-                chosenHiderColours[colour] = true;
+                chosenDefaultColours[colour] = true;
                 return colour;
             }
         }

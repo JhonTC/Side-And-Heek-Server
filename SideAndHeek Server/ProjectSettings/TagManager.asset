@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - BodyCollider
+  - MapSpawnpoints
+  - ShrinkingArea
   layers:
   - Default
   - TransparentFX
