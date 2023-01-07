@@ -86,8 +86,6 @@ public class JellyBomb : SpawnableObject
 
     protected override void FixedUpdate()
     {
-        base.FixedUpdate();
-
         if (isExploding)
         {
             if (currentExplosionSize < explosionRadius)
@@ -107,6 +105,8 @@ public class JellyBomb : SpawnableObject
                 StartCoroutine(StartLifetimeCoundown());
             }
         }
+
+        base.FixedUpdate();
     }
 
     private void OnDestroy()
@@ -117,9 +117,9 @@ public class JellyBomb : SpawnableObject
         }
     }
 
-    public override void Init(ushort _objectId, ushort _creatorId, int _code, bool _sendMovement)
+    public override void Init(ushort _creatorId, int _code)
     {
-        base.Init(_objectId, _creatorId, _code, _sendMovement);
+        base.Init(_creatorId, _code);
 
         lifeDuration = activeItemDetails.pickupSO.duration;
         rigidbody.AddForce(Player.list[_creatorId].shootDirection * Player.list[_creatorId].throwForce * throwForceMultiplier);
@@ -162,53 +162,6 @@ public class JellyBomb : SpawnableObject
 
             isExploding = true;
         }
-
-        /*if (!hasExploded)
-        {
-            if (other.CompareTag("BodyCollider"))
-            {
-                Player player = other.GetComponentInParent<Player>();
-                if (player.Id == creatorId)
-                {
-                    return;
-                } else
-                {
-                    //player.movementController.root.velocity = Vector3.zero;
-                    player.movementController.root.AddExplosionForce(explosionForce, transform.position, explosionRadius);
-
-                    TrappedBody trappedBody = new TrappedBody(player.movementController.root, player);
-                    trappedBody.Stick();
-                    trappedBodies.Add(trappedBody);
-
-                    trappedBody = new TrappedBody(player.movementController.leftLeg);
-                    trappedBody.Stick();
-                    trappedBodies.Add(trappedBody);
-
-                    trappedBody = new TrappedBody(player.movementController.rightLeg);
-                    trappedBody.Stick();
-                    trappedBodies.Add(trappedBody);
-
-                    trappedBody = new TrappedBody(player.movementController.leftFootCollider.foot);
-                    trappedBody.Stick();
-                    trappedBodies.Add(trappedBody);
-
-                    trappedBody = new TrappedBody(player.movementController.rightFootCollider.foot);
-                    trappedBody.Stick();
-                    trappedBodies.Add(trappedBody);
-                }
-            }
-
-            if (!isExploding)
-            {
-                rigidbody.velocity = Vector3.zero;
-                rigidbody.useGravity = false;
-
-                isExploding = true;
-            }
-        } else
-        {
-            
-        }*/
     }
 
     public void OnTriggerExit(Collider other)
@@ -258,5 +211,7 @@ public class JellyBomb : SpawnableObject
         }
 
         transform.localScale = Vector3.zero;
+
+        NetworkObjectsManager.instance.DestroyObject(this);
     }
 }

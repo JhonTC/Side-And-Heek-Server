@@ -3,15 +3,11 @@ using UnityEngine;
 
 public class PickupHandler //TODO: Make into Singleton
 {
-    public static Dictionary<ushort, Pickup> pickups = new Dictionary<ushort, Pickup>();
-
-    public static Dictionary<PickupCode, int> pickupLog = new Dictionary<PickupCode, int>();
+    public static Dictionary<PickupType, int> pickupLog = new Dictionary<PickupType, int>();
 
     private delegate BasePickup PickupHandlerDelegate(PickupSO _pickupSO, Player _player);
 
-    private static Dictionary<PickupCode, PickupHandlerDelegate> pickupHandlers;
-
-    private static ushort currentPickupId = 0;
+    private static Dictionary<PickupType, PickupHandlerDelegate> pickupHandlers;
 
     public PickupHandler()
     {
@@ -20,36 +16,30 @@ public class PickupHandler //TODO: Make into Singleton
 
     private void InitialisePickupData()
     {
-        pickupHandlers = new Dictionary<PickupCode, PickupHandlerDelegate>()
+        pickupHandlers = new Dictionary<PickupType, PickupHandlerDelegate>()
         {
-            { PickupCode.NULL,  NullPickup },
-            { PickupCode.SuperFlop, SuperFlop },
-            { PickupCode.SuperJump, SuperJump },
-            { PickupCode.JellyBomb, JellyBomb },
-            { PickupCode.SuperSpeed_3, SuperSpeed },
-            { PickupCode.SuperSpeed_6, SuperSpeed },
-            { PickupCode.SuperSpeed_9, SuperSpeed },
-            { PickupCode.Invisibility, Invisibility },
-            { PickupCode.Teleport, Teleport },
-            { PickupCode.Morph, Morph }
+            { PickupType.NULL,  NullPickup },
+            { PickupType.SuperFlop, SuperFlop },
+            { PickupType.SuperJump, SuperJump },
+            { PickupType.JellyBomb, JellyBomb },
+            { PickupType.SuperSpeed_3, SuperSpeed },
+            { PickupType.SuperSpeed_6, SuperSpeed },
+            { PickupType.SuperSpeed_9, SuperSpeed },
+            { PickupType.Invisibility, Invisibility },
+            { PickupType.Teleport, Teleport },
+            { PickupType.Morph, Morph }
         };
         Debug.Log("Initialised packets.");
     }
 
     public Pickup SpawnPickup(ushort _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
     {
-        Pickup pickup = null;
-
-        if (!pickups.ContainsKey(currentPickupId))
+        Pickup pickup = NetworkObjectsManager.instance.SpawnObject(NetworkedObjectType.Pickup, _position, _rotation, false) as Pickup;
+        if (pickup != null)
         {
-            pickup = NetworkObjectsManager.instance.SpawnPickup(_position, _rotation);
-            pickup.Init(_spawner, currentPickupId, _creatorId, _code);
-            pickups.Add(currentPickupId, pickup);
+            pickup.Init(_spawner, _creatorId, _code);
 
             ServerSend.PickupSpawned(pickup.objectId, true, pickup.creatorId, pickup.activeItemDetails.pickupSO, _position, _rotation);
-
-            currentPickupId++;
-            //TODO: above will cause issues on server being live for a long time - after many pickup spawns value will be out of range
         }
 
         return pickup;
@@ -75,7 +65,7 @@ public class PickupHandler //TODO: Make into Singleton
             return false;
         }
 
-        foreach (PickupCode pickupCode in pickupLog.Keys)
+        foreach (PickupType pickupCode in pickupLog.Keys)
         {
             if (pickupLog.ContainsKey(pickupCode))
             {
@@ -97,15 +87,6 @@ public class PickupHandler //TODO: Make into Singleton
     {
         BasePickup ret = pickupHandlers[_pickupSO.pickupCode](_pickupSO, _player);
         return ret;
-    }
-
-    public static void ClearAllActivePickups()
-    {
-        foreach (Pickup pickup in pickups.Values)
-        {
-            Object.Destroy(pickup.gameObject);
-        }
-        pickups.Clear();
     }
 
     public static void ResetPickupLog()

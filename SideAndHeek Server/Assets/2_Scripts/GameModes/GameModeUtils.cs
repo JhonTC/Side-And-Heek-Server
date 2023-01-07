@@ -20,6 +20,9 @@ public static class GameModeUtils
             currentTime--;
         }
 
-        callback?.Invoke();
+        if (GameManager.instance.gameStarted)
+        {
+            callback?.Invoke();
+        }
     }
 }

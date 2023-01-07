@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameStarted: 0
-  collection: {fileID: 11400000, guid: d4e6de60ac9c13d4787376905ad3eaa1, type: 2}
+  collection: {fileID: 11400000, guid: b8bbefbc1c9b9d14699ad5c36b7a2ee1, type: 2}
   gameMode:
     sceneName: 
   gameType: 1
@@ -325,10 +325,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupPrefab: {fileID: 5727015819816308131, guid: aa552f0b4bc6d7c488c27ffb725ccf68,
     type: 3}
-  itemDetails:
-  - itemPrefab: {fileID: 2424058124560369487, guid: 35df8d20612d7d94f99c2d7da3a87a65,
+  itemPrefabs:
+  - prefab: {fileID: 2424058124560369487, guid: 35df8d20612d7d94f99c2d7da3a87a65,
       type: 3}
-    pickupCode: 3
+    pickupType: 3
 --- !u!1001 &394274069
 PrefabInstance:
   m_ObjectHideFlags: 0

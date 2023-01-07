@@ -6,9 +6,9 @@ public class Pickup : SpawnableObject
 {
     public PickupSpawner spawner;
 
-    public void Init(PickupSpawner _spawner, ushort _objectId, ushort _creatorId, int _code)
+    public void Init(PickupSpawner _spawner, ushort _creatorId, int _code)
     {
-        base.Init(_objectId, _creatorId, _code, false);
+        base.Init(_creatorId, _code);
 
         spawner = _spawner;
     }
@@ -42,16 +42,11 @@ public class Pickup : SpawnableObject
         Player.list[_byPlayer].PickupPickedUp(pickup);
         ServerSend.PickupPickedUp(objectId, _byPlayer, code);
 
-        if (PickupHandler.pickups.ContainsKey(objectId))
-        {
-            PickupHandler.pickups.Remove(objectId);
-        }
-
         if (spawner != null)
         {
             spawner.PickupPickedUp();
         }
 
-        Destroy(gameObject);
+        NetworkObjectsManager.instance.DestroyObject(this);
     }
 }

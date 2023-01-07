@@ -48,8 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectId: 0
+  sendTransform: 0
+  networkedObjectType: 2
   creatorId: 0
-  sendMovement: 0
   activeItemDetails:
     pickupSO: {fileID: 0}
     numberOfUses: 0
@@ -80,6 +81,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   explosionForce: 2200
+  throwForce: 0
   throwForceMultiplier: 6.5
 --- !u!54 &2424058124560369486
 Rigidbody:

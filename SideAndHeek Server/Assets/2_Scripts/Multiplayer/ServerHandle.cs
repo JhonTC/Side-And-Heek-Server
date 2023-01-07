@@ -63,12 +63,20 @@ public class ServerHandle
     {
         ushort _pickupId = message.GetUShort();
 
-        if (PickupHandler.pickups.ContainsKey(_pickupId))
+        if (NetworkObjectsManager.networkObjects.ContainsKey(_pickupId))
         {
-            PickupHandler.pickups[_pickupId].PickupPickedUp(fromClientId);
+            Pickup pickup = NetworkObjectsManager.networkObjects[_pickupId] as Pickup;
+            if (pickup != null)
+            {
+                pickup.PickupPickedUp(fromClientId);
+            }
+            else
+            {
+                Debug.LogWarning($"ERROR: No pickup with id {_pickupId}");
+            }
         } else
         {
-            Debug.Log($"ERROR: No pickup with id {_pickupId}");
+            Debug.LogWarning($"ERROR: No pickup with id {_pickupId}");
         }
     }
 

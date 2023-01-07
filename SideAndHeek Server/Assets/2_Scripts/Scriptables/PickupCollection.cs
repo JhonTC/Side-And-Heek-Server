@@ -7,7 +7,7 @@ public class PickupCollection : ScriptableObject
 {
     public List<PickupDetails> pickupDetails;
 
-    public PickupDetails GetPickupByCode(PickupCode code)
+    public PickupDetails GetPickupByCode(PickupType code)
     {
         foreach (PickupDetails pickupDetails in pickupDetails)
         {

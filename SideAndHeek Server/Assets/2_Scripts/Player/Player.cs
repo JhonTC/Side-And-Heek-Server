@@ -217,11 +217,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void PickupSpawned(int code)
-    {
-        NetworkObjectsManager.instance.pickupHandler.SpawnPickup(Id, code, transform.position, transform.rotation);
-    }
-
     public void PickupPickedUp(PickupSO pickup)
     {
         activePickup = NetworkObjectsManager.instance.pickupHandler.HandlePickup(pickup, this);

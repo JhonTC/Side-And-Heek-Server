@@ -58,11 +58,11 @@ public class PickupSpawner : MonoBehaviour
 
             hasPickup = true;
 
-            PickupSpawned((int)activePickupDetails.pickupSO.pickupCode);
+            SpawnPickupWithCode((int)activePickupDetails.pickupSO.pickupCode);
         }
     }
 
-    public void PickupSpawned(int code)
+    public void SpawnPickupWithCode(int code)
     {
         activePickup = NetworkObjectsManager.instance.pickupHandler.SpawnPickup(id, code, transform.position, transform.rotation, this);
     }

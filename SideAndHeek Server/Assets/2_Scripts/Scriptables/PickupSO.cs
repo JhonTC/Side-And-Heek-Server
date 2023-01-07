@@ -13,12 +13,12 @@ public class PickupSO : ScriptableObject
 
     public PlayerType userType;
 
-    public PickupCode pickupCode;
+    public PickupType pickupCode;
     public float power;
     public float duration;
 }
 
-public enum PickupCode
+public enum PickupType
 {
     NULL,
     SuperFlop,

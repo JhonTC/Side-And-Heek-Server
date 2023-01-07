@@ -162,8 +162,7 @@ public class GameManager : MonoBehaviour
             player.SetPlayerType(PlayerType.Default, false, false);
         }
 
-        PickupHandler.ClearAllActivePickups();
-        ItemHandler.ClearAllActiveItems();
+        NetworkObjectsManager.instance.ClearAllSpawnedNetworkObjects();
 
         SceneManager.UnloadSceneAsync(gameMode.sceneName);
         ServerSend.UnloadScene(gameMode.sceneName);

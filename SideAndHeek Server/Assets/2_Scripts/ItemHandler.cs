@@ -3,15 +3,13 @@ using UnityEngine;
 
 public class ItemHandler
 {
-    public static ushort currentItemId = 0;
-
     public static Dictionary<ushort, SpawnableObject> items = new Dictionary<ushort, SpawnableObject>();
 
-    public static Dictionary<PickupCode, int> itemLog = new Dictionary<PickupCode, int>();
+    public static Dictionary<PickupType, int> itemLog = new Dictionary<PickupType, int>();
 
     private delegate BasePickup ItemHandlerDelegate(PickupSO _pickupSO, Player _player);
 
-    private static Dictionary<PickupCode, ItemHandlerDelegate> itemHandlers;
+    private static Dictionary<PickupType, ItemHandlerDelegate> itemHandlers;
     //private static Dictionary<PickupCode, Type> itemHondlers;
 
     public ItemHandler()
@@ -21,18 +19,18 @@ public class ItemHandler
 
     private void InitialiseItemData()
     {
-        itemHandlers = new Dictionary<PickupCode, ItemHandlerDelegate>()
+        itemHandlers = new Dictionary<PickupType, ItemHandlerDelegate>()
         {
-            { PickupCode.NULL,  NullItem },
-            { PickupCode.SuperFlop, SuperFlop },
-            { PickupCode.SuperJump, SuperJump },
-            { PickupCode.JellyBomb, JellyBomb },
-            { PickupCode.SuperSpeed_3, SuperSpeed },
-            { PickupCode.SuperSpeed_6, SuperSpeed },
-            { PickupCode.SuperSpeed_9, SuperSpeed },
-            { PickupCode.Invisibility, Invisibility },
-            { PickupCode.Teleport, Teleport },
-            { PickupCode.Morph, Morph }
+            { PickupType.NULL,  NullItem },
+            { PickupType.SuperFlop, SuperFlop },
+            { PickupType.SuperJump, SuperJump },
+            { PickupType.JellyBomb, JellyBomb },
+            { PickupType.SuperSpeed_3, SuperSpeed },
+            { PickupType.SuperSpeed_6, SuperSpeed },
+            { PickupType.SuperSpeed_9, SuperSpeed },
+            { PickupType.Invisibility, Invisibility },
+            { PickupType.Teleport, Teleport },
+            { PickupType.Morph, Morph }
         };
 
         Debug.Log("Initialised packets.");
@@ -40,29 +38,12 @@ public class ItemHandler
 
     public SpawnableObject SpawnItem(ushort _creatorId, int _code, Vector3 _position, Quaternion _rotation, PickupSpawner _spawner = null)
     {
-        SpawnableObject item = null;
-
-        if (!items.ContainsKey(currentItemId))
+        SpawnableObject item = NetworkObjectsManager.instance.SpawnObject(NetworkedObjectType.Item, _position, _rotation, true, (PickupType)_code) as SpawnableObject;
+        if (item != null)
         {
-            item = NetworkObjectsManager.instance.SpawnItem((PickupCode)_code, _position, _rotation);
-            item.Init(currentItemId, _creatorId, _code, true);
-            /*switch ((PickupCode)_code)
-            {
-                case PickupCode.JellyBomb:
-                    JellyBomb jellybomb = item as JellyBomb;
-                    jellybomb.Init(currentItemId, _creatorId, _code, ); //TODO: cleanup to pass params rather than having specific calls
-                    break;
-                default:
-                    item.Init(currentItemId, _creatorId, _code, true);
-                    break;
-            }*/
-
-            items.Add(item.objectId, item);
+            item.Init(_creatorId, _code);
 
             ServerSend.ItemSpawned(item.objectId, item.creatorId, item.activeItemDetails.pickupSO, _position, _rotation);
-
-            currentItemId++;
-            //TODO: above will cause issues on server being live for a long time - after many pickup spawns value will be out of range
         }
 
         return item;
@@ -88,7 +69,7 @@ public class ItemHandler
             return false;
         }
 
-        foreach (PickupCode pickupCode in itemLog.Keys)
+        foreach (PickupType pickupCode in itemLog.Keys)
         {
             if (itemLog.ContainsKey(pickupCode))
             {
@@ -104,15 +85,6 @@ public class ItemHandler
         }
 
         return true;
-    }
-
-    public static void ClearAllActiveItems()
-    {
-        foreach (SpawnableObject spawnable in items.Values)
-        {
-            Object.Destroy(spawnable.gameObject);
-        }
-        items.Clear();
     }
 
     public BasePickup HandlePickup(PickupSO _pickupSO, Player _player)

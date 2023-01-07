@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class GR_Deathmatch : GameRules
 {
-    [Range(60, 360)]
+    [Range(10, 360)]
     public int gameLength;
     [Range(0, 10)]
     public int playerLives;

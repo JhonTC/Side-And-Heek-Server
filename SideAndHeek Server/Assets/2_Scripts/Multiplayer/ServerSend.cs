@@ -151,13 +151,21 @@ public class ServerSend
         NetworkManager.Instance.Server.SendToAll(message);
     }
 
-    public static void ItemTransform(ushort _id, Vector3 _position, Quaternion _rotation, Vector3 _scale)
+    public static void NetworkObjectTransform(ushort _id, Vector3 _position, Quaternion _rotation, Vector3 _scale)
     {
-        Message message = Message.Create(MessageSendMode.Unreliable, ServerToClientId.itemTransform);
+        Message message = Message.Create(MessageSendMode.Unreliable, ServerToClientId.networkObjectTransform);
         message.AddUShort(_id);
         message.AddVector3(_position);
         message.AddQuaternion(_rotation);
         message.AddVector3(_scale);
+
+        NetworkManager.Instance.Server.SendToAll(message);
+    }
+
+    public static void NetworkObjectDestroyed(ushort _id)
+    {
+        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.networkObjectDestroyed);
+        message.AddUShort(_id);
 
         NetworkManager.Instance.Server.SendToAll(message);
     }
