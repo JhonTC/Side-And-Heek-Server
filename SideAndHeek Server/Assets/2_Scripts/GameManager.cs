@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     
     private LevelManager levelManager;
 
+    public GameplayRecorder gameplayRecorder;
+
     public PickupCollection collection;
     public GameMode gameMode;
     public GameType gameType;
@@ -57,6 +59,8 @@ public class GameManager : MonoBehaviour
         {
             chosenDefaultColours.Add(colour, false);
         }
+
+        gameplayRecorder = new GameplayRecorder();
     }
 
     private void FixedUpdate()
@@ -65,6 +69,8 @@ public class GameManager : MonoBehaviour
         {
             gameMode.FixedUpdate();
         }
+
+        gameplayRecorder.FixedUpdate();
     }
 
     void OnEnable()
@@ -225,5 +231,36 @@ public class GameManager : MonoBehaviour
         }
 
         throw new System.Exception("ERROR: No colours are left to choose from");
+    }
+
+    public void OnPlayerLeft(ushort playerId)
+    {
+        bool isLeavingPlayerHost = Player.list[playerId].isHost;
+
+        if (gameStarted)
+        {
+            gameMode.OnPlayerLeft(Player.list[playerId]);
+        }
+
+        UnclaimHiderColour(Player.list[playerId].activeColour);
+
+        Player.list[playerId].DespawnPlayer();
+        Destroy(Player.list[playerId].gameObject);
+        Player.list.Remove(playerId);
+
+        CheckForGameOver();
+
+        if (Player.list.Count > 0)
+        {
+            if (isLeavingPlayerHost)
+            {
+                Player.AppointNewHost();
+            }
+        }
+        else
+        {
+            //Application.Quit();
+            Debug.LogWarning("Last Player left, server should close");
+        }
     }
 }

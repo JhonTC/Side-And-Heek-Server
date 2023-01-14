@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GR_Deathmatch : GameRules
+public class GR_CaptureTheFlag : GameRules
 {
-    [Range(10, 360)]
+    [Range(2, 10)]
+    public int numberOfTeams;
+    [Range(60, 360)]
     public int gameLength;
-    [Range(0, 10)]
-    public int playerLives;
-    [Range(0, 0.1f)]
-    public float shrinkSpeed = 0.005f;
+    [Range(1, 20)]
+    public int maxScore;
+    public GameEndType gameEndType;
+    public CatchType catchType;
 
-    public GR_Deathmatch(GameType gameType)
+    public GR_CaptureTheFlag(GameType gameType)
     {
         this.gameType = gameType;
     }
@@ -22,8 +24,11 @@ public class GR_Deathmatch : GameRules
     {
         base.AddMessageValues(message);
 
+        message.AddInt(numberOfTeams);
         message.AddInt(gameLength);
-        message.AddInt(playerLives);
+        message.AddInt(maxScore);
+        message.AddInt((int)gameEndType);
+        message.AddInt((int)catchType);
         message.AddBool(continuousFlop);
 
         return message;
@@ -31,8 +36,11 @@ public class GR_Deathmatch : GameRules
 
     public override void ReadMessageValues(Message message)
     {
+        numberOfTeams = message.GetInt();
         gameLength = message.GetInt();
-        playerLives = message.GetInt();
+        maxScore = message.GetInt();
+        gameEndType = (GameEndType)message.GetInt();
+        catchType = (CatchType)message.GetInt();
         continuousFlop = message.GetBool();
     }
 
@@ -40,8 +48,11 @@ public class GR_Deathmatch : GameRules
     {
         Dictionary<string, object> retList = new Dictionary<string, object>();
 
+        retList.Add("Number Of Teams", numberOfTeams);
         retList.Add("Game Length", gameLength);
-        retList.Add("Player Lives", playerLives);
+        retList.Add("Max Score", maxScore);
+        retList.Add("Game End Type", gameEndType);
+        retList.Add("Catch Type", catchType);
         retList.Add("Continuous Flop", continuousFlop);
 
         return retList;

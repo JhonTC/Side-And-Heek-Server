@@ -7,6 +7,7 @@ using UnityEngine;
 public class GameMode
 {
     public string sceneName;
+    protected GameRules gameRules;
 
     public virtual void Init()
     {
@@ -24,15 +25,18 @@ public class GameMode
             case GameType.Deathmatch:
                 gameMode = new GM_Deathmatch();
                 break;
+            case GameType.CaptureTheFlag:
+                gameMode = new GM_CaptureTheFlag();
+                break;
         }
         gameMode.Init();
 
         return gameMode;
     }
 
-    public virtual GameRules GetGameRules()
+    public GameRules GetGameRules()
     {
-        return null;
+        return gameRules;
     }
 
     public virtual void SetGameRules(GameRules gameRules)
@@ -90,6 +94,16 @@ public class GameMode
     }
 
     public virtual void OnSceneLoaded()
+    {
+
+    }
+
+    public virtual void OnTeamScore(ushort teamId)
+    {
+        
+    }
+
+    public virtual void OnPlayerLeft(Player player)
     {
 
     }

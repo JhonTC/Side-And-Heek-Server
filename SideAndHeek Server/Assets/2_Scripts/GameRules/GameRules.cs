@@ -31,12 +31,15 @@ public class GameRules
             case GameType.Deathmatch:
                 gameRules = new GR_Deathmatch(_gameType);
                 break;
+            case GameType.CaptureTheFlag:
+                gameRules = new GR_CaptureTheFlag(_gameType);
+                break;
         }
 
         return gameRules;
     }
 
-    public virtual Dictionary<string, object> GetListOfValues()
+    public virtual Dictionary<string, object> GetListOfValues() //Used in GameManagerEditor
     {
         return null;
     }
@@ -45,7 +48,8 @@ public class GameRules
 public enum GameType
 {
     HideAndSeek,
-    Deathmatch
+    Deathmatch,
+    CaptureTheFlag
 }
 
 public enum CatchType
@@ -72,4 +76,10 @@ public enum HiderFallRespawnType
     Hider,
     Hunter,
     Spectator
+}
+
+public enum GameEndType
+{
+    Time,
+    Score
 }

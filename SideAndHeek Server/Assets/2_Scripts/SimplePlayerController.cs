@@ -22,7 +22,7 @@ public class SimplePlayerController : MonoBehaviour
     [SerializeField] private float turnSpeed;
 
     public float maxForwardForceMultipler = 1;
-    [HideInInspector] public float forwardForceMultipler = 1;
+    public float forwardForceMultipler = 1;
     
     public Rigidbody rightLeg;
     public Rigidbody leftLeg;

@@ -5,20 +5,14 @@ using UnityEngine;
 
 public class GM_Deathmatch : GameMode
 {
-    public GR_Deathmatch gameRules;
-    private string spectatorSceneName = "Lobby";
+    private GR_Deathmatch CustomGameRules => gameRules as GR_Deathmatch;
 
+    private string spectatorSceneName = "Lobby";
     public Transform shrinkingArea;
-    private float shrinkSpeed = 0.005f;
 
     public override void Init()
     {
         sceneName = "Map_2";
-    }
-
-    public override GameRules GetGameRules()
-    {
-        return gameRules;
     }
 
     public override void SetGameRules(GameRules _gameRules)
@@ -45,14 +39,14 @@ public class GM_Deathmatch : GameMode
         }
 
         ServerSend.GameStarted();
-        GameModeUtils.StartGameTimer(GameManager.instance.GameOver, gameRules.gameLength);
+        GameModeUtils.StartGameTimer(GameManager.instance.GameOver, CustomGameRules.gameLength);
     }
 
     public override void FixedUpdate()
     {
         if (shrinkingArea.localScale.x >= 0.4f)
         {
-            shrinkingArea.localScale -= new Vector3(shrinkSpeed, 0, shrinkSpeed) * Time.fixedDeltaTime;
+            shrinkingArea.localScale -= new Vector3(CustomGameRules.shrinkSpeed, 0, CustomGameRules.shrinkSpeed) * Time.fixedDeltaTime;
         }
 
         //NEED TO SEND NEW SCALE TO CLIENTS
@@ -65,7 +59,7 @@ public class GM_Deathmatch : GameMode
 
     public override void AddGameStartMessageValues(ref Message message)
     {
-        message.AddInt(gameRules.gameLength);
+        message.AddInt(CustomGameRules.gameLength);
     }
 
     public override void AddGameOverMessageValues(ref Message message)

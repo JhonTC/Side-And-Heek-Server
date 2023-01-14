@@ -24,9 +24,12 @@ public class GameManagerEditor : Editor
                 if (gameRules != null)
                 {
                     Dictionary<string, object> valueList = gameManager.gameMode.GetGameRules().GetListOfValues();
-                    foreach (var item in valueList)
+                    if (valueList != null)
                     {
-                        EditorGUILayout.TextField(item.Key.ToString(), item.Value.ToString());
+                        foreach (var item in valueList)
+                        {
+                            EditorGUILayout.TextField(item.Key.ToString(), item.Value.ToString());
+                        }
                     }
                 }
             }
@@ -47,5 +50,20 @@ public class GameManagerEditor : Editor
         {
             gameManager.GameOver();
         }
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Record"))
+        {
+            gameManager.gameplayRecorder.StartRecording();
+        }
+        if (GUILayout.Button("Stop"))
+        {
+            gameManager.gameplayRecorder.StopRecording();
+        }
+        if (GUILayout.Button("Play"))
+        {
+            gameManager.gameplayRecorder.PlayRecording();
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }

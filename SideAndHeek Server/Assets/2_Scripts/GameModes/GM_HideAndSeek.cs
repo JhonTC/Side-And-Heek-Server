@@ -1,11 +1,13 @@
 using Riptide;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GM_HideAndSeek : GameMode
 {
-    public GR_HideAndSeek gameRules;
+    private GR_HideAndSeek CustomGameRules => gameRules as GR_HideAndSeek;
+
     private int specialSpawnCount = 0;
     private bool isHunterVictory = false;
     private string activeHunterSceneName = "Lobby";
@@ -13,11 +15,6 @@ public class GM_HideAndSeek : GameMode
     public override void Init()
     {
         sceneName = "Map_1";
-    }
-
-    public override GameRules GetGameRules()
-    {
-        return gameRules;
     }
 
     public override void SetGameRules(GameRules _gameRules)
@@ -30,15 +27,13 @@ public class GM_HideAndSeek : GameMode
         }
     }
 
-    private Player GetRandomPlayerExcludingLastHunters()
+    private Player GetRandomPlayerAvoidingLastHunters()
     {
-        List<Player> randomPlayers = new List<Player>();
-        foreach (Player player in Player.list.Values)
+        List<Player> randomPlayers = Player.list.Values.Where(p => !GameManager.instance.lastMainHunterPlayers.Contains(p)).ToList();
+
+        if (randomPlayers.Count <= 0)
         {
-            if (!GameManager.instance.lastMainHunterPlayers.Contains(player))
-            {
-                randomPlayers.Add(player);
-            }
+            randomPlayers = Player.list.Values.ToList();
         }
 
         return randomPlayers[Random.Range(0, randomPlayers.Count)];
@@ -46,7 +41,7 @@ public class GM_HideAndSeek : GameMode
 
     public override void TryGameStartSuccess()
     {
-        Player randomPlayer = GetRandomPlayerExcludingLastHunters();
+        Player randomPlayer = GetRandomPlayerAvoidingLastHunters();
         GameManager.instance.lastMainHunterPlayers.Clear();
 
         foreach (Player player in Player.list.Values)
@@ -78,7 +73,7 @@ public class GM_HideAndSeek : GameMode
             }
             else
             {
-                GameManager.instance.StartCoroutine(SpawnSpecial(player, gameRules.hidingTime));
+                GameManager.instance.StartCoroutine(SpawnSpecial(player, CustomGameRules.hidingTime));
             }
         }
     }
@@ -92,7 +87,7 @@ public class GM_HideAndSeek : GameMode
 
     public override void AddGameStartMessageValues(ref Message message)
     {
-        message.AddInt(gameRules.gameLength);
+        message.AddInt(CustomGameRules.gameLength);
     }
 
     public override void AddGameOverMessageValues(ref Message message)
@@ -169,7 +164,7 @@ public class GM_HideAndSeek : GameMode
             {
                 player.activePlayerCollisionIds.Add(other.Id);
 
-                if (gameRules.catchType == CatchType.OnTouch || (gameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
+                if (CustomGameRules.catchType == CatchType.OnTouch || (CustomGameRules.catchType == CatchType.OnFlop && player.movementController.canKnockOutOthers))
                 {
                     if (other.isBodyActive)
                     {
@@ -195,13 +190,13 @@ public class GM_HideAndSeek : GameMode
         }
         else
         {
-            if (gameRules.fallRespawnType == HiderFallRespawnType.Hunter)
+            if (CustomGameRules.fallRespawnType == HiderFallRespawnType.Hunter)
             {
                 player.SetPlayerType(PlayerType.Hunter);
             }
         }
 
-        player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(gameRules.fallRespawnLocation == FallRespawnLocation.Centre));
+        player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeSceneName).GetNextSpawnpoint(CustomGameRules.fallRespawnLocation == FallRespawnLocation.Centre));
     }
 
     public override void OnPlayerTypeSet(Player player, PlayerType playerType, bool isFirstHunter)
@@ -210,16 +205,16 @@ public class GM_HideAndSeek : GameMode
 
         if (playerType == PlayerType.Hunter)
         {
-            switch (gameRules.speedBoostType)
+            switch (CustomGameRules.speedBoostType)
             {
                 case SpeedBoostType.FirstHunter:
                     if (isFirstHunter)
                     {
-                        speedMultiplier = gameRules.speedMultiplier;
+                        speedMultiplier = CustomGameRules.speedMultiplier;
                     }
                     break;
                 case SpeedBoostType.AllHunters:
-                    speedMultiplier = gameRules.speedMultiplier;
+                    speedMultiplier = CustomGameRules.speedMultiplier;
                     break;
             }
         }
@@ -246,7 +241,7 @@ public class GM_HideAndSeek : GameMode
             _player.TeleportPlayer(LevelManager.GetLevelManagerForScene(activeHunterSceneName).GetNextSpawnpoint(true));
 
             ServerSend.GameStarted();
-            GameModeUtils.StartGameTimer(GameManager.instance.GameOver, gameRules.gameLength);
+            GameModeUtils.StartGameTimer(GameManager.instance.GameOver, CustomGameRules.gameLength);
         }
     }
 }

@@ -7,7 +7,7 @@ public class BodyCollisionDetection : MonoBehaviour
     [HideInInspector] public Player player;
     [SerializeField] private bool isHeadCollider = false;
 
-    private void OnCollisionEnter(Collision collision)
+    /*private void OnCollisionEnter(Collision collision)
     {
         if (player != null)
         {
@@ -16,6 +16,7 @@ public class BodyCollisionDetection : MonoBehaviour
                 Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
                 if (other != player)
                 {
+                    Debug.Log("OnCollisionEnter");
                     GameManager.instance.gameMode.OnPlayerCollision(player, other);
                 }
             }
@@ -31,6 +32,7 @@ public class BodyCollisionDetection : MonoBehaviour
                 Player other = collision.gameObject.GetComponent<BodyCollisionDetection>().player;
                 if (other != player)
                 {
+                    Debug.Log("OnCollisionExit");
                     if (player.activePlayerCollisionIds.Contains(other.Id))
                     {
                         player.activePlayerCollisionIds.Remove(other.Id);
@@ -38,7 +40,7 @@ public class BodyCollisionDetection : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 
     private void OnTriggerEnter(Collider collider)
     {
@@ -47,12 +49,9 @@ public class BodyCollisionDetection : MonoBehaviour
             if (collider.tag == "BodyCollider")
             {
                 Player other = collider.GetComponent<BodyCollisionDetection>().player;
-                if (player != null)
+                if (other != player)
                 {
-                    if (other != player)
-                    {
-                        GameManager.instance.gameMode.OnPlayerCollision(player, other);
-                    }
+                    GameManager.instance.gameMode.OnPlayerCollision(player, other);
                 }
             }
 
@@ -63,19 +62,17 @@ public class BodyCollisionDetection : MonoBehaviour
                 if (collider.tag == "BodyCollider")
                 {
                     Player other = collider.GetComponent<BodyCollisionDetection>().player;
-                    if (other != player)
-                    {
-                        player.movementController.canKnockOutOthers = false;
-                    } else
+                    if (other == player)
                     {
                         canSend = false;
                     }
+                } 
+                else //anycollisions that arent on players will end the flop
+                {
+                    player.movementController.canKnockOutOthers = false;
                 }
 
-                if (canSend)
-                {
-                    player.headCollided = true;
-                }
+                player.headCollided = canSend;
             }
         }
     }

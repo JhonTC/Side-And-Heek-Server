@@ -56,7 +56,7 @@ public class GR_HideAndSeek : GameRules
         continuousFlop = message.GetBool();
     }
 
-    public override Dictionary<string, object> GetListOfValues()
+    public override Dictionary<string, object> GetListOfValues() //Used in GameManagerEditor
     {
         Dictionary<string, object> retList = new Dictionary<string, object>();
 

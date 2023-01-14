@@ -477,7 +477,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   standingForce: 100
   jumpingForce: 5000
-  walkFootForwardForce: 150
+  walkFootForwardForce: 200
   sneakFootForwardForce: 100
   footVerticalForce: 125
   flopForce: 4000
@@ -501,6 +501,7 @@ MonoBehaviour:
   - {fileID: 6841714984496121421}
   - {fileID: 8909292605335433777}
   - {fileID: 8411262288676932208}
+  owner: {fileID: 0}
   isJumping: 0
   jumpForceMultiplier: 0
   jumpCount: 0
@@ -511,7 +512,7 @@ MonoBehaviour:
   lastIsFlopping: 0
   flopCount: 0
   isSneaking: 0
-  moveStageDuration: 0.1
+  moveStageDuration: 0.09
   standingHeight: 1.63
   groundMask:
     serializedVersion: 2
