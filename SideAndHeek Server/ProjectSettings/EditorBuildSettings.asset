@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/5_Scenes/Map_Legacy.unity
     guid: 746fd50abd90a4e4f84417485f80fc69
+  - enabled: 0
+    path: Assets/5_Scenes/Map_1Old.unity
+    guid: b5136eceac843654d93d6659a8a90e93
   m_configObjects: {}

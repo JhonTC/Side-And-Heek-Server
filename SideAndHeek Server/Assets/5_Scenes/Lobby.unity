@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameStarted: 0
-  collection: {fileID: 11400000, guid: b8bbefbc1c9b9d14699ad5c36b7a2ee1, type: 2}
+  collection: {fileID: 11400000, guid: d4e6de60ac9c13d4787376905ad3eaa1, type: 2}
   gameMode:
     sceneName: 
   gameType: 1
@@ -1448,7 +1448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2129778326
 Transform:
   m_ObjectHideFlags: 0
