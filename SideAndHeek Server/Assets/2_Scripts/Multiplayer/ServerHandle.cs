@@ -107,4 +107,16 @@ public class ServerHandle
 
         Debug.Log($"Game Rules Changed by player with id {fromClientId}");
     }
+
+    [MessageHandler((ushort)ClientToServerId.command)]
+    public static void Command(ushort fromClientId, Message message)
+    {
+        string cmd = message.GetString();
+        switch (cmd) //todo: extract into separate commands class
+        {
+            case "relaunch_server":
+                Commands.RelaunchServer();
+                break;
+        }
+    }
 }

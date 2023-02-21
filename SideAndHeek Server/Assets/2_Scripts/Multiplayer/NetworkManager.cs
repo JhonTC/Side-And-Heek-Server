@@ -41,7 +41,8 @@ public enum ClientToServerId : ushort
     setPlayerColour,
     pickupSelected,
     itemUsed,
-    gameRulesChanged
+    gameRulesChanged,
+    command
 }
 
 public class NetworkManager : MonoBehaviour
